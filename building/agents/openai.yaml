@@ -1,0 +1,4 @@
+interface:
+  display_name: "Building"
+  short_description: "Build Nova binaries, runtimes, and x86 containers"
+  default_prompt: "Use $building to choose and run the right Nova build workflow."

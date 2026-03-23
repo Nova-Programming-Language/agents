@@ -1,0 +1,4 @@
+interface:
+  display_name: "Coding"
+  short_description: "Implement Nova repo changes with repo guardrails"
+  default_prompt: "Use $coding to implement this Nova repo change with the right guardrails."

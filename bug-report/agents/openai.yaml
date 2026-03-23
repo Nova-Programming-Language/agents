@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bug Report"
+  short_description: "Write verified Nova bug reports and repro notes"
+  default_prompt: "Use $bug-report to write a verified Nova bug report from this issue."

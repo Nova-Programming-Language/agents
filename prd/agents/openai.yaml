@@ -1,0 +1,4 @@
+interface:
+  display_name: "PRD"
+  short_description: "Write Nova project PRDs for multi-session delivery"
+  default_prompt: "Use $prd to create or update the PRD for this Nova project."

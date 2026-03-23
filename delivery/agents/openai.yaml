@@ -1,0 +1,4 @@
+interface:
+  display_name: "Delivery"
+  short_description: "Run multi-session Nova projects with stage-gated artifacts"
+  default_prompt: "Use $delivery to manage this Nova project across requirements, planning, implementation, and validation."

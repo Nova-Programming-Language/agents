@@ -1,0 +1,4 @@
+interface:
+  display_name: "Regression Test"
+  short_description: "Run targeted and full Nova regression workflows"
+  default_prompt: "Use $regression-test to choose and run the right Nova regression workflow."

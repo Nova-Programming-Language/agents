@@ -1,0 +1,154 @@
+---
+name: coding
+description: Implement or modify the Nova toolchain safely; use when changing interpreter, frontend, codegen, CLI, tests, or architecture-driven behavior in the Nova repo.
+---
+
+# Coding
+
+## When to Use
+
+Use this skill for Nova repo implementation work, not for generic coding. It is
+about respecting the repo's semantic constraints, architecture documents, and
+cross-command behavior.
+
+## Source of Truth
+
+Read in this order:
+
+1. `docs/agent-rules.md`
+2. the relevant language spec files under `docs/specs/`
+3. the relevant architecture docs and evolution plans under
+   `docs/architecture/`
+4. `../references/source-of-truth.md`
+5. `../references/artifact-freshness.md`
+6. `../references/runtime-evidence.md` for reproducible runtime bugs
+7. `../references/semantic-family.md` when related constructs may share a
+   semantic family
+8. `references/nova-semantics.md` when language semantics matter
+9. the affected code paths
+
+If the spec or architecture is ambiguous, stop and ask instead of inventing a
+ behavior.
+
+## Implementation Rules
+
+- Implement the spec and architecture, not just the current test expectation.
+- Do not add fallbacks, heuristics, silent degradation, or silent coercions to
+  hide missing metadata or upstream bugs.
+- Do not work around bugs in another component when the correct fix is to repair
+  the producer.
+- Keep changes within the component boundaries the user requested.
+- Rebuild the artifacts required by the validation command after source changes.
+- For reproducible runtime bugs, gather runtime evidence before changing code.
+- Do not special-case syntax before checking for a shared semantic family.
+
+## Source-of-Truth Contract
+
+Before implementing a lookup or decision path, state:
+
+1. the exact answer being computed
+2. the authoritative source for that answer
+3. whether missing data is valid or a bug
+4. which component owns producing or installing the data if it is missing
+
+If the authoritative source should exist and does not, fail loudly or report
+the blocker. Do not replace missing source-of-truth data with heuristics or
+secondary inference.
+
+Forbidden shortcuts:
+
+- string-name or pattern heuristics when structured data exists or should exist
+- fallback from contract data to AST, registries, or side maps because the
+  primary source is missing
+- defaulting required data to `None`, empty maps, or no-op behavior
+- “temporary” compatibility logic that makes invalid states look valid
+
+## Semantic-Family Check
+
+Before adding a construct-specific path, state:
+
+1. the semantic family the construct belongs to
+2. the closest existing construct already covering that family
+3. whether the new construct is identical, a specialization, or a sibling
+4. the first layer where observable semantics actually diverge
+
+If the construct is only a specialization of an existing family, prefer a thin
+specialization over a shared core path. If it is truly distinct, split only at
+the first layer where semantics diverge.
+
+## Component Workflow
+
+1. State the semantic rule you are changing.
+2. Identify the owning component.
+3. Identify every user-facing path the change affects.
+4. If the bug is reproducible at runtime, do only enough code reading to find
+   the likely debug surface, then collect runtime evidence.
+5. If related constructs are involved, identify the highest shared semantic
+   layer before adding any special case.
+6. Implement the general fix.
+7. Validate the impacted paths, not just one happy path.
+
+For data-contract fixes, include the missing-data path in the implementation
+plan, not just the success path.
+
+## Cross-Command Audit Requirement
+
+For shared toolchain/runtime behavior, audit:
+
+- `nova run`
+- `nova check`
+- `nova repl`
+- `nova test`
+- `nova doc` example verification
+- `nova-test-runner`
+- compiled backend paths when applicable
+
+Do not treat one command path as sufficient if the feature is shared.
+
+## Validation Strategy
+
+Artifact freshness checklist before validation:
+
+1. Name the exact command you are about to run.
+2. Identify whether it executes Cargo-built debug artifacts,
+   `target/release/nova`, compiled/runtime-linked libraries, or x86 container
+   artifacts.
+3. Rebuild the required surfaces first, or explicitly note that the command
+   itself guarantees freshness.
+4. In your user-facing validation summary, state what was rebuilt or why no
+   rebuild was needed.
+5. In your user-facing implementation summary, state the authoritative source
+   used and what happens if it is missing.
+
+- Use the smallest command that proves the change.
+- Then use a broader command if the feature crosses subsystems.
+- For reproducible runtime bugs, stop broad code reading once the next useful
+  fact is a live value or branch outcome that LLDB or narrow tracing can show.
+- When removing a syntax-shaped special case, add paired tests for the related
+  constructs that should share a path.
+- When constructs truly diverge, add tests that prove the divergence occurs at
+  the intended layer.
+- When removing a fallback or heuristic, add a regression that proves missing
+  required data fails loudly instead of silently degrading.
+- Use `scripts/full-regression.sh check` for canonical full-suite regression.
+- Use `cargo check -p <crate>` and `cargo test -p <crate> <filter>` for
+  crate-local Rust validation.
+- Use `../references/artifact-freshness.md` when the validation command may
+  consume release or runtime artifacts.
+
+## Architecture-Driven Work
+
+If the change is part of an evolution phase:
+
+- read the phase plan
+- implement the whole phase requirement in the owned component
+- do not reintroduce deprecated fallback paths
+- record blockers explicitly when another component is not ready
+
+## Open These References As Needed
+
+- `../references/source-of-truth.md`
+- `../references/artifact-freshness.md`
+- `../references/runtime-evidence.md`
+- `../references/semantic-family.md`
+- `references/nova-semantics.md`

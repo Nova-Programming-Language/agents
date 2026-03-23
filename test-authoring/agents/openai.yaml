@@ -1,0 +1,4 @@
+interface:
+  display_name: "Test Authoring"
+  short_description: "Write Nova tests with correct forms and annotations"
+  default_prompt: "Use $test-authoring to add or update Nova tests for this change."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design"
+  short_description: "Write Nova architecture and design documents"
+  default_prompt: "Use $design to draft or revise this Nova architecture document."

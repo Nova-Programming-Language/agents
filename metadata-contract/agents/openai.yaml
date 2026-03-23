@@ -1,0 +1,4 @@
+interface:
+  display_name: "Metadata Contract"
+  short_description: "Inspect LoweredModule metadata contract behavior"
+  default_prompt: "Use $metadata-contract to inspect or debug lowered metadata in Nova."

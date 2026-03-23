@@ -1,0 +1,70 @@
+# PLAN.md Template
+
+```md
+# Implementation Plan
+
+## Objective
+
+- what this plan delivers:
+
+## Nova Scope
+
+- affected Nova surfaces:
+- authoritative docs:
+- metadata / `prelude.novi` / runtime ABI impact:
+- behavior that must fail loudly if invalid or missing:
+
+## Milestones
+
+### M1
+
+- scope:
+- owning components:
+- expected proof:
+- expected commit shape:
+
+### M2
+
+- scope:
+- owning components:
+- expected proof:
+- expected commit shape:
+
+## Cross-Command Impact
+
+- `nova run`
+- `nova check`
+- `nova repl`
+- `nova test`
+- `nova doc`
+- `nova-test-runner`
+- compiled backend paths
+
+Mark only the paths that actually apply.
+
+## Validation Plan
+
+- acceptance criteria mapping:
+- exact commands:
+- cross-surface checks:
+- negative validation:
+- build or environment prerequisites:
+- manual checks:
+
+## AI Critique
+
+- verdict: pending | ready_for_human_review | revise_before_human_review
+- major findings:
+- revisions applied:
+
+## Dependencies / Blockers
+
+- dependency:
+- blocker:
+
+## Notes
+
+- sequencing assumptions:
+- related constructs that should stay unified:
+- true divergence points:
+```

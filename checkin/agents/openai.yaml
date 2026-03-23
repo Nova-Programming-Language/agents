@@ -1,0 +1,4 @@
+interface:
+  display_name: "Checkin"
+  short_description: "Commit, rebase, and push Nova repo changes"
+  default_prompt: "Use $checkin to prepare, commit, and publish this Nova repo work."
