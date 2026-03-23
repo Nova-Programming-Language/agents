@@ -16,9 +16,10 @@ or publish work to the remote repository.
 2. Inspect divergence from upstream.
 3. Inspect dirty files and draft a commit message from the actual worktree.
 4. Wait for the human to confirm the commit message before committing.
-5. Stage only the intended files.
-6. Commit with a non-interactive git command.
-7. Push. If push is rejected because upstream moved, fetch/rebase/push again.
+5. Stage all dirty files by default.
+6. Only split or exclude files when the human explicitly asks for a narrower commit.
+7. Commit with a non-interactive git command.
+8. Push. If push is rejected because upstream moved, fetch/rebase/push again.
 
 ## Required Inspection Commands
 
@@ -47,8 +48,12 @@ git pull --rebase origin main
 
 ## Commit Policy
 
-- Draft the message from the actual staged change, not from the ticket title.
+- Draft the message from the actual dirty worktree, not from the ticket title.
 - Wait for explicit human confirmation before running `git commit`.
+- By default, treat the full dirty worktree as the intended commit scope.
+- Do not silently narrow the commit to only the files touched most recently.
+- Only create a partial commit when the human explicitly asks to split the work
+  or exclude files.
 - Do not amend an existing commit unless the user asks.
 - Do not use destructive git commands such as `reset --hard` or checkout-based
   reverts unless explicitly requested.
