@@ -1,0 +1,4 @@
+interface:
+  display_name: "Orchestrate"
+  short_description: "Drive long sessions via focused agent pipeline"
+  default_prompt: "Use orchestrate to drive this session with agents"

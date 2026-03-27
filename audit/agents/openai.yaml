@@ -1,0 +1,4 @@
+interface:
+  display_name: "Audit"
+  short_description: "Audit changes for correctness, structure, and impact"
+  default_prompt: "Use audit to verify recent code changes"
