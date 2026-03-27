@@ -69,9 +69,11 @@ The standard failure view is machine-first:
 - use `scripts/full-regression.sh failed` before opening `full-run.log`
 - `failed --json` emits the structured failure list
 - each failure record includes `classification`, `case_id`, `engine`, `form`,
-  `tier`, `file`, `case_name`, `status`, `message`, and `rerun_hint`
+  `tier`, `file`, `case_name`, `source_case_key`, `status`, `message`,
+  `owner`, `phase`, `artifacts`, and `rerun_hint`
 - classifications are relative to the chosen comparison target, typically
   `baseline`
+- prefer per-case `artifacts` over grepping `full-run.log`; the run log is archival
 
 ## Open These References As Needed
 

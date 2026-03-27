@@ -49,6 +49,10 @@ git pull --rebase origin main
 ## Commit Policy
 
 - Draft the message from the actual dirty worktree, not from the ticket title.
+- Write commit messages as durable context for both humans and future AI coding
+  agents. Prefer messages that capture the concrete behavior change, important
+  semantic or ownership clues, key validation commands, and any still-relevant
+  blockers when that context will help a later coding session.
 - Wait for explicit human confirmation before running `git commit`.
 - By default, treat the full dirty worktree as the intended commit scope.
 - Do not silently narrow the commit to only the files touched most recently.

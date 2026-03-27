@@ -56,6 +56,8 @@ Core semantics:
 - `failed` is the primary machine-readable failure view
 - `list` and `show` recover cross-session run context
 - `baseline set <run-ref>` promotes a recorded run without rerunning
+- full regression stores per-case failure artifacts alongside the suite reports;
+  prefer those over `full-run.log` when drilling into one failing case
 
 Run references:
 
@@ -83,6 +85,10 @@ Stable aliases under `tests/.nova/full-regression/`:
 - `last-run-vs-previous.json`
 - `last-run-vs-best-recorded.json`
 - `runs/<run-id>/`
+
+Structured failure entries now carry `source_case_key`, `owner`, `phase`, and
+`artifacts` when available, so agents can classify failures without parsing raw
+compiler output.
 
 ## x86 Container Path
 

@@ -13,29 +13,37 @@ keep the agent focused on the right level of detail.
 
 ## Core Artifacts
 
-Use a project folder:
+A checkout delivers one project at a time. Artifacts live at well-known paths:
 
 ```text
-project-notes/<slug>/
-  PROJECT.md
-  PLAN.md
-  STATUS.md
+project-notes/
+  PROJECT.md    # durable project backbone
+  PLAN.md       # implementation plan and milestone breakdown
+  STATUS.md     # current tactical checkpoint for the next session
+  LOG.md        # append-only session log
+  PRD.md        # product requirements (when applicable)
+  SPEC.md       # project-specific spec (when applicable)
+  *.md           # any other project documents (bug reports, research, etc.)
 ```
 
-Artifact roles:
-
-- `PROJECT.md`: durable project backbone
-- `PLAN.md`: implementation plan and milestone breakdown
-- `STATUS.md`: current tactical checkpoint for the next session
+All project documents live here — PRDs, specs, bug reports, research notes,
+design sketches. The fixed names above are reserved; additional documents use
+descriptive names.
 
 `PROJECT.md` must contain required links to:
 
-- PRD
-- architecture docs
-- implementation plan
+- PRD (`PRD.md` or `N/A` with reason)
+- architecture docs (in `docs/architecture/` or `N/A`)
+- implementation plan (`PLAN.md`)
 
 If one link does not apply, write `N/A` with a reason instead of leaving it
 implicit.
+
+### One project at a time
+
+A repo checkout is used for at most one active delivery project. Starting a
+new project overwrites the existing artifacts. If the previous project was not
+completed, archive it first (`git stash` or move to `project-notes/archive/`).
 
 ## Read First
 
@@ -53,9 +61,9 @@ implicit.
 
 At the start of a session:
 
-1. Read `PROJECT.md`.
-2. Read `PLAN.md`.
-3. Read `STATUS.md`.
+1. Read `project-notes/PROJECT.md`.
+2. Read `project-notes/PLAN.md`.
+3. Read `project-notes/STATUS.md`.
 4. Confirm the current lifecycle stage before coding.
 
 Do not start by rereading old chats, commits, or broad code surfaces unless the
@@ -74,7 +82,7 @@ project artifacts are stale or incomplete.
 
 ## Workflow
 
-1. Create or refresh `PROJECT.md`, `PLAN.md`, and `STATUS.md`.
+1. Create or refresh `project-notes/PROJECT.md`, `PLAN.md`, and `STATUS.md`.
 2. Identify the current stage and load the matching checklist from
    `references/stage-checklists.md`.
 3. Use the required skill(s) for that stage.
@@ -82,11 +90,28 @@ project artifacts are stale or incomplete.
 5. Do not move to the next stage until the current stage exit criteria are met
    or an explicit blocker is recorded.
 
+## Session Log
+
+Append a dated entry to `project-notes/LOG.md` at session end:
+
+```md
+## YYYY-MM-DD
+
+- stage: implementation
+- focus: what was worked on
+- outcome: what was accomplished
+- blockers: any blockers encountered
+- next: what the next session should start with
+```
+
+The log is append-only. Do not edit prior entries.
+
 ## Non-Negotiable Rules
 
 - `PROJECT.md` is the durable source of project truth.
 - `PLAN.md` is the source of truth for milestone sequencing.
 - `STATUS.md` is tactical and should stay short.
+- `LOG.md` is append-only history.
 - A coding agent is expected to drive every stage, not just implementation.
 - Multi-session projects must explicitly record Nova command surfaces,
   authoritative docs, and proof commands.
