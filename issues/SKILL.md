@@ -114,6 +114,32 @@ If an issue blocks another component or milestone:
 - If it's blocking an orchestrate pipeline, record it in STATUS.md
   under Blocked with the issue URL
 
+## Claiming: Preventing Duplicate Work
+
+When multiple agents may be working issues concurrently, each agent
+must claim an issue before starting work:
+
+1. **Check assignment.** Run `gh issue view <number> --json assignees`.
+   If the issue is already assigned, skip it — someone else is on it.
+2. **Claim it.** Assign yourself and add a comment:
+   ```
+   gh issue edit <number> --add-assignee @me
+   gh issue comment <number> --body "Claimed — starting diagnosis."
+   ```
+3. **Only then start work.** Do not read the code, reproduce, or
+   diagnose before claiming. The claim is the lock.
+4. **Release if blocked.** If you cannot fix the issue (blocker,
+   wrong subsystem, need more context), unassign and comment why:
+   ```
+   gh issue edit <number> --remove-assignee @me
+   gh issue comment <number> --body "Released — blocked by [reason]."
+   ```
+
+The assignment is the coordination mechanism. No agent should start
+work on an assigned issue. If an issue has been assigned but has no
+activity (no comments, no commits) for an extended period, the user
+decides whether to reassign — agents do not unassign other agents.
+
 ## Triage: Working Through a Backlog
 
 When presented with multiple issues:
@@ -121,7 +147,7 @@ When presented with multiple issues:
 1. Read all issue titles and labels to understand the landscape.
 2. Group by likely root cause — multiple issues may share one.
 3. Prioritize: blockers first, then bugs, then enhancements.
-4. Fix one at a time using fix-test discipline. Do not batch.
+4. Claim and fix one at a time using fix-test discipline. Do not batch.
 5. After each fix, check if other issues in the same group are
    now resolved. Close them with evidence if so.
 
