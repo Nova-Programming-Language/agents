@@ -1,0 +1,4 @@
+interface:
+  display_name: "Issues"
+  short_description: "Report and fix bugs via GitHub issues"
+  default_prompt: "Use issues to file or fix GitHub issues"

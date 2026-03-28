@@ -1,6 +1,6 @@
 ---
 name: fix-test
-description: Fix failing tests one at a time with root-cause analysis and verified fixes; use when presented with test failures to fix, regression results to work through, or a list of bugs that need depth-first resolution.
+description: Fix failing tests one at a time with root-cause analysis, audit, and verified commits; use when presented with test failures to fix, regression results to work through, or a list of bugs that need depth-first resolution.
 ---
 
 # Fix Test
@@ -8,11 +8,11 @@ description: Fix failing tests one at a time with root-cause analysis and verifi
 ## When to Use
 
 Use when you have failing tests to fix. This skill enforces one-at-a-time
-resolution — each failure is fully diagnosed, fixed, and verified before
-touching the next.
+resolution — each failure is diagnosed, fixed, audited, and committed
+before touching the next.
 
 Do NOT batch failures. Do NOT start a second fix before the first is
-verified.
+committed.
 
 ## The Loop
 
@@ -20,10 +20,10 @@ Repeat for each failure:
 
 ### 1. Select one failure
 
-Pick the next failure from the list. If working through regression
-results, use the structured failure data (classification, owner, phase)
-to choose the most informative failure first — one whose fix is likely
-to resolve or explain other failures.
+Pick the next failure. If working through regression results, use the
+structured failure data (classification, owner, phase) to choose the
+most informative failure first — one whose fix is likely to resolve
+or explain others.
 
 Record in STATUS.md: which failure you are working on and why.
 
@@ -34,21 +34,20 @@ Run the failing test in isolation. Record:
 - The actual output (error message, wrong value, crash)
 - The expected output
 
-If the test cannot be reproduced in isolation, note that — it may be
-an ordering or environment dependency.
+If not reproducible in isolation, note it — may be an ordering or
+environment dependency.
 
 ### 3. Diagnose root cause
 
-Trace from the symptom to the root cause. This is the critical step
-that must not be skipped.
+Trace from symptom to root cause. This step must not be skipped.
 
 - Read the test to understand what it asserts
 - Read the code path the test exercises
-- Identify WHERE the behavior diverges from the expectation
-- Identify WHY — is it a logic error, a missing case, wrong data,
-  stale contract, upstream bug?
-- If the root cause is in another component, record it as a blocker
-  with evidence — do not work around it
+- Identify WHERE behavior diverges from the expectation
+- Identify WHY — logic error, missing case, wrong data, stale
+  contract, upstream bug?
+- If root cause is in another component, record as blocker with
+  evidence — do not work around it
 
 The diagnosis must name:
 - The root cause (one sentence)
@@ -57,85 +56,94 @@ The diagnosis must name:
 
 ### 4. Fix the root cause
 
-Implement the fix. Rules:
+Implement the fix:
 
-- Fix the root cause, not the symptom. If the test fails because a
-  value is nil, don't add a nil check — find out why it's nil.
-- Do not modify the test expectations to match wrong behavior.
-- Do not add workarounds, fallbacks, or defensive checks that hide
-  the real problem.
-- Keep the fix minimal — only change what is necessary.
-- If the fix touches shared code, consider whether it affects other
-  tests (check in step 5).
+- Fix the root cause, not the symptom
+- Do not modify test expectations to match wrong behavior
+- Do not add workarounds or defensive checks that hide the problem
+- Keep the fix minimal
 
 ### 5. Verify
 
 Run the target test. It must pass.
 
-Then run a broader scope to check for collateral damage:
+Then run a broader scope for collateral damage:
 - If the fix touched shared code, run related tests
 - If a regression suite command exists, run it and compare
 
-Record in STATUS.md:
-- Target test: pass/fail
-- Broader check: any new failures introduced?
+If the fix introduced new failures, diagnose and fix those before
+proceeding — they are part of THIS fix.
 
-If the fix introduced new failures, you are not done. Diagnose and
-fix those before moving on — they are part of THIS fix, not a
-separate item.
+### 6. Audit
 
-### 6. Record and move on
+Run the `audit` skill against this fix. The audit checks:
 
-Only after the fix is verified with no collateral damage:
+- **Functional**: does the target test now pass?
+- **Structural**: is this a root-cause fix or a symptom fix? Does it
+  introduce shortcuts, silent failures, or incomplete error handling?
+- **Completeness**: does the fix match the diagnosed root cause, or
+  did it drift into a different approach?
+- **Collateral**: any new failures or out-of-scope changes?
 
-- Update STATUS.md: move this failure to Done with a one-line summary
-  of the root cause and fix
-- If working in an orchestrate pipeline, the orchestrator may commit
-  at this point
+If the audit fails, go back to step 4 with the audit findings. The
+fix must pass audit before it can be committed. Do not skip the audit
+because "it's a small change" — small changes are where shortcuts hide.
 
-Then return to step 1 for the next failure.
+### 7. Commit
+
+After passing audit, commit using `checkin`. The commit message must
+include:
+- The test that was failing
+- The root cause (one sentence)
+- The fix (one sentence)
+- The verification command
+
+This creates a clean, revertible checkpoint per fix. If a later fix
+goes wrong, earlier fixes are safely committed.
+
+### 8. Move on
+
+Update STATUS.md: move this failure to Done with the commit hash.
+
+Check if other failures in the list are now resolved by this fix —
+run them, and if they pass, mark them Done referencing this commit.
+Do not assume they're fixed without running them.
+
+Return to step 1 for the next failure.
 
 ## When to Stop
 
-- All failures in the list are fixed and verified
-- You hit a blocker (upstream bug, missing contract) — record it with
+- All failures are fixed, audited, and committed
+- You hit a blocker (upstream bug, missing contract) — record with
   evidence and stop. Do not work around it.
 - The user tells you to stop
 
 Do NOT stop because "the remaining failures are similar" or "these
-can be batched." Each failure gets its own diagnosis.
+can be batched."
 
 ## Depth-First Rules
 
-These rules exist because agents consistently prefer breadth (touching
-many failures shallowly) over depth (fixing each one completely):
-
 - **One at a time.** Never have two failures in progress simultaneously.
-- **Verify before moving on.** A fix is not done until the test passes
-  and no new failures are introduced.
-- **Root cause required.** Every fix must name the root cause. "Made
-  the test pass" is not a diagnosis. If you cannot identify the root
-  cause, escalate — do not guess.
-- **No symptom fixes.** Adding nil checks, clamps, default values, or
-  try/catch blocks that hide the real problem is not fixing. It is
-  covering up.
-- **No test modification.** Changing test expectations or assertions
-  to match wrong output is not fixing. The test is usually right and
-  the code is wrong.
-- **No batching.** "These three failures have the same root cause" may
-  be true, but verify it — fix one, verify, then check if the others
-  are resolved. If they are, great. If not, each gets its own cycle.
+- **Audit before commit.** Every fix is audited. No exceptions.
+- **Commit before moving on.** A fix is not done until it is committed.
+- **Root cause required.** "Made the test pass" is not a diagnosis.
+- **No symptom fixes.** Nil checks, clamps, defaults, try/catch that
+  hide the problem are not fixes.
+- **No test modification.** The test is usually right and the code
+  is wrong.
+- **No batching.** Fix one, verify, audit, commit. Then check if
+  others resolved.
 
 ## Integration with Orchestrate
 
-When orchestrate encounters a milestone with multiple test failures:
-- Each failure should be a separate cycle of this skill's loop
-- The orchestrate pipeline should not pack multiple independent failures
-  into one implementation agent run
-- The audit agent verifies each fix individually
+When orchestrate encounters test failures:
+- Each failure is a separate cycle of this loop
+- The orchestrate pipeline should not batch failures into one agent run
+- Each cycle produces its own audit and commit
 
 When used standalone, this skill manages its own sequencing.
 
 ## References
 
 - `references/failure-log-template.md` — format for tracking fixes
+- `audit/SKILL.md` — audit skill used at step 6
