@@ -116,29 +116,77 @@ If an issue blocks another component or milestone:
 
 ## Claiming: Preventing Duplicate Work
 
-When multiple agents may be working issues concurrently, each agent
-must claim an issue before starting work:
+Multiple agents may share a single GitHub account, so assignment
+cannot distinguish between them. Claims use comments with a unique
+session identifier instead.
 
-1. **Check assignment.** Run `gh issue view <number> --json assignees`.
-   If the issue is already assigned, skip it — someone else is on it.
-2. **Claim it.** Assign yourself and add a comment:
-   ```
-   gh issue edit <number> --add-assignee @me
-   gh issue comment <number> --body "Claimed — starting diagnosis."
-   ```
-3. **Only then start work.** Do not read the code, reproduce, or
-   diagnose before claiming. The claim is the lock.
-4. **Release if blocked.** If you cannot fix the issue (blocker,
-   wrong subsystem, need more context), unassign and comment why:
-   ```
-   gh issue edit <number> --remove-assignee @me
-   gh issue comment <number> --body "Released — blocked by [reason]."
-   ```
+### Before picking up an issue
 
-The assignment is the coordination mechanism. No agent should start
-work on an assigned issue. If an issue has been assigned but has no
-activity (no comments, no commits) for an extended period, the user
-decides whether to reassign — agents do not unassign other agents.
+Check the issue's recent comments for an active claim:
+
+```
+gh issue view <number> --json comments --jq '.comments[-5:][].body'
+```
+
+If any recent comment starts with `🔒 Claimed by session`, the issue
+is taken. Skip it and pick another.
+
+### Claiming
+
+Comment with your session ID before doing any work:
+
+```
+gh issue comment <number> --body "🔒 Claimed by session <session-id> — starting diagnosis."
+```
+
+The session ID should be unique per agent invocation (e.g., a
+timestamp, UUID, or the conversation/process identifier). The claim
+comment is the lock — do not read code, reproduce, or diagnose
+before posting it.
+
+### Releasing
+
+If you cannot fix the issue (blocker, wrong subsystem, need more
+context), release it:
+
+```
+gh issue comment <number> --body "🔓 Released by session <session-id> — [reason]."
+```
+
+A released issue is available for other agents to claim.
+
+### Reassigning to a different component
+
+If diagnosis reveals the root cause is in a different subsystem than
+the issue's current label:
+
+1. Relabel the issue to the correct subsystem:
+   ```
+   gh issue edit <number> --remove-label "c-backend" --add-label "frontend"
+   ```
+2. Comment with the diagnosis so the next agent doesn't repeat it:
+   ```
+   gh issue comment <number> --body "🔀 Reassigned from c-backend to frontend by session <session-id>.
+
+   Diagnosis: [root cause summary]
+   Evidence: [file:line, command output]
+   The defect is in [component] because [reason]."
+   ```
+3. If you can fix the other component, keep your claim and fix it.
+4. If you cannot (wrong expertise, different worktree, blocked),
+   release the claim. The diagnosis comment stays so the next agent
+   picks up where you left off.
+
+Do not leave the old label in place "just in case." The label should
+reflect the current understanding of ownership.
+
+### Stale claims
+
+If an issue has a claim comment but no follow-up activity (no
+further comments, no referencing commits), the claim may be stale —
+the agent may have crashed or the session may have ended. Agents
+do not override other agents' claims. Only the user decides whether
+to release a stale claim.
 
 ## Triage: Working Through a Backlog
 
