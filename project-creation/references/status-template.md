@@ -11,12 +11,6 @@
 
 - what this session is trying to accomplish:
 
-## Active Review Gate
-
-- architecture critique:
-- implementation plan critique:
-- human feedback status:
-
 ## Done
 
 - completed item:
@@ -27,7 +21,25 @@
 
 ## Blocked
 
-- blocker:
+- blocker (must be verifiable, not a judgment call):
+
+## Regression Baseline
+
+Captured after each milestone commit. Used by between-milestones
+regression checks.
+
+- command: [the regression command, e.g. scripts/full-regression.sh check]
+- captured at commit: [hash]
+- passing: [count]
+- failing: [count]
+- not compilable: [count]
+
+## Declared Regressions
+
+Tests expected to fail due to in-progress migration. Each must name the
+introducing milestone and the resolving milestone.
+
+- [test or surface]: introduced by [M#], resolved by [M#]
 
 ## Next Session Start Here
 

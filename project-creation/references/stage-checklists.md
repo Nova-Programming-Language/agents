@@ -1,4 +1,4 @@
-# Delivery Stage Checklists
+# Project Stage Checklists
 
 Use this file after reading `PROJECT.md`, `PLAN.md`, and `STATUS.md`.
 Use `../../references/nova-delivery-checks.md` when filling or critiquing the
@@ -8,7 +8,7 @@ project artifacts.
 
 Required skills:
 
-- `delivery`
+- `project-creation`
 - `prd` when the project needs a real PRD
 
 Agent actions:
@@ -45,7 +45,7 @@ Escalate if:
 
 Required skills:
 
-- `delivery`
+- `project-creation`
 - `design` when architecture docs need to be created or updated
 - `review-nova` before human feedback
 
@@ -82,7 +82,7 @@ Escalate if:
 
 Required skill:
 
-- `delivery`
+- `project-creation`
 - `review-nova` before human feedback
 
 Agent actions:
@@ -119,6 +119,7 @@ Required skills:
 
 Conditional skills:
 
+- `fix-test` when working through test failures
 - `building`
 - `docs`
 
@@ -149,7 +150,7 @@ Escalate if:
 
 Required skills:
 
-- `regression-test`
+- `regressions`
 - `building`
 
 Conditional skill:
@@ -194,5 +195,5 @@ Escalate if:
 
 ## Commit And Publish
 
-Not a delivery stage. Use `checkin` after a validated milestone or when the
-user explicitly asks for commit or push.
+Not a project-creation stage. Use `checkin` after a validated milestone or
+when the user explicitly asks for commit or push.

@@ -145,6 +145,31 @@ If the change is part of an evolution phase:
 - do not reintroduce deprecated fallback paths
 - record blockers explicitly when another component is not ready
 
+## Depth-First Work
+
+When presented with multiple problems, fixes, or changes:
+
+- Complete each one fully before starting the next. Diagnose, fix,
+  verify — then move on.
+- A partially-fixed item is worse than an unfixed item. It creates the
+  illusion of progress while hiding remaining work.
+- "These are similar so I'll batch them" is not acceptable. Fix one,
+  verify, then check if the others are resolved.
+- If a fix list has more than 3 independent items, use the `fix-test`
+  skill to enforce one-at-a-time sequencing.
+
+## When Invoked by Orchestrate
+
+When spawned as an implementation agent by `orchestrate`, the brief and
+plan take precedence over independent architectural decisions:
+
+- Read `project-notes/<slug>/BRIEF.md` for your task spec.
+- Follow the architectural approach specified in the brief.
+- Update `project-notes/<slug>/STATUS.md` when done or blocked.
+- If the brief conflicts with source-of-truth rules, record the
+  conflict in STATUS.md and follow the brief — the audit will catch
+  genuine architectural problems.
+
 ## Open These References As Needed
 
 - `../references/source-of-truth.md`

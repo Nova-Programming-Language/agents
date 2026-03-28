@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Creation"
+  short_description: "Create project artifacts for multi-session work"
+  default_prompt: "Use project-creation to set up project artifacts"

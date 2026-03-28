@@ -145,6 +145,28 @@ work but hides problems, takes shortcuts, or papers over bugs.
   the new expectations are correct — not just that they match the
   (possibly wrong) implementation output.
 
+### Shallow fixes
+
+This catches the most common agent failure: touching many problems
+without fully fixing any of them.
+
+- For each fix in the diff, can you identify the root cause? If the
+  diff changes behavior without a clear causal chain from symptom to
+  root cause to fix, the fix is likely shallow.
+- Does the fix address why the problem occurs, or does it just suppress
+  the symptom? (e.g., catching an exception vs. preventing the
+  condition that throws it)
+- Were fixes verified independently? If the diff contains multiple
+  independent fixes, each should have been tested on its own. Look
+  for signs of batching — multiple unrelated changes in one commit
+  where some work and some don't.
+- If test failures were being fixed, does each fix name the root cause
+  in STATUS.md or the commit message? "Made the test pass" without
+  naming why it was failing is a red flag.
+- Were test expectations modified? If so, verify the new expectations
+  are correct — not just that they match the current (possibly wrong)
+  output.
+
 ### Incomplete error paths
 
 - Does every new error condition have a corresponding test or validation

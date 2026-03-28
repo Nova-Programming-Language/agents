@@ -1,0 +1,4 @@
+interface:
+  display_name: "Fix Test"
+  short_description: "Fix failing tests one at a time with root-cause analysis"
+  default_prompt: "Use fix-test to work through these test failures"
