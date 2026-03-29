@@ -7,8 +7,12 @@ description: Write verified Nova bug reports with exact reproduction, clean-rebu
 
 ## When to Use
 
-Use this skill when the task is to record a Nova bug in `reports/` or to draft
-issue-quality defect notes from a confirmed reproducer.
+Use this skill for local investigation of a bug — reproducing it, narrowing
+the subsystem, and writing durable notes. The output lives in `reports/`.
+
+To track a bug externally on GitHub, use the `issues` skill instead.
+Use `bug-report` first when the reproduction is non-trivial and you
+need structured investigation before filing.
 
 ## Requirements Before Writing
 

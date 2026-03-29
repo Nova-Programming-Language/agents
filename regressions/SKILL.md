@@ -1,5 +1,5 @@
 ---
-name: regression-test
+name: regressions
 description: Run targeted or full Nova regression workflows; use when verifying behavior, tracking full-suite regressions across sessions, or using the pinned x86 container.
 ---
 
@@ -74,6 +74,20 @@ The standard failure view is machine-first:
 - classifications are relative to the chosen comparison target, typically
   `baseline`
 - prefer per-case `artifacts` over grepping `full-run.log`; the run log is archival
+
+## After Running Regressions
+
+When failures are found:
+
+- To fix them: use `fix-test` — one failure at a time, root-cause
+  diagnosis, audit, commit per fix
+- To track them externally: use `issues` — file one GitHub issue per
+  distinct root cause with the structured failure data
+- To investigate non-obvious failures: use `bug-report` for local
+  investigation notes before filing
+
+Do not leave failures untracked. Every unexpected failure should either
+be fixed in this session or filed as an issue for a future session.
 
 ## Open These References As Needed
 

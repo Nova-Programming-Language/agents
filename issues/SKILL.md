@@ -28,11 +28,34 @@ should be tracked:
 2. **Create the issue** using `references/issue-template.md` for
    structure. File with `gh issue create`.
 
-3. **Label it.** Apply labels for subsystem, severity, and source:
-   - Subsystem: `frontend`, `interpreter`, `c-backend`, `tests`,
-     `cli`, `runtime`, `docs`
+3. **Assign to a component.** Every issue must have exactly one
+   subsystem label. This is how agents find work and how triage
+   routes issues. Apply the label based on where the defect is,
+   not where the symptom appears:
+
+   Subsystem labels: `frontend`, `interpreter`, `c-backend`, `tests`,
+   `cli`, `runtime`, `docs`
+
+   To decide the correct component:
+   - If the stack trace or error points to a specific crate or module,
+     use that component
+   - If the failure is in codegen output, label `c-backend`
+   - If the failure is in type checking, resolution, or lowering,
+     label `frontend`
+   - If the failure is in runtime behavior (interpreter execution),
+     label `interpreter`
+   - If the failure is in test infrastructure (not the code under
+     test), label `tests`
+   - If uncertain, make your best hypothesis and note it in the issue
+     body — triage will correct it if wrong
+
+   Also apply severity and source labels:
    - Severity: `bug`, `enhancement`, `blocker`
-   - Source: `audit`, `regression`, `manual` (how it was found)
+   - Source: `audit`, `regression`, `manual`
+
+   ```
+   gh issue create --label "c-backend" --label "bug" --label "regression" ...
+   ```
 
 4. **Link context.** If the issue came from an audit, regression run,
    or project milestone, reference it in the issue body.
@@ -188,16 +211,58 @@ the agent may have crashed or the session may have ended. Agents
 do not override other agents' claims. Only the user decides whether
 to release a stale claim.
 
-## Triage: Working Through a Backlog
+## Triage: Component Assignment and Prioritization
 
-When presented with multiple issues:
+Triage has two jobs: make sure every issue is assigned to the right
+component, and prioritize the backlog for fixing.
 
-1. Read all issue titles and labels to understand the landscape.
-2. Group by likely root cause — multiple issues may share one.
-3. Prioritize: blockers first, then bugs, then enhancements.
-4. Claim and fix one at a time using fix-test discipline. Do not batch.
-5. After each fix, check if other issues in the same group are
-   now resolved. Close them with evidence if so.
+### Component verification pass
+
+Before fixing anything, verify component labels are correct:
+
+```
+gh issue list --state open --json number,title,labels
+```
+
+For each issue:
+- Does it have exactly one subsystem label? If zero, read the issue
+  and assign one. If multiple, pick the one where the defect lives
+  (not where the symptom appears) and remove the others.
+- Does the label look correct based on the title and body? A quick
+  read is enough — full diagnosis happens during fixing, not triage.
+- If you can tell the label is wrong from the title alone (e.g.,
+  "C backend panic" labeled `frontend`), relabel it now.
+
+This pass is fast — you are reading titles and labels, not code.
+Comment on any relabeled issue with your reasoning.
+
+### Picking issues by component
+
+When an agent is working a specific component, filter:
+
+```
+gh issue list --state open --label "c-backend" --json number,title,labels
+```
+
+Only claim issues labeled for your component. If during diagnosis you
+discover the root cause is in a different component, follow the
+reassignment workflow (see Reassigning to a different component).
+
+### Prioritizing within a component
+
+1. `blocker` first — these block other work
+2. `bug` + `regression` — regressions from recent changes
+3. `bug` — other defects
+4. `enhancement` — last
+
+Within the same priority, prefer issues with more evidence (exact
+reproduction, file:line references) — they are faster to fix.
+
+### Fixing
+
+Claim and fix one at a time using `fix-test` discipline. Do not batch.
+After each fix, check if other issues in the same component are now
+resolved. Close them with evidence if so.
 
 ## Integration
 

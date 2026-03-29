@@ -49,10 +49,23 @@ git pull --rebase origin main
 ## Commit Policy
 
 - Draft the message from the actual dirty worktree, not from the ticket title.
+- Commit messages describe **what changed in the software and why** — not
+  the agent process that produced the change. Do not include: validation
+  commands run, STATUS.md updates, artifact refreshes, audit results,
+  skill invocations, or session workflow steps. Those belong in LOG.md
+  or STATUS.md, not in permanent git history.
 - Write commit messages as durable context for both humans and future AI coding
   agents. Prefer messages that capture the concrete behavior change, important
   semantic or ownership clues, key validation commands, and any still-relevant
   blockers when that context will help a later coding session.
+- Reference GitHub issues in the commit message:
+  - If the commit fully fixes an issue: `Fixes #123` (GitHub auto-closes it)
+  - If the commit partially addresses an issue: `Progress on #123` or
+    `Addresses #123 — [what this commit does toward the fix]`
+  - If the commit is related but does not fix: `Related to #123`
+  - Check the issue tracker before committing — if the work was driven by
+    an issue, the commit must reference it. Do not leave the connection
+    implicit.
 - Wait for explicit human confirmation before running `git commit`.
 - By default, treat the full dirty worktree as the intended commit scope.
 - Do not silently narrow the commit to only the files touched most recently.

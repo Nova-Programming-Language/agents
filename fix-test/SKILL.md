@@ -54,6 +54,24 @@ The diagnosis must name:
 - The file and line where the defect lives
 - Whether this is a local fix or requires upstream changes
 
+### 3a. File discovered bugs
+
+During diagnosis you will often find bugs that are unrelated to the
+current failure — upstream contract violations, adjacent defects,
+stale assumptions in other components. Do not ignore them and do not
+fix them inline (that is scope creep).
+
+For each discovered bug:
+- File a GitHub issue using the `issues` skill
+- Include the evidence you already have (file:line, what's wrong)
+- Label it with the correct subsystem
+- Reference the current issue if related
+
+Then continue with the current fix. The discovered bugs are now
+tracked and will get their own fix cycle.
+
+This is not optional. Unfiled bugs are lost bugs.
+
 ### 4. Fix the root cause
 
 Implement the fix:
@@ -61,7 +79,8 @@ Implement the fix:
 - Fix the root cause, not the symptom
 - Do not modify test expectations to match wrong behavior
 - Do not add workarounds or defensive checks that hide the problem
-- Keep the fix minimal
+- Keep the fix minimal — do not fix discovered bugs inline, they
+  have their own issues now
 
 ### 5. Verify
 
@@ -97,6 +116,9 @@ include:
 - The root cause (one sentence)
 - The fix (one sentence)
 - The verification command
+- Issue reference: `Fixes #N` if this fully resolves the issue, or
+  `Progress on #N` if the issue covers multiple failures and this
+  commit addresses one of them
 
 This creates a clean, revertible checkpoint per fix. If a later fix
 goes wrong, earlier fixes are safely committed.
