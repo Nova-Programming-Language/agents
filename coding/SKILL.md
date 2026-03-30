@@ -48,6 +48,52 @@ If the spec or architecture is ambiguous, stop and ask instead of inventing a
   boundary, not an artificial split. Deep nesting (3+ levels) is a signal
   that the function is doing too much.
 
+## Naming
+
+Names are the primary documentation. A reader should understand what a
+function does, what a variable holds, or what a module owns from the name
+alone.
+
+- **Functions**: verb phrase describing the action and result. `resolve_type`
+  not `do_type`, `emit_diagnostic` not `handle`. If a function does two
+  things that need "and" in the name (`validate_and_transform`), it should
+  be two functions.
+- **Variables**: noun phrase describing the content. `remaining_attempts` not
+  `n`, `source_path` not `p`. Loop counters (`i`, `j`) and short-lived
+  bindings in closures are fine.
+- **Booleans**: predicate form. `is_resolved`, `has_errors`, `should_emit`.
+  Not `flag`, `status`, `check`.
+- **Packages/modules**: noun describing what the module owns. `type_resolver`
+  not `utils`, `diagnostics` not `helpers`.
+- **Files**: match the primary type or module they define. One concept per
+  file when possible.
+- **Consistency**: match the naming patterns already in the file and its
+  neighbors. If the codebase uses `resolve_X` for lookups, do not introduce
+  `fetch_X` or `get_X` for the same operation.
+
+Avoid: generic names (`data`, `result`, `tmp`, `val`, `info`, `manager`,
+`process`, `handle`), abbreviations that lose meaning (`ctx` used once,
+`mgr`, `impl` as a variable name), and misleading names (a function named
+`validate` that also transforms its input).
+
+## Comments
+
+Comments explain *why*, not *what*. The code already says what it does.
+
+- **When to comment**: non-obvious intent, business rules that aren't
+  self-evident from the code, workarounds with a reason, magic numbers
+  with their derivation, safety invariants that the type system doesn't
+  enforce.
+- **When not to comment**: restating the code (`// increment counter`),
+  explaining obvious types or signatures, narrating control flow that is
+  clear from reading.
+- **Keep comments near the code they explain.** A block comment 20 lines
+  above the relevant code will become stale.
+- **Update or remove comments when changing the code they describe.**
+  A stale comment is worse than no comment — it actively misleads.
+- **Do not add TODO/FIXME in new code.** If something needs doing, either
+  do it or file an issue. TODOs in committed code are forgotten promises.
+
 ## Source-of-Truth Contract
 
 Before implementing a lookup or decision path, state:

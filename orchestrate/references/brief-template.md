@@ -47,6 +47,12 @@ function.]
 - Forbidden approaches
 - Dependencies on other milestones
 - Files or APIs that must NOT be modified
+- Naming conventions to follow — note patterns in the existing code
+  (e.g., `resolve_X` for lookups, `emit_X` for output). If the
+  briefing agent notices inconsistencies in the files this milestone
+  touches (e.g., mix of `get_` and `fetch_` for the same operation),
+  flag them here so the implementation agent picks one and the audit
+  can verify
 
 ## Done When
 

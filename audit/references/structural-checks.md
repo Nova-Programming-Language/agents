@@ -110,6 +110,37 @@ milestone":
 - If the new code introduces a different convention, is there a reason,
   or is it inconsistency?
 
+### Naming quality
+
+- Are there generic names (`data`, `result`, `tmp`, `val`, `info`,
+  `manager`, `handle`, `process`) that should be more specific? Each
+  name should tell the reader what the thing *is* or *does* without
+  reading the surrounding code.
+- Do function names accurately describe what the function does? A
+  function named `validate` that also transforms its input is
+  misleading. A function named `do_thing` says nothing.
+- Are boolean variables/parameters in predicate form (`is_X`, `has_X`,
+  `should_X`)? Not `flag`, `status`, `check`.
+- Is naming granularity consistent? If peer functions are `resolve_type`
+  and `resolve_binding`, a new function called
+  `get_and_validate_all_pending_items` is inconsistent.
+- If the brief flagged naming inconsistencies in the existing code, did
+  the implementation perpetuate or fix them?
+
+### Comment quality
+
+- Are there comments that restate the code? (`// set x to 5` above
+  `x = 5`) — these add noise and go stale. Flag for removal.
+- Do non-obvious code paths have a *why* comment? Magic numbers,
+  workarounds, unusual control flow, and safety invariants that the
+  type system doesn't enforce should be explained.
+- Are there stale comments that no longer match the code they sit
+  next to? Check whether comments near changed lines still apply.
+- Does the diff introduce TODO/FIXME comments? New code should not
+  contain TODOs — either do the work or file an issue.
+- Are comments placed near the code they explain, or are they
+  separated by enough lines to drift out of sync?
+
 ## Function Size and Complexity
 
 Agents tend to produce monolithic functions that grow unchecked because
