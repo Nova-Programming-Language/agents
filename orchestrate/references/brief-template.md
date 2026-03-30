@@ -30,7 +30,14 @@ observable behavior.]
 
 ## Implementation Approach
 
-[Key steps from PLAN.md. Enough to guide, not a second plan.]
+[Key steps from PLAN.md. Enough to guide, not a second plan.
+
+If a step implies multiple distinct responsibilities (e.g., "parse
+input, validate, transform, and write output"), break it into separate
+steps. Each step should map to roughly one function. If a single step
+cannot be described without "and" or "then" joining unrelated concerns,
+it is too broad and the implementation will produce an overly long
+function.]
 
 1. ...
 

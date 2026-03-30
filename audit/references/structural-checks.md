@@ -110,6 +110,39 @@ milestone":
 - If the new code introduces a different convention, is there a reason,
   or is it inconsistency?
 
+## Function Size and Complexity
+
+Agents tend to produce monolithic functions that grow unchecked because
+no one is there to say "this is getting too long." Check every function
+that is new or significantly modified in the diff.
+
+- Does the function exceed ~50 lines? Length alone is not a hard rule,
+  but functions beyond this threshold almost always mix concerns. Read
+  the function and identify whether it handles multiple distinct
+  responsibilities (e.g., validation + transformation + persistence,
+  or parsing + dispatch + error recovery).
+- Does the function have 3+ levels of nesting? Deep nesting signals
+  that conditional logic, iteration, and business logic are tangled.
+  Inner blocks often deserve their own named function.
+- Does the function use comments like "--- step 2 ---" or blank-line
+  sections to separate phases? These are the function telling you it
+  wants to be decomposed. Each labeled phase is a candidate for
+  extraction.
+- If the brief's implementation approach described the work as multiple
+  steps, does each step map to its own function? A brief step that
+  said "validate input" and "transform records" should not both live
+  in a single function.
+- Does the function have more than 4-5 parameters? High parameter
+  count often means the function is doing too much or its inputs
+  should be grouped into a struct/type.
+
+When flagging, recommend the decomposition — name the responsibilities
+and where the splits should go. Do not just say "function is too long."
+
+Exception: match/switch statements with many arms that each do minimal
+work (1-3 lines per arm) can legitimately be long. The concern is
+mixed responsibilities, not line count alone.
+
 ## Completeness
 
 This section catches the most common agent failure mode: doing the easy

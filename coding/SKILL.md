@@ -41,6 +41,12 @@ If the spec or architecture is ambiguous, stop and ask instead of inventing a
 - Rebuild the artifacts required by the validation command after source changes.
 - For reproducible runtime bugs, gather runtime evidence before changing code.
 - Do not special-case syntax before checking for a shared semantic family.
+- Keep functions focused on a single responsibility. If a function you are
+  writing or extending grows beyond ~50 lines or handles multiple distinct
+  concerns (e.g., validation then transformation then persistence), decompose
+  it into named steps. Each step should represent a genuine responsibility
+  boundary, not an artificial split. Deep nesting (3+ levels) is a signal
+  that the function is doing too much.
 
 ## Source-of-Truth Contract
 
