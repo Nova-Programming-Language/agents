@@ -73,10 +73,14 @@ session:
 
 When a regression check produces unexpected failures:
 
-- One issue per distinct root cause (not per failing test — multiple
-  tests may fail from the same cause)
+- Run `scripts/full-regression.sh failed --json` to get structured
+  failure records
+- Group records by `owner` or `phase` to identify distinct root causes
+  — multiple tests may fail from the same cause
+- One issue per distinct root cause, not per failing test
 - Include the regression command, baseline, and current results
-- Include the structured failure data if available
+- Paste the relevant JSON failure record(s) into the issue body so the
+  fixer has machine-readable context from the start
 
 ### What makes a good issue
 

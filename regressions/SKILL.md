@@ -66,14 +66,25 @@ Keep the current test-system model in mind:
 
 The standard failure view is machine-first:
 
-- use `scripts/full-regression.sh failed` before opening `full-run.log`
-- `failed --json` emits the structured failure list
+- use `scripts/full-regression.sh failed --json` — this is the primary
+  failure command; always prefer JSON over the plain-text view
 - each failure record includes `classification`, `case_id`, `engine`, `form`,
   `tier`, `file`, `case_name`, `source_case_key`, `status`, `message`,
   `owner`, `phase`, `artifacts`, and `rerun_hint`
 - classifications are relative to the chosen comparison target, typically
   `baseline`
 - prefer per-case `artifacts` over grepping `full-run.log`; the run log is archival
+
+Use the structured JSON records for all downstream work:
+
+- **Fixing**: pass records to `fix-test` — classification, owner, and phase
+  fields let it prioritize which failure to tackle first
+- **Triaging**: group records by `owner` or `phase` to partition failures
+  across components or subsystems before assigning work
+- **Filing issues**: attach the relevant JSON record to each GitHub issue so
+  the fixer has machine-readable context from the start
+- **Diffing runs**: compare JSON output across runs to distinguish new
+  regressions from pre-existing failures
 
 ## After Running Regressions
 

@@ -20,10 +20,11 @@ Repeat for each failure:
 
 ### 1. Select one failure
 
-Pick the next failure. If working through regression results, use the
-structured failure data (classification, owner, phase) to choose the
-most informative failure first — one whose fix is likely to resolve
-or explain others.
+Pick the next failure. If working through regression results, run
+`scripts/full-regression.sh failed --json` and use the resulting
+records — specifically `classification`, `owner`, and `phase` — to
+choose the most informative failure first — one whose fix is likely
+to resolve or explain others.
 
 Record in STATUS.md: which failure you are working on and why.
 

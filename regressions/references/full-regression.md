@@ -86,9 +86,52 @@ Stable aliases under `tests/.nova/full-regression/`:
 - `last-run-vs-best-recorded.json`
 - `runs/<run-id>/`
 
-Structured failure entries now carry `source_case_key`, `owner`, `phase`, and
-`artifacts` when available, so agents can classify failures without parsing raw
-compiler output.
+Structured failure entries carry enough context to classify, triage, and fix
+failures without parsing raw compiler output. Example record from
+`failed --json`:
+
+```json
+{
+  "classification": "new_in_last_run",
+  "case_id": "interpreter::unit::standard::tests/unit/math_tests.nova::integer_overflow",
+  "engine": "interpreter",
+  "form": "unit",
+  "tier": "standard",
+  "file": "tests/unit/math_tests.nova",
+  "case_name": "integer_overflow",
+  "source_case_key": "math_tests::integer_overflow",
+  "status": "fail",
+  "message": "expected 0, got 4294967295",
+  "owner": "frontend",
+  "phase": "execution",
+  "artifacts": [
+    "runs/20260329-143012/cases/interpreter-unit-standard-math_tests-integer_overflow/stderr.txt",
+    "runs/20260329-143012/cases/interpreter-unit-standard-math_tests-integer_overflow/diff.txt"
+  ],
+  "rerun_hint": "cargo run -- test tests/unit/math_tests.nova --filter integer_overflow"
+}
+```
+
+Field reference:
+
+| Field | Meaning |
+|---|---|
+| `classification` | Relationship to comparison target — `new_in_last_run`, `persistent`, `fixed_in_last_run`, `improvement` |
+| `case_id` | Canonical identity: `engine::form::tier::file::case_name` |
+| `engine` | `interpreter` or `compiled` |
+| `form` | `unit`, `program`, or `diagnostic` |
+| `tier` | `standard` or `e2e` |
+| `file` | Test source file path |
+| `case_name` | Individual test case within the file |
+| `source_case_key` | Source-level key (module::case) for cross-engine matching |
+| `status` | `fail`, `not_compilable`, `discovery_error`, or `infra_error` |
+| `message` | Human-readable failure summary |
+| `owner` | Subsystem that likely owns the defect: `frontend`, `interpreter`, `c-backend`, `runtime`, `tests`, `cli` |
+| `phase` | Where execution failed: `compilation`, `execution`, `discovery`, `infra` |
+| `artifacts` | Per-case failure files (stderr, diff, IR dumps) under the run directory |
+| `rerun_hint` | Exact command to reproduce this single failure |
+
+The output of `failed --json` is a JSON array of these records.
 
 ## x86 Container Path
 
