@@ -9,7 +9,8 @@ functional correctness, structural quality, and forward impact.
 Project: project-notes/[slug]/
 
 Read (when they exist):
-- project-notes/[slug]/BRIEF.md — acceptance criteria, constraints
+- project-notes/[slug]/BRIEF.md — acceptance criteria, constraints,
+  abstraction context, behavioral inventory
 - project-notes/[slug]/PLAN.md — validation commands, upcoming milestones
 - project-notes/[slug]/PROJECT.md — architecture constraints, semantic families
 - audit/references/structural-checks.md — evaluation criteria

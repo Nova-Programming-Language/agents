@@ -66,6 +66,41 @@ what the code *does* from the caller's or user's perspective.]
 or "no existing test coverage". Untested behaviors are the ones most
 likely to be silently dropped.]
 
+## Abstraction Context
+
+[The briefing agent must read the modules this milestone touches and
+their immediate neighbors, then inventory the abstraction landscape.
+This is not optional — abstraction problems caught after implementation
+are expensive; catching them in the brief is cheap.
+
+List each existing abstraction (function, trait, protocol, module
+boundary) that the milestone will use, extend, or work alongside.
+For each, note its health:]
+
+### Existing abstractions
+
+- `path::to::abstraction` — [what it does, who calls it]
+  - Health: [complete | incomplete | leaky | duplicated by X]
+  - [If incomplete]: callers do [extra work] around it because [reason]
+  - [If leaky]: callers depend on [internal detail] instead of interface
+  - [If duplicated]: also implemented as `path::to::other`
+
+### Abstraction requirements for this milestone
+
+[Based on the inventory above, state what the implementation must do
+with respect to abstractions:]
+
+- **Must use**: [existing abstraction] — do not reimplement
+- **Must extend**: [existing abstraction] to cover [new case]
+- **Must not duplicate**: [concept] already has [abstraction]
+- **Must fix**: [incomplete/leaky abstraction] as part of this milestone
+  (only if the milestone's scope includes it)
+
+[If no relevant abstractions exist and this milestone introduces new
+behavior, state whether a new abstraction is warranted or whether
+inline code is appropriate. The default is inline — only create an
+abstraction when there are or will be multiple call sites.]
+
 ## Declared Regressions
 
 [Tests this milestone is expected to break. Must be declared here

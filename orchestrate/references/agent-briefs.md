@@ -28,6 +28,12 @@ Rules:
 - Only information relevant to this milestone
 - Acceptance criteria must be verifiable
 - List every file to read or modify with its role
+- Read the modules this milestone touches and their immediate neighbors
+  to populate the Abstraction Context section — inventory existing
+  abstractions, note their health (complete, incomplete, leaky,
+  duplicated), and state what the implementation must do with them
+- For refactoring milestones, populate the Behavioral Inventory section
+  by reading the source being moved and listing every discrete behavior
 - Flag ambiguities as open questions
 - Do not write code or modify other files
 ```

@@ -24,17 +24,70 @@ For each category, examine the diff and the surrounding code.
 
 ## Abstraction
 
-- Is there code in the diff that is semantically similar to existing code
-  elsewhere in the touched files or their immediate neighbors?
+If BRIEF.md contains an Abstraction Context section, verify each
+requirement against the implementation. If the brief has no abstraction
+context, apply the general checks below — but flag the missing section
+as a brief gap.
+
+### Verify brief requirements
+
+For each item in the brief's "Abstraction requirements for this
+milestone":
+
+- **Must use**: did the implementation call the specified abstraction,
+  or did it reimplement the behavior? Grep for the abstraction's usage
+  in the new code.
+- **Must extend**: was the abstraction extended to cover the new case,
+  or was a parallel path added alongside it?
+- **Must not duplicate**: does the diff introduce a second
+  implementation of the same concept? Check for functions with similar
+  signatures, matching logic, or overlapping responsibility.
+- **Must fix**: if the brief scoped fixing an incomplete or leaky
+  abstraction, verify the fix — check that callers no longer do extra
+  work or depend on internals.
+
+### Missing abstractions
+
+- Is there code in the diff that is semantically similar to existing
+  code elsewhere in the touched files or their immediate neighbors?
   - Same operation on different types → should share a generic/trait/protocol
   - Same sequence of steps with minor variation → should share a function
     with parameters for the varying parts
   - Same data transformation in multiple places → should be one function
     called from each site
-- Conversely, is anything over-abstracted? Abstractions with a single
-  call site that add indirection without reuse or clarity are premature.
-- Are helper functions or utilities created for one-time operations that
-  would be clearer inline?
+
+### Incomplete abstractions
+
+- Does the diff add pre-processing, post-processing, or conditional
+  bypasses around an existing abstraction? This suggests the
+  abstraction doesn't cover the caller's actual need.
+- Do multiple callers of the same abstraction each do the same extra
+  work (unwrap-then-rewrap, nil-check-then-call, format-then-pass)?
+  The repeated work should be inside the abstraction.
+
+### Leaky abstractions
+
+- Does the diff access struct fields, internal state, or
+  representation details of a type that has a public interface? Callers
+  should use the interface, not reach through it.
+- Does the diff match on or branch over implementation details (type
+  tags, internal enum variants, string representations) that could
+  change without the caller knowing?
+
+### Duplicative abstractions
+
+- Does the diff introduce a new function, trait, or module that
+  overlaps with an existing one? Check for:
+  - Similar names in different modules
+  - Functions with the same input/output shape and comparable logic
+  - Two modules that both claim to "handle" the same concept
+
+### Over-abstraction
+
+- Abstractions with a single call site that add indirection without
+  reuse or clarity are premature.
+- Helper functions or utilities created for one-time operations that
+  would be clearer inline.
 
 ## Semantic Families
 
