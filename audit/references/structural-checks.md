@@ -176,6 +176,44 @@ without fully fixing any of them.
 - If the brief specifies negative validation (what should fail), verify
   those failure modes actually produce the expected errors.
 
+## Refactoring Integrity
+
+This section applies when the diff shows code removed from one component
+and added to another — migrations, extractions, consolidations, and
+moves. The most common agent failure in refactoring is deleting the old
+code cleanly while only partially recreating it in the new location.
+
+### Behavioral inventory verification
+
+- Does BRIEF.md contain a behavioral inventory section? If the milestone
+  is a refactoring and the inventory is missing, flag it — the brief
+  was incomplete and the implementation cannot be verified against it.
+- For each item in the behavioral inventory, verify the behavior exists
+  in the new location. "Exists" means the code path is present and
+  reachable, not just that a similarly-named function was created.
+- If an inventory item is marked "no existing test coverage", pay extra
+  attention — these are the behaviors most likely to be silently dropped.
+
+### Deletion vs addition balance
+
+- Identify the major code blocks deleted in the diff. For each one,
+  locate the corresponding addition. If a deleted block has no
+  corresponding addition anywhere in the diff, flag it.
+- "Corresponding" means functionally equivalent — not necessarily
+  identical code, but the same behavior or capability is preserved.
+  Structural changes (different module, different interface) are fine
+  as long as the behavior survives.
+- If functionality was intentionally removed (not moved), the brief
+  must say so explicitly. Unexplained deletions are a finding.
+
+### Caller and integration verification
+
+- If the old code had callers, verify those callers now use the new
+  location. A moved function with no updated call sites is dead code
+  — the behavior was effectively dropped even though the code exists.
+- If the refactoring changed an interface (different function signature,
+  different module path), verify all consumers were updated.
+
 ## Scope
 
 - Were files modified that are not listed in BRIEF.md (or the stated

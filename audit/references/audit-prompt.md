@@ -23,8 +23,8 @@ Steps:
 2. FUNCTIONAL: For each acceptance criterion, run validation commands
    and determine pass/fail/cannot_verify with exact evidence
 3. STRUCTURAL: Evaluate per structural-checks.md — architecture,
-   abstraction, completeness, integrity, semantic families, patterns,
-   scope
+   abstraction, completeness, integrity, refactoring integrity,
+   semantic families, patterns, scope
 4. FORWARD IMPACT: Does this help or hinder upcoming milestones?
 5. Append a dated section to project-notes/[slug]/AUDIT.md per
    audit/references/audit-template.md

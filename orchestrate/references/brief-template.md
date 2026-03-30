@@ -46,6 +46,26 @@ observable behavior.]
 - [ ] [command] produces [expected output]
 - [ ] [behavior] is observable via [method]
 
+## Behavioral Inventory (refactoring milestones only)
+
+[Required when this milestone moves, extracts, or consolidates code.
+Skip for pure additions or bug fixes.
+
+The briefing agent must read the source being refactored and list every
+discrete behavior, code path, or capability it provides. This inventory
+becomes the contract: the implementation agent must account for every
+item, and the audit verifies nothing was dropped.
+
+Each entry is one behavior — not a function name or line range, but
+what the code *does* from the caller's or user's perspective.]
+
+- [ ] [behavior description] — currently in `path/to/old.ext` (lines ~N-M)
+- [ ] ...
+
+[If the old code has tests, cross-reference: "covered by `test_name`"
+or "no existing test coverage". Untested behaviors are the ones most
+likely to be silently dropped.]
+
 ## Declared Regressions
 
 [Tests this milestone is expected to break. Must be declared here
