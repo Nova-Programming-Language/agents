@@ -199,6 +199,9 @@ Artifact freshness checklist before validation:
    used and what happens if it is missing.
 
 - Use the smallest command that proves the change.
+- Then run the owning component's test suite or a representative subset
+  that exercises its major code paths. A change that passes its target
+  test but breaks other paths in the same component is not verified.
 - Then use a broader command if the feature crosses subsystems.
 - For reproducible runtime bugs, stop broad code reading once the next useful
   fact is a live value or branch outcome that LLDB or narrow tracing can show.

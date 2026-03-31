@@ -252,6 +252,24 @@ Anti-deferral rules:
   values instead of derived values, wrapping instead of migrating), the
   audit must flag this as an architectural shortcut, not a pass.
 
+### Verification breadth
+
+A fix or implementation that only runs the target test is insufficiently
+verified. Check whether the verification actually exercised the
+component:
+
+- Was the owning component's test suite (or a representative subset of
+  its major code paths) run after the change, or was only the single
+  target test run?
+- If the change touched shared code (utilities, data structures, common
+  paths), were the consuming components' tests also run?
+- If the brief or commit message claims "verified" but only names one
+  test command, flag the narrow verification — a change to the type
+  checker verified by a single type-checking test is not sufficient.
+- If a full regression was run, that satisfies this check. If only
+  targeted tests were run, the scope should at least cover the changed
+  component's major code paths.
+
 ## Integrity
 
 This section catches implementation dishonesty — code that appears to

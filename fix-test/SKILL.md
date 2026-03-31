@@ -96,9 +96,21 @@ Implement the fix:
 
 Run the target test. It must pass.
 
-Then run a broader scope for collateral damage:
-- If the fix touched shared code, run related tests
-- If a regression suite command exists, run it and compare
+Then verify the component broadly. The goal is not just proving the
+target test passes — it is proving the component still works across
+its major code paths. A fix that passes one test but breaks the
+component elsewhere is not a fix.
+
+- Identify which component owns the code you changed, using the
+  architecture document if one exists.
+- Run the component's test suite or a representative subset that
+  exercises its major code paths. For example, if you fixed a bug
+  in the type checker, run the type checking tests broadly, not
+  just the one test that was failing.
+- If the fix touched shared code (utilities, data structures, common
+  paths), widen further — run tests for the components that consume
+  that shared code.
+- If a regression suite command exists, run it and compare.
 
 If the fix introduced new failures, diagnose and fix those before
 proceeding — they are part of THIS fix.
