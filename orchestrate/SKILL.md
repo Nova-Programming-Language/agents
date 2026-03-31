@@ -22,7 +22,17 @@ artifacts and source files, then writes `project-notes/<slug>/BRIEF.md`.
 
 ### 2. Implement (agent)
 Spawn an implementation agent. It reads BRIEF.md and PLAN.md, implements
-the milestone, and updates STATUS.md.
+the milestone, and updates STATUS.md. The agent must exit with one of
+two states: **done** (patch + verification) or **blocked** (one specific
+blocker with evidence). Progress notes without a patch are not a valid
+exit — see `references/decision-protocol.md` for handling.
+
+### 2a. Check for completion (orchestrator)
+Before spawning the audit, read STATUS.md and check whether the
+implementation agent actually produced a committed patch with
+verification. If it returned progress notes, diagnosis, or partial
+findings instead, route per the **Incomplete** section of
+`references/decision-protocol.md` — do not proceed to audit.
 
 ### 3. Audit (agent)
 Spawn an audit agent per the `audit` skill. It evaluates functional
@@ -33,6 +43,8 @@ dated section to `project-notes/<slug>/AUDIT.md`.
 Read the latest AUDIT.md section. Route per `references/decision-protocol.md`:
 - **Pass** — proceed to commit.
 - **Fail** — escalate to user with the audit findings.
+- **Incomplete** — the worker returned findings instead of a patch.
+  Split and re-brief per the decision protocol.
 
 No automatic retries. If the audit fails, the user decides next steps.
 

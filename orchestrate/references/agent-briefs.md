@@ -49,8 +49,14 @@ Rules:
 
 ### After
 
-Read BRIEF.md. Verify criteria match the milestone, file list is
-complete, no blocking open questions remain.
+Read BRIEF.md. Verify:
+- Criteria match the milestone
+- File list is complete
+- No blocking open questions remain
+- **Scope check**: do the acceptance criteria require multiple independent
+  root-cause diagnoses? If so, the milestone is too broad — split it
+  before launching the implementation agent. One milestone = one
+  diagnosis + one fix + one verification.
 
 ---
 
@@ -83,8 +89,31 @@ Implement the milestone:
   to start another item.
 - For test failures, use the fix-test skill's loop: reproduce, diagnose
   root cause, fix, verify, check for collateral damage.
-- Update project-notes/[slug]/STATUS.md when done.
-- If blocked, record a verifiable blocker in STATUS.md and stop.
+
+Exit states — there are exactly two valid ways to finish:
+
+1. **Done**: patch committed, acceptance criteria verified, STATUS.md
+   updated with commit hash and verification commands. The orchestrator
+   can proceed to audit.
+2. **Blocked**: one specific blocker identified with verifiable evidence
+   (file:line, command output, upstream bug). Recorded in STATUS.md
+   with enough detail that the orchestrator or user can act on it.
+
+"Here is what I found, there is more to investigate" is NOT a valid
+exit. If your fix exposed a new defect outside the original scope,
+file it as a GitHub issue using the `issues` skill and declare the
+original scope done (if your fix is complete) or blocked (if the new
+defect prevents your acceptance criteria from passing). Do not continue
+diagnosing the new defect — that is a different milestone.
+
+Discovery discipline during implementation:
+- When your fix exposes a new bug (e.g., fixing duplicate symbols
+  reveals a constructor-ownership defect), that new bug is out of scope.
+- File it as a GitHub issue with the evidence you already have.
+- Return to your original acceptance criteria. If they pass, you are
+  done. If they fail because of the new defect, you are blocked by it.
+- Do not keep diagnosing and surfacing sequential problems. Each
+  problem is its own milestone with its own brief, fix, and audit.
 
 Rules:
 - Stay within BRIEF.md scope
@@ -92,6 +121,8 @@ Rules:
 - Do not refactor surrounding code
 - If ambiguous, use the most conservative interpretation
 - Do not batch fixes across multiple independent problems
+- Do not return progress notes as your result — return a patch or a
+  blocker
 ```
 
 ---

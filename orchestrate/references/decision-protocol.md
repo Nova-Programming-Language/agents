@@ -25,6 +25,33 @@ Escalate to the user with:
 Wait for user direction. The user may provide guidance, adjust the plan,
 fix code themselves, or descope. Do not attempt automatic fixes.
 
+## Incomplete (progress without completion)
+
+The implementation agent returned findings, diagnosis notes, or partial
+progress instead of a patch + verification or a concrete blocker. This
+is not a valid exit state.
+
+Do NOT re-run the same brief. The milestone is likely too broad or the
+worker hit sequential discoveries. Instead:
+
+1. Read STATUS.md to understand what was accomplished vs what remains.
+2. If the worker filed GitHub issues for discovered defects, those
+   issues become candidates for new milestones.
+3. If the worker's partial fix is committed and verified for a subset
+   of the acceptance criteria, treat it as a narrower "done" — audit
+   what was actually completed, then create new milestones for the
+   remaining criteria.
+4. If no code was committed, the milestone produced only diagnosis.
+   Split the original milestone into smaller milestones based on the
+   distinct root causes the worker identified. Each new milestone
+   should target one root cause with one diagnosis + fix + verification.
+5. Update PLAN.md with the new milestones before continuing.
+
+The pattern to watch for: the worker clears one failure, exposes the
+next, reports it, clears that one, exposes the next. This is unbounded
+sequential discovery. The correct response is to stop, split, and
+re-brief — not to keep running the same worker.
+
 ## Structural Issues (functional pass)
 
 If functional criteria pass but structural issues exist, present the

@@ -8,6 +8,28 @@ separate milestones — one per change. The orchestrate pipeline handles
 sequencing. Batching independent items into one brief causes shallow
 work on each.
 
+**Scope validation — the briefing agent must check before writing:**
+
+A milestone is too broad if its acceptance criteria require multiple
+independent root-cause diagnoses. One milestone = one diagnosis + one
+fix + one verification. If the source issue combines multiple distinct
+defects (e.g., "symbol canonicalization AND circular ownership AND
+constructor ownership"), each defect is a separate milestone even if
+they were filed as one issue. Split before briefing, not during
+implementation.
+
+Signs that a milestone needs splitting:
+- The acceptance criteria list independent symptoms with different root
+  causes
+- The implementation approach has multiple "diagnose X, then diagnose Y"
+  steps that could fail independently
+- Fixing one criterion does not necessarily help or inform fixing another
+- The original issue spans multiple components or subsystems
+
+When splitting, the briefing agent should note the split in the first
+brief's Open Questions section so the orchestrator creates the remaining
+milestones.
+
 ```md
 # Task Brief: [milestone name]
 
