@@ -7,251 +7,136 @@ description: Implement or modify the Nova toolchain safely; use when changing in
 
 ## When to Use
 
-Use this skill for Nova repo implementation work, not for generic coding. It is
-about respecting the repo's semantic constraints, architecture documents, and
-cross-command behavior.
+Use this skill for Nova repo implementation work — respecting semantic
+constraints, architecture documents, and cross-command behavior.
 
 ## Source of Truth
 
 Read in this order:
 
 1. `docs/agent-rules.md`
-2. the relevant language spec files under `docs/specs/`
-3. the relevant architecture docs and evolution plans under
-   `docs/architecture/`
+2. the relevant spec files under `docs/specs/`
+3. the relevant architecture docs under `docs/architecture/`
 4. `../references/source-of-truth.md`
 5. `../references/artifact-freshness.md`
 6. `../references/runtime-evidence.md` for reproducible runtime bugs
-7. `../references/semantic-family.md` when related constructs may share a
-   semantic family
+7. `../references/semantic-family.md` when related constructs may share a family
 8. `references/nova-semantics.md` when language semantics matter
 9. the affected code paths
 
-If the spec or architecture is ambiguous, stop and ask instead of inventing a
- behavior.
+If the spec or architecture is ambiguous, stop and ask.
 
 ## Using Architecture Documents
 
-Before implementing, read the relevant architecture document in
-`docs/architecture/`. Use it to answer:
+Before implementing, read the relevant architecture document to answer:
 
-1. **Which component owns this change?** Find the component whose owned
-   state, invariant, or boundary covers the behavior you are modifying.
-   If the architecture document has a "Not responsible for" section on
-   that component, verify your change does not violate it.
+1. **Which component owns this?** Check owned state, invariants, and
+   "Not responsible for" boundaries.
+2. **What else must change?** Follow the Common Change Patterns section
+   for your type of modification.
+3. **What is forbidden?** Check Missing-Data Behavior / Forbidden Fallbacks.
+   Reconstructing data from secondary evidence is a forbidden shortcut.
 
-2. **What else must change?** Check the "Common Change Patterns" section
-   for the type of modification you are making. It will list which other
-   components, tables, or validation steps must be updated alongside your
-   primary change. Follow it — incomplete changes are the most common
-   agent failure mode.
-
-3. **What is forbidden?** Check the "Missing-Data Behavior" or "Forbidden
-   Fallbacks" section. If your fix involves reconstructing data that
-   should come from an upstream producer, that is a forbidden shortcut —
-   fix the producer instead.
-
-If the architecture document does not have a Common Change Patterns section
-or does not cover your type of change, flag that as a documentation gap.
+Flag missing Common Change Patterns coverage as a documentation gap.
 
 ## Implementation Rules
 
-- Implement the spec and architecture, not just the current test expectation.
-- Do not add fallbacks, heuristics, silent degradation, or silent coercions to
-  hide missing metadata or upstream bugs.
-- Do not work around bugs in another component when the correct fix is to repair
-  the producer.
-- Keep changes within the component boundaries defined in the architecture
-  document. If the architecture document names a component as "not responsible
-  for" the behavior you are adding, your code belongs somewhere else.
-- Rebuild the artifacts required by the validation command after source changes.
-- For reproducible runtime bugs, gather runtime evidence before changing code.
-- Do not special-case syntax before checking for a shared semantic family.
-- Keep functions focused on a single responsibility. If a function you are
-  writing or extending grows beyond ~50 lines or handles multiple distinct
-  concerns (e.g., validation then transformation then persistence), decompose
-  it into named steps. Each step should represent a genuine responsibility
-  boundary, not an artificial split. Deep nesting (3+ levels) is a signal
-  that the function is doing too much.
+- Implement the spec and architecture, not just the test expectation.
+- No fallbacks, heuristics, or silent degradation to hide missing data.
+- Do not work around bugs in another component — fix the producer.
+- Stay within the component boundaries from the architecture document.
+- Rebuild artifacts before validation.
+- Gather runtime evidence before changing code for reproducible bugs.
+- Check for a shared semantic family before adding construct-specific paths.
+- Keep functions to a single responsibility. Decompose beyond ~50 lines
+  or 3+ nesting levels into named steps at genuine responsibility boundaries.
 
 ## Naming
 
-Names are the primary documentation. A reader should understand what a
-function does, what a variable holds, or what a module owns from the name
-alone.
+Names are the primary documentation.
 
-- **Functions**: verb phrase describing the action and result. `resolve_type`
-  not `do_type`, `emit_diagnostic` not `handle`. If a function does two
-  things that need "and" in the name (`validate_and_transform`), it should
-  be two functions.
-- **Variables**: noun phrase describing the content. `remaining_attempts` not
-  `n`, `source_path` not `p`. Loop counters (`i`, `j`) and short-lived
-  bindings in closures are fine.
-- **Booleans**: predicate form. `is_resolved`, `has_errors`, `should_emit`.
-  Not `flag`, `status`, `check`.
-- **Packages/modules**: noun describing what the module owns. `type_resolver`
-  not `utils`, `diagnostics` not `helpers`.
-- **Files**: match the primary type or module they define. One concept per
-  file when possible.
-- **Consistency**: match the naming patterns already in the file and its
-  neighbors. If the codebase uses `resolve_X` for lookups, do not introduce
-  `fetch_X` or `get_X` for the same operation.
+- **Functions**: verb phrase. `resolve_type` not `do_type`. Two things
+  needing "and" means two functions.
+- **Variables**: noun phrase. `remaining_attempts` not `n`. Loop counters fine.
+- **Booleans**: predicate form. `is_resolved`, `has_errors`. Not `flag`.
+- **Modules/files**: noun describing ownership. `type_resolver` not `utils`.
+- **Consistency**: match existing patterns. Don't introduce `fetch_X` if
+  the codebase uses `resolve_X`.
 
-Avoid: generic names (`data`, `result`, `tmp`, `val`, `info`, `manager`,
-`process`, `handle`), abbreviations that lose meaning (`ctx` used once,
-`mgr`, `impl` as a variable name), and misleading names (a function named
-`validate` that also transforms its input).
+Avoid: `data`, `result`, `tmp`, `val`, `info`, `manager`, `handle`,
+`process`. No abbreviations that lose meaning. No misleading names.
 
 ## Comments
 
-Comments explain *why*, not *what*. The code already says what it does.
+Comments explain *why*, not *what*.
 
-- **When to comment**: non-obvious intent, business rules that aren't
-  self-evident from the code, workarounds with a reason, magic numbers
-  with their derivation, safety invariants that the type system doesn't
-  enforce.
-- **When not to comment**: restating the code (`// increment counter`),
-  explaining obvious types or signatures, narrating control flow that is
-  clear from reading.
-- **Keep comments near the code they explain.** A block comment 20 lines
-  above the relevant code will become stale.
-- **Update or remove comments when changing the code they describe.**
-  A stale comment is worse than no comment — it actively misleads.
-- **Do not add TODO/FIXME in new code.** If something needs doing, either
-  do it or file an issue. TODOs in committed code are forgotten promises.
+- Comment: non-obvious intent, business rules, workarounds, magic numbers,
+  safety invariants the type system doesn't enforce.
+- Don't comment: code restatements, obvious types, clear control flow.
+- Keep comments near the code. Update or remove when changing nearby code.
+- No TODO/FIXME in new code — do it or file an issue.
 
 ## Source-of-Truth Contract
 
-Before implementing a lookup or decision path, state:
+Before implementing a lookup or decision path, state the answer being
+computed, its authoritative source, whether missing data is valid or a bug,
+and which component owns producing it.
 
-1. the exact answer being computed
-2. the authoritative source for that answer
-3. whether missing data is valid or a bug
-4. which component owns producing or installing the data if it is missing
-
-If the authoritative source should exist and does not, fail loudly or report
-the blocker. Do not replace missing source-of-truth data with heuristics or
-secondary inference.
-
-Forbidden shortcuts:
-
-- string-name or pattern heuristics when structured data exists or should exist
-- fallback from contract data to AST, registries, or side maps because the
-  primary source is missing
-- defaulting required data to `None`, empty maps, or no-op behavior
-- “temporary” compatibility logic that makes invalid states look valid
+Forbidden: string/pattern heuristics when structured data exists, fallback
+from contract data to AST/registries, defaulting required data to None/empty,
+"temporary" compatibility logic.
 
 ## Semantic-Family Check
 
-Before adding a construct-specific path, state:
-
-1. the semantic family the construct belongs to
-2. the closest existing construct already covering that family
-3. whether the new construct is identical, a specialization, or a sibling
-4. the first layer where observable semantics actually diverge
-
-If the construct is only a specialization of an existing family, prefer a thin
-specialization over a shared core path. If it is truly distinct, split only at
-the first layer where semantics diverge.
+Before adding a construct-specific path, state the semantic family, the
+closest existing construct, whether new is identical/specialization/sibling,
+and the first layer where semantics diverge. Prefer shared core with thin
+specialization over separate paths.
 
 ## Component Workflow
 
-1. State the semantic rule you are changing.
+1. State the semantic rule being changed.
 2. Identify the owning component.
-3. Identify every user-facing path the change affects.
-4. If the bug is reproducible at runtime, do only enough code reading to find
-   the likely debug surface, then collect runtime evidence.
-5. If related constructs are involved, identify the highest shared semantic
-   layer before adding any special case.
+3. Identify every user-facing path affected.
+4. For runtime bugs, collect runtime evidence before broad code reading.
+5. For related constructs, find the highest shared semantic layer first.
 6. Implement the general fix.
-7. Validate the impacted paths, not just one happy path.
+7. Validate all impacted paths, not just one.
 
-For data-contract fixes, include the missing-data path in the implementation
-plan, not just the success path.
+## Cross-Command Audit
 
-## Cross-Command Audit Requirement
-
-For shared toolchain/runtime behavior, audit:
-
-- `nova run`
-- `nova check`
-- `nova repl`
-- `nova test`
-- `nova doc` example verification
-- `nova-test-runner`
-- compiled backend paths when applicable
-
-Do not treat one command path as sufficient if the feature is shared.
+For shared behavior, audit: `nova run`, `nova check`, `nova repl`,
+`nova test`, `nova doc`, `nova-test-runner`, compiled backend paths.
 
 ## Validation Strategy
 
-Artifact freshness checklist before validation:
+Before validation: name the command, identify which artifacts it executes,
+rebuild if needed, state what was rebuilt.
 
-1. Name the exact command you are about to run.
-2. Identify whether it executes Cargo-built debug artifacts,
-   `target/release/nova`, compiled/runtime-linked libraries, or x86 container
-   artifacts.
-3. Rebuild the required surfaces first, or explicitly note that the command
-   itself guarantees freshness.
-4. In your user-facing validation summary, state what was rebuilt or why no
-   rebuild was needed.
-5. In your user-facing implementation summary, state the authoritative source
-   used and what happens if it is missing.
-
-- Use the smallest command that proves the change.
-- Then run the owning component's test suite or a representative subset
-  that exercises its major code paths. A change that passes its target
-  test but breaks other paths in the same component is not verified.
-- Then use a broader command if the feature crosses subsystems.
-- For reproducible runtime bugs, stop broad code reading once the next useful
-  fact is a live value or branch outcome that LLDB or narrow tracing can show.
-- When removing a syntax-shaped special case, add paired tests for the related
-  constructs that should share a path.
-- When constructs truly diverge, add tests that prove the divergence occurs at
-  the intended layer.
-- When removing a fallback or heuristic, add a regression that proves missing
-  required data fails loudly instead of silently degrading.
-- Use `scripts/full-regression.sh check` for canonical full-suite regression.
-- Use `cargo check -p <crate>` and `cargo test -p <crate> <filter>` for
-  crate-local Rust validation.
-- Use `../references/artifact-freshness.md` when the validation command may
-  consume release or runtime artifacts.
+- Smallest command that proves the change.
+- Then the owning component's test suite broadly.
+- Then broader commands if the feature crosses subsystems.
+- Use `scripts/full-regression.sh check` for full-suite regression.
+- Use `cargo check -p <crate>` / `cargo test -p <crate>` for crate-local.
+- Use `../references/artifact-freshness.md` when consuming release artifacts.
 
 ## Architecture-Driven Work
 
-If the change is part of an evolution phase:
-
-- read the phase plan
-- implement the whole phase requirement in the owned component
-- do not reintroduce deprecated fallback paths
-- record blockers explicitly when another component is not ready
+For evolution phases: read the phase plan, implement the whole requirement,
+do not reintroduce deprecated fallbacks, record blockers explicitly.
 
 ## Depth-First Work
 
-When presented with multiple problems, fixes, or changes:
-
-- Complete each one fully before starting the next. Diagnose, fix,
-  verify — then move on.
-- A partially-fixed item is worse than an unfixed item. It creates the
-  illusion of progress while hiding remaining work.
-- "These are similar so I'll batch them" is not acceptable. Fix one,
-  verify, then check if the others are resolved.
-- If a fix list has more than 3 independent items, use the `fix-test`
-  skill to enforce one-at-a-time sequencing.
+Complete each fix fully (diagnose, fix, verify) before starting the next.
+No batching. If 3+ independent items, use `fix-test` for sequencing.
 
 ## When Invoked by Orchestrate
 
-When spawned as an implementation agent by `orchestrate`, the brief and
-plan take precedence over independent architectural decisions:
+Brief and plan take precedence. Read BRIEF.md, follow its approach, update
+STATUS.md when done or blocked. If the brief conflicts with source-of-truth
+rules, record the conflict and follow the brief — the audit catches problems.
 
-- Read `project-notes/<slug>/BRIEF.md` for your task spec.
-- Follow the architectural approach specified in the brief.
-- Update `project-notes/<slug>/STATUS.md` when done or blocked.
-- If the brief conflicts with source-of-truth rules, record the
-  conflict in STATUS.md and follow the brief — the audit will catch
-  genuine architectural problems.
-
-## Open These References As Needed
+## References
 
 - `../references/source-of-truth.md`
 - `../references/artifact-freshness.md`

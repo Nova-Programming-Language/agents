@@ -2,47 +2,26 @@
 
 The briefing agent writes `project-notes/<slug>/BRIEF.md`.
 
-A brief should describe ONE focused change. If a milestone contains
-multiple independent changes (e.g., "fix bugs 1-5"), split it into
-separate milestones — one per change. The orchestrate pipeline handles
-sequencing. Batching independent items into one brief causes shallow
-work on each.
+One brief = one focused change. Batching independent items causes shallow
+work. The orchestrate pipeline handles sequencing.
 
-**Scope validation — the briefing agent must check before writing:**
-
-A milestone is too broad if its acceptance criteria require multiple
-independent root-cause diagnoses. One milestone = one diagnosis + one
-fix + one verification. If the source issue combines multiple distinct
-defects (e.g., "symbol canonicalization AND circular ownership AND
-constructor ownership"), each defect is a separate milestone even if
-they were filed as one issue. Split before briefing, not during
-implementation.
-
-Signs that a milestone needs splitting:
-- The acceptance criteria list independent symptoms with different root
-  causes
-- The implementation approach has multiple "diagnose X, then diagnose Y"
-  steps that could fail independently
-- Fixing one criterion does not necessarily help or inform fixing another
-- The original issue spans multiple components or subsystems
-
-When splitting, the briefing agent should note the split in the first
-brief's Open Questions section so the orchestrator creates the remaining
-milestones.
+**Scope validation** — check before writing: if acceptance criteria require
+multiple independent root-cause diagnoses, split into separate milestones.
+One milestone = one diagnosis + fix + verification. Signs of too-broad scope:
+independent symptoms with different root causes, multiple "diagnose X then Y"
+steps, fixing one criterion doesn't inform fixing another, issue spans
+multiple components. Note splits in Open Questions for the orchestrator.
 
 ```md
 # Task Brief: [milestone name]
 
 ## Objective
 
-[One sentence: what this milestone achieves and why. Must describe a
-single coherent change, not a batch.]
+[One sentence: what this milestone achieves and why.]
 
 ## Acceptance Criteria
 
-[Numbered list from PROJECT.md, filtered to this milestone.
-Each must be verifiable — exact command, expected output, or
-observable behavior.]
+[Numbered, verifiable. Exact command, expected output, or observable behavior.]
 
 1. ...
 
@@ -52,101 +31,59 @@ observable behavior.]
 
 ## Implementation Approach
 
-[Key steps from PLAN.md. Enough to guide, not a second plan.
-
-If a step implies multiple distinct responsibilities (e.g., "parse
-input, validate, transform, and write output"), break it into separate
-steps. Each step should map to roughly one function. If a single step
-cannot be described without "and" or "then" joining unrelated concerns,
-it is too broad and the implementation will produce an overly long
-function.]
+[Key steps from PLAN.md. Each step should map to roughly one function.
+If a step needs "and" or "then" joining unrelated concerns, split it.
+If the architecture doc has a matching Common Change Pattern, list the
+co-required component updates here.]
 
 1. ...
 
 ## Constraints
 
-- Design decisions that apply here
-- Forbidden approaches
-- Dependencies on other milestones
-- Files or APIs that must NOT be modified
-- Naming conventions to follow — note patterns in the existing code
-  (e.g., `resolve_X` for lookups, `emit_X` for output). If the
-  briefing agent notices inconsistencies in the files this milestone
-  touches (e.g., mix of `get_` and `fetch_` for the same operation),
-  flag them here so the implementation agent picks one and the audit
-  can verify
+- Design decisions, forbidden approaches, dependencies, files not to modify
+- Naming conventions — note existing patterns and flag inconsistencies
 
 ## Done When
 
 - [ ] [command] produces [expected output]
 - [ ] [behavior] is observable via [method]
 
-## Behavioral Inventory (refactoring milestones only)
+## Behavioral Inventory (refactoring only)
 
-[Required when this milestone moves, extracts, or consolidates code.
-Skip for pure additions or bug fixes.
+[Required when moving, extracting, or consolidating code. List every
+discrete behavior from the caller/user perspective. Cross-reference test
+coverage: "covered by `test_name`" or "no test coverage".]
 
-The briefing agent must read the source being refactored and list every
-discrete behavior, code path, or capability it provides. This inventory
-becomes the contract: the implementation agent must account for every
-item, and the audit verifies nothing was dropped.
-
-Each entry is one behavior — not a function name or line range, but
-what the code *does* from the caller's or user's perspective.]
-
-- [ ] [behavior description] — currently in `path/to/old.ext` (lines ~N-M)
-- [ ] ...
-
-[If the old code has tests, cross-reference: "covered by `test_name`"
-or "no existing test coverage". Untested behaviors are the ones most
-likely to be silently dropped.]
+- [ ] [behavior] — in `path/to/old.ext` (~lines N-M)
 
 ## Abstraction Context
 
-[The briefing agent must read the modules this milestone touches and
-their immediate neighbors, then inventory the abstraction landscape.
-This is not optional — abstraction problems caught after implementation
-are expensive; catching them in the brief is cheap.
-
-List each existing abstraction (function, trait, protocol, module
-boundary) that the milestone will use, extend, or work alongside.
-For each, note its health:]
+[Read architecture doc and neighboring modules. List existing abstractions
+this milestone touches with health assessment.]
 
 ### Existing abstractions
 
-- `path::to::abstraction` — [what it does, who calls it]
+- `path::to::abstraction` — [what, who calls it]
   - Health: [complete | incomplete | leaky | duplicated by X]
-  - [If incomplete]: callers do [extra work] around it because [reason]
-  - [If leaky]: callers depend on [internal detail] instead of interface
-  - [If duplicated]: also implemented as `path::to::other`
 
-### Abstraction requirements for this milestone
+### Requirements for this milestone
 
-[Based on the inventory above, state what the implementation must do
-with respect to abstractions:]
-
-- **Must use**: [existing abstraction] — do not reimplement
-- **Must extend**: [existing abstraction] to cover [new case]
+- **Must use**: [abstraction] — do not reimplement
+- **Must extend**: [abstraction] to cover [new case]
 - **Must not duplicate**: [concept] already has [abstraction]
-- **Must fix**: [incomplete/leaky abstraction] as part of this milestone
-  (only if the milestone's scope includes it)
+- **Must fix**: [abstraction] (only if in scope)
 
-[If no relevant abstractions exist and this milestone introduces new
-behavior, state whether a new abstraction is warranted or whether
-inline code is appropriate. The default is inline — only create an
-abstraction when there are or will be multiple call sites.]
+[Default is inline code — only abstract when multiple call sites exist.]
 
 ## Declared Regressions
 
-[Tests this milestone is expected to break. Must be declared here
-BEFORE implementation runs. Cannot be added after the fact.
-Each must name a specific resolving milestone.]
+[Must be declared BEFORE implementation. Each names a resolving milestone.]
 
-- [ ] `[test/surface]` will regress because [reason]. Resolved by: [M#].
+- [ ] `[test]` will regress because [reason]. Resolved by: [M#].
 
 If none: "None."
 
 ## Open Questions
 
-[The orchestrator resolves these before launching implementation.]
+[Orchestrator resolves before launching implementation.]
 ```
