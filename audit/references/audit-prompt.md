@@ -14,6 +14,10 @@ Read (when they exist):
 - project-notes/[slug]/PLAN.md — validation commands, upcoming milestones
 - project-notes/[slug]/PROJECT.md — architecture constraints, semantic families
 - audit/references/structural-checks.md — evaluation criteria
+- The relevant architecture document(s) in docs/architecture/ — component
+  ownership, invariants, not-responsible-for boundaries, common change
+  patterns. These are the primary reference for the Architecture section
+  of the structural evaluation.
 
 [If no project artifacts exist, provide inline:]
 Acceptance criteria: [list]
@@ -23,9 +27,11 @@ Steps:
 1. Run `git diff [base-commit]..HEAD` to see all changes
 2. FUNCTIONAL: For each acceptance criterion, run validation commands
    and determine pass/fail/cannot_verify with exact evidence
-3. STRUCTURAL: Evaluate per structural-checks.md — architecture,
-   abstraction, completeness, integrity, refactoring integrity,
-   semantic families, patterns, scope
+3. STRUCTURAL: Evaluate per structural-checks.md — architecture
+   (component ownership, change pattern completeness, invariant
+   preservation), abstraction, completeness, integrity, refactoring
+   integrity, semantic families, patterns (naming, comments), function
+   size, scope
 4. FORWARD IMPACT: Does this help or hinder upcoming milestones?
 5. Append a dated section to project-notes/[slug]/AUDIT.md per
    audit/references/audit-template.md
@@ -37,6 +43,11 @@ Rules:
 - Evaluate independently — do not assume correctness
 - Every criterion gets pass/fail with evidence (file:line, commands)
 - Report structural issues even if functional criteria pass
+- When evaluating architecture, check the architecture document's Common
+  Change Patterns section to verify the implementation updated every
+  co-required component
+- When evaluating architecture, check that component invariants are
+  preserved and not-responsible-for boundaries are respected
 - Do not fix code or modify source files
 - Only write to project-notes/[slug]/AUDIT.md
 ```

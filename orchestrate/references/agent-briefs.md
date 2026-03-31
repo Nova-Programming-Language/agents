@@ -20,7 +20,11 @@ Read in order:
 1. project-notes/[slug]/PROJECT.md — goals, criteria, constraints
 2. project-notes/[slug]/PLAN.md — milestone [name]: scope, proof commands
 3. project-notes/[slug]/STATUS.md — current state, baseline
-4. Source files: [paths relevant to this milestone from PLAN.md]
+4. The relevant architecture document(s) in docs/architecture/ — component
+   ownership, invariants, not-responsible-for boundaries, common change
+   patterns. Use these to populate Abstraction Context and to identify
+   which components the milestone must update.
+5. Source files: [paths relevant to this milestone from PLAN.md]
 
 Write project-notes/[slug]/BRIEF.md per orchestrate/references/brief-template.md.
 
@@ -28,10 +32,15 @@ Rules:
 - Only information relevant to this milestone
 - Acceptance criteria must be verifiable
 - List every file to read or modify with its role
-- Read the modules this milestone touches and their immediate neighbors
-  to populate the Abstraction Context section — inventory existing
-  abstractions, note their health (complete, incomplete, leaky,
-  duplicated), and state what the implementation must do with them
+- Read the relevant architecture document and the modules this milestone
+  touches to populate the Abstraction Context section — use the
+  architecture document's component ownership, invariants, and
+  not-responsible-for boundaries as the starting point, then inventory
+  the code-level abstractions, note their health (complete, incomplete,
+  leaky, duplicated), and state what the implementation must do with them
+- If the architecture document has a Common Change Patterns section,
+  identify which pattern applies to this milestone and list the
+  co-required component updates in the brief's Implementation Approach
 - For refactoring milestones, populate the Behavioral Inventory section
   by reading the source being moved and listing every discrete behavior
 - Flag ambiguities as open questions

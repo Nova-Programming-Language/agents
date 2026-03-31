@@ -30,6 +30,30 @@ Read in this order:
 If the spec or architecture is ambiguous, stop and ask instead of inventing a
  behavior.
 
+## Using Architecture Documents
+
+Before implementing, read the relevant architecture document in
+`docs/architecture/`. Use it to answer:
+
+1. **Which component owns this change?** Find the component whose owned
+   state, invariant, or boundary covers the behavior you are modifying.
+   If the architecture document has a "Not responsible for" section on
+   that component, verify your change does not violate it.
+
+2. **What else must change?** Check the "Common Change Patterns" section
+   for the type of modification you are making. It will list which other
+   components, tables, or validation steps must be updated alongside your
+   primary change. Follow it — incomplete changes are the most common
+   agent failure mode.
+
+3. **What is forbidden?** Check the "Missing-Data Behavior" or "Forbidden
+   Fallbacks" section. If your fix involves reconstructing data that
+   should come from an upstream producer, that is a forbidden shortcut —
+   fix the producer instead.
+
+If the architecture document does not have a Common Change Patterns section
+or does not cover your type of change, flag that as a documentation gap.
+
 ## Implementation Rules
 
 - Implement the spec and architecture, not just the current test expectation.
@@ -37,7 +61,9 @@ If the spec or architecture is ambiguous, stop and ask instead of inventing a
   hide missing metadata or upstream bugs.
 - Do not work around bugs in another component when the correct fix is to repair
   the producer.
-- Keep changes within the component boundaries the user requested.
+- Keep changes within the component boundaries defined in the architecture
+  document. If the architecture document names a component as "not responsible
+  for" the behavior you are adding, your code belongs somewhere else.
 - Rebuild the artifacts required by the validation command after source changes.
 - For reproducible runtime bugs, gather runtime evidence before changing code.
 - Do not special-case syntax before checking for a shared semantic family.

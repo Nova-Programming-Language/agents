@@ -6,7 +6,50 @@ review.
 Read `../../references/nova-delivery-checks.md` first when the draft is for a
 Nova multi-session project.
 
+Read `../../design/references/document-quality.md` for prose and structure
+standards.
+
 ## Architecture Drafts
+
+### Document structure
+
+- Does the document have an executive summary? Not a one-line purpose
+  statement, but 2-4 paragraphs that answer: what does this component do,
+  what is its output contract, what is the key invariant, and what is the
+  most common implementation mistake?
+- Does the document have a process view or pipeline diagram when the
+  component has sequential stages?
+- Does every component section have **Invariant:** and **Not responsible
+  for:** callouts?
+- Does the document have a Common Change Patterns section? This is not
+  optional — it is the single highest-leverage section for preventing
+  incomplete implementations.
+- Does the document have an explicit Missing-Data Behavior or Forbidden
+  Fallbacks section?
+
+### Prose quality
+
+- Are architectural decisions accompanied by reasoning (why it exists, what
+  goes wrong when violated), or are they stated as bare facts?
+- Are component descriptions written in prose paragraphs, or are they just
+  bulleted keyword lists? Bullet lists are for enumerations (types, fields,
+  checks), not for architectural reasoning.
+- Are invariants explained with enough context that an agent can handle edge
+  cases, or are they bare assertions ("all nodes have types")?
+- Does the document explain *why* boundaries are where they are, not just
+  *what* they are?
+
+### Abstraction design
+
+- For each abstraction boundary: is the owned state named, the invariant
+  stated, the hidden details identified, the negative boundary drawn, and
+  the failure mode specified?
+- Are component boundaries justified by what changes independently, or are
+  they arbitrary groupings?
+- Where a component says "not responsible for," is that boundary clear
+  enough that an agent would not accidentally put the wrong logic there?
+
+### Technical completeness
 
 Check for:
 
@@ -41,6 +84,8 @@ Check for:
 - missing build or runtime prerequisite calls when relevant
 - lack of blocker handling
 - lack of clear next-step granularity for the next coding session
+- milestones whose implementation approach implies multi-concern functions
+  instead of decomposed steps
 
 ## Verdict
 

@@ -42,6 +42,11 @@ environment dependency.
 
 Trace from symptom to root cause. This step must not be skipped.
 
+- Read the relevant architecture document in `docs/architecture/` to
+  identify which component owns the behavior being tested. Use the
+  component's **Invariant** and **Not responsible for** sections to
+  determine whether the defect is in the component itself or in an
+  upstream producer.
 - Read the test to understand what it asserts
 - Read the code path the test exercises
 - Identify WHERE behavior diverges from the expectation
@@ -49,6 +54,10 @@ Trace from symptom to root cause. This step must not be skipped.
   contract, upstream bug?
 - If root cause is in another component, record as blocker with
   evidence — do not work around it
+- If the architecture document has a "Common Change Patterns" section,
+  check whether the original change that introduced the bug followed
+  the pattern. Often a test failure means one component was updated
+  but a co-required component was not.
 
 The diagnosis must name:
 - The root cause (one sentence)

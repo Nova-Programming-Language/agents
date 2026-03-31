@@ -5,14 +5,42 @@ For each category, examine the diff and the surrounding code.
 
 ## Architecture
 
-- Are changes in the correct layer? (e.g., not putting business logic in
-  a presentation layer, not putting I/O in a pure computation module)
+If a relevant architecture document exists in `docs/architecture/`, read
+it before evaluating this dimension. The architecture document is the
+primary reference for component boundaries, ownership, invariants, and
+change patterns.
+
+### Component ownership
+
+- Does the component that owns the changed behavior match the architecture
+  document's component definitions? Check the "owned state" and "not
+  responsible for" sections for each component touched by the diff.
+- If the diff adds logic to a component whose architecture doc says it is
+  "not responsible for" that behavior, flag it — the code is in the wrong
+  place.
 - Does the component that owns this behavior match what PROJECT.md says?
   If no PROJECT.md, does it match the implicit ownership in the codebase?
+
+### Boundary and layer correctness
+
+- Are changes in the correct layer? (e.g., not putting business logic in
+  a presentation layer, not putting I/O in a pure computation module)
 - Are module/package boundaries respected? Does the change introduce
   cross-boundary dependencies that did not exist before?
 - If new files were created, are they in the right directory with the
   right naming convention?
+
+### Change pattern completeness
+
+- If the architecture document has a "Common Change Patterns" section,
+  identify which pattern matches the type of change in the diff. Verify
+  that every component listed in that pattern was actually updated.
+  Missing updates are the most common source of incomplete implementations.
+- If the architecture document does not cover this type of change, flag
+  the documentation gap.
+
+### Architectural intent
+
 - Does the implementation fulfill the architectural intent of the
   milestone, or does it achieve functional correctness through shortcuts
   that bypass the intended architecture? (e.g., hardcoding values instead
@@ -21,6 +49,14 @@ For each category, examine the diff and the surrounding code.
 - If the milestone's purpose is architectural migration or cleanup, verify
   that the old path is actually removed or reduced — not just that the
   new path exists alongside it.
+
+### Invariant preservation
+
+- For each component touched by the diff, check whether the component's
+  stated invariants still hold after the change. Read the **Invariant:**
+  callouts in the architecture document.
+- If the diff weakens an invariant (e.g., adding a fallback where the
+  architecture says "fail loudly"), flag it even if the tests pass.
 
 ## Abstraction
 
