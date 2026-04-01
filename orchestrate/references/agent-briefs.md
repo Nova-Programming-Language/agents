@@ -69,32 +69,27 @@ Implement the milestone:
 - Complete each item fully (diagnose, fix, verify) before the next.
 - For test failures, use fix-test discipline: reproduce, diagnose root
   cause, fix, verify, check collateral.
-- Write progress checkpoints to STATUS.md as you complete meaningful
-  steps, prefixed with `[checkpoint]` (e.g., "[checkpoint] diagnosed
-  root cause: [summary]", "[checkpoint] fix committed, running
-  verification"). These are not your exit state — they are a trail
-  so the orchestrator or user can see where you are mid-run.
+- As you work, write progress to STATUS.md prefixed with `[checkpoint]`
+  (e.g., "[checkpoint] diagnosed root cause: [summary]").
 
-Exit states — exactly two valid exits. Write the marker to STATUS.md
-AND lead your return message with the same marker so both channels
-are consistent:
+When you are finished, you must do one of these two things:
 
-1. **Done**: write `[done]` to STATUS.md and start your return message
-   with `[done]`. Include commit hash and verification commands.
-2. **Blocked**: write `[blocked]` to STATUS.md and start your return
-   message with `[blocked]`. Include one specific blocker with
-   verifiable evidence (file:line, command output).
+1. Write `[done]` to STATUS.md with the commit hash and verification
+   commands. Start your return message with `[done]`.
+2. Write `[blocked]` to STATUS.md with the specific blocker and
+   evidence (file:line, command output). Start your return message
+   with `[blocked]`.
 
-Progress notes are NOT a valid exit. If your fix exposed a new defect
-outside scope, file it as a GitHub issue and return to your acceptance
-criteria — done if they pass, blocked if the new defect prevents them.
-Do not keep diagnosing sequential problems.
+You must always finish with one of these. There is no other way to
+end your work. If you fixed part of the problem but a new defect
+blocks the remaining acceptance criteria, file the new defect as a
+GitHub issue and write `[blocked]` with that issue as the blocker.
+If all acceptance criteria pass, write `[done]`.
 
 Rules:
 - Stay within BRIEF.md scope
 - Do not refactor surrounding code
 - Do not batch independent problems
-- Return a patch or a blocker, not findings
 ```
 
 ---
