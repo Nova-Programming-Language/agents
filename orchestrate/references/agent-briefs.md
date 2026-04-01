@@ -75,12 +75,15 @@ Implement the milestone:
   verification"). These are not your exit state — they are a trail
   so the orchestrator or user can see where you are mid-run.
 
-Exit states — exactly two valid exits, each with a STATUS.md marker:
+Exit states — exactly two valid exits. Write the marker to STATUS.md
+AND lead your return message with the same marker so both channels
+are consistent:
 
-1. **Done**: write `[done]` to STATUS.md with commit hash and
-   verification commands.
-2. **Blocked**: write `[blocked]` to STATUS.md with one specific blocker
-   and verifiable evidence (file:line, command output).
+1. **Done**: write `[done]` to STATUS.md and start your return message
+   with `[done]`. Include commit hash and verification commands.
+2. **Blocked**: write `[blocked]` to STATUS.md and start your return
+   message with `[blocked]`. Include one specific blocker with
+   verifiable evidence (file:line, command output).
 
 Progress notes are NOT a valid exit. If your fix exposed a new defect
 outside scope, file it as a GitHub issue and return to your acceptance

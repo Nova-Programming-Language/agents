@@ -82,7 +82,13 @@ All in `project-notes/<slug>/`:
 | AUDIT.md | audit agent | append-only |
 | BRIEF.md | briefing agent | per-milestone |
 
-Agents communicate through files, not return values.
+**Authoritative state is in files, not agent return messages.** When a
+sub-agent completes, it returns a text message — but that message is a
+summary, not the source of truth. Always read the relevant artifact file
+(STATUS.md, AUDIT.md, BRIEF.md) to determine the actual outcome. Agent
+return messages may be truncated, ambiguous, or describe intermediate
+progress. The file markers (`[done]`, `[blocked]`, `[checkpoint]`) are
+the authoritative signal.
 
 ## Session Start
 1. List `project-notes/` to identify the active slug.
