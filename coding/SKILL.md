@@ -53,6 +53,9 @@ Flag missing Common Change Patterns coverage as a documentation gap.
 - Refactoring should result in a net reduction in lines of code. If a
   refactor adds more code than it removes, it is adding complexity, not
   reducing it.
+- Do not commit formatting-only changes. Reformatting lines you didn't
+  otherwise modify creates diff churn that obscures real changes and
+  pollutes git blame.
 
 ## Naming
 

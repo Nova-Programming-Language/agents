@@ -139,3 +139,6 @@ it removes, flag it — the refactor is adding complexity, not reducing it.
 
 - Were files outside BRIEF.md scope modified? Flag drive-by refactors,
   formatting changes, and unrelated fixes.
+- Does the diff contain formatting-only changes to lines that were not
+  otherwise modified? Flag as diff churn — it obscures real changes and
+  pollutes git blame.
