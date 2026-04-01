@@ -21,16 +21,18 @@ Spawn a briefing agent (`references/agent-briefs.md`). It reads project
 artifacts and source files, then writes `project-notes/<slug>/BRIEF.md`.
 
 ### 2. Implement (agent)
-Spawn an implementation agent. It reads BRIEF.md and PLAN.md, implements
-the milestone, and updates STATUS.md. The agent must exit with one of
-two states: **done** (patch + verification) or **blocked** (one specific
-blocker with evidence). Progress notes without a patch are not a valid
-exit — see `references/decision-protocol.md` for handling.
+Spawn an implementation agent **in foreground** and wait for it to
+complete. Do not proceed until the agent has returned. Implementation
+agents may run for a long time — that is expected. Do not abandon,
+re-check, or move on while the agent is still running.
+
+If the agent appears to have stopped responding, check STATUS.md for
+`[checkpoint]` entries to confirm it is still making progress before
+taking any action.
 
 ### 2a. Check for completion (orchestrator)
-Before spawning the audit, read STATUS.md and check the final status
-marker. The implementation agent writes progress checkpoints during
-work (prefixed `[checkpoint]`) and a final exit marker when done:
+After the implementation agent returns, read STATUS.md and check the
+final status marker:
 - `[done]` — patch committed and verified. Proceed to audit.
 - `[blocked]` — one specific blocker. Route per decision protocol.
 - No final marker, only checkpoints — the agent did not finish cleanly.
