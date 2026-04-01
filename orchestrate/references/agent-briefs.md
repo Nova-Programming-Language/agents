@@ -69,6 +69,10 @@ Implement the milestone:
 - Complete each item fully (diagnose, fix, verify) before the next.
 - For test failures, use fix-test discipline: reproduce, diagnose root
   cause, fix, verify, check collateral.
+- Write progress checkpoints to STATUS.md as you complete meaningful
+  steps (e.g., "diagnosed root cause: [summary]", "fix committed,
+  running verification"). This is not your exit state — it is a trail
+  so the orchestrator or user can see where you are mid-run.
 
 Exit states — exactly two valid exits:
 
