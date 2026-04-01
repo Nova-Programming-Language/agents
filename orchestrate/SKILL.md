@@ -28,11 +28,15 @@ blocker with evidence). Progress notes without a patch are not a valid
 exit — see `references/decision-protocol.md` for handling.
 
 ### 2a. Check for completion (orchestrator)
-Before spawning the audit, read STATUS.md and check whether the
-implementation agent actually produced a committed patch with
-verification. If it returned progress notes, diagnosis, or partial
-findings instead, route per the **Incomplete** section of
-`references/decision-protocol.md` — do not proceed to audit.
+Before spawning the audit, read STATUS.md and check the final status
+marker. The implementation agent writes progress checkpoints during
+work (prefixed `[checkpoint]`) and a final exit marker when done:
+- `[done]` — patch committed and verified. Proceed to audit.
+- `[blocked]` — one specific blocker. Route per decision protocol.
+- No final marker, only checkpoints — the agent did not finish cleanly.
+  Route per the **Incomplete** section of `references/decision-protocol.md`.
+
+Do not treat `[checkpoint]` entries as the final state.
 
 ### 3. Audit (agent)
 Spawn an audit agent per the `audit` skill. It evaluates functional

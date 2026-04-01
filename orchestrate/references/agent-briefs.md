@@ -70,15 +70,17 @@ Implement the milestone:
 - For test failures, use fix-test discipline: reproduce, diagnose root
   cause, fix, verify, check collateral.
 - Write progress checkpoints to STATUS.md as you complete meaningful
-  steps (e.g., "diagnosed root cause: [summary]", "fix committed,
-  running verification"). This is not your exit state — it is a trail
+  steps, prefixed with `[checkpoint]` (e.g., "[checkpoint] diagnosed
+  root cause: [summary]", "[checkpoint] fix committed, running
+  verification"). These are not your exit state — they are a trail
   so the orchestrator or user can see where you are mid-run.
 
-Exit states — exactly two valid exits:
+Exit states — exactly two valid exits, each with a STATUS.md marker:
 
-1. **Done**: patch committed, criteria verified, STATUS.md updated with
-   commit hash and verification commands.
-2. **Blocked**: one specific blocker with verifiable evidence in STATUS.md.
+1. **Done**: write `[done]` to STATUS.md with commit hash and
+   verification commands.
+2. **Blocked**: write `[blocked]` to STATUS.md with one specific blocker
+   and verifiable evidence (file:line, command output).
 
 Progress notes are NOT a valid exit. If your fix exposed a new defect
 outside scope, file it as a GitHub issue and return to your acceptance
