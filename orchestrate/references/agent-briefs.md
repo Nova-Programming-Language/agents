@@ -56,7 +56,9 @@ Milestone: [name]
 Read in order:
 1. project-notes/[slug]/BRIEF.md — your task spec
 2. project-notes/[slug]/PLAN.md — milestone [name] scope and proof
-3. Source files listed in BRIEF.md
+3. The relevant architecture document in docs/architecture/ — component
+   ownership, invariants, not-responsible-for boundaries, change patterns
+4. Source files listed in BRIEF.md
 
 [If domain coding rules exist:]
 Read coding/SKILL.md for source-of-truth and semantic-family rules.
