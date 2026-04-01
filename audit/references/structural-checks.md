@@ -120,7 +120,9 @@ Catches code that appears to work but hides problems.
 
 ## Refactoring Integrity
 
-Applies when the diff moves code between components.
+Applies when the diff moves code between components. Refactoring should
+result in a net reduction in lines of code. If the diff adds more than
+it removes, flag it — the refactor is adding complexity, not reducing it.
 
 - **Behavioral inventory**: if BRIEF.md has one, verify each item exists
   and is reachable in the new location. Extra attention to items marked

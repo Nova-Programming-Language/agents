@@ -50,6 +50,9 @@ Flag missing Common Change Patterns coverage as a documentation gap.
 - Check for a shared semantic family before adding construct-specific paths.
 - Keep functions to a single responsibility. Decompose beyond ~50 lines
   or 3+ nesting levels into named steps at genuine responsibility boundaries.
+- Refactoring should result in a net reduction in lines of code. If a
+  refactor adds more code than it removes, it is adding complexity, not
+  reducing it.
 
 ## Naming
 
