@@ -22,23 +22,21 @@ artifacts and source files, then writes `project-notes/<slug>/BRIEF.md`.
 
 ### 2. Implement (agent)
 Spawn an implementation agent **in foreground** and wait for it to
-complete. Do not proceed until the agent has returned. Implementation
-agents may run for a long time — that is expected. Do not abandon,
-re-check, or move on while the agent is still running.
+complete. Do not proceed until the agent has returned its final message.
 
-If the agent appears to have stopped responding, check STATUS.md for
-`[checkpoint]` entries to confirm it is still making progress before
-taking any action.
+**`[checkpoint]` entries in STATUS.md do NOT mean the agent is done.**
+They are mid-run progress written while the agent is still working.
+Seeing a checkpoint is not a reason to stop waiting — it is confirmation
+the agent is still making progress. Only proceed to step 2a after the
+agent has returned its final message to you.
 
 ### 2a. Check for completion (orchestrator)
-After the implementation agent returns, read STATUS.md and check the
-final status marker:
+The agent has returned. Now read STATUS.md for the final marker:
 - `[done]` — patch committed and verified. Proceed to audit.
 - `[blocked]` — one specific blocker. Route per decision protocol.
-- No final marker, only checkpoints — the agent did not finish cleanly.
-  Route per the **Incomplete** section of `references/decision-protocol.md`.
-
-Do not treat `[checkpoint]` entries as the final state.
+- No `[done]` or `[blocked]`, only `[checkpoint]` entries — the agent
+  exited without completing. Route per the **Incomplete** section of
+  `references/decision-protocol.md`.
 
 ### 3. Audit (agent)
 Spawn an audit agent per the `audit` skill. It evaluates functional
