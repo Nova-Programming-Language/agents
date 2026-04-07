@@ -28,6 +28,8 @@ targeted tests, crate-local tests, or the canonical full regression workflow.
 - Prefer the smallest validation that proves the change.
 - If the chosen command consumes release or runtime artifacts, refresh them
   first or use the canonical script that does it for you.
+- For targeted or directory `nova test` runs, rely on the default exact-scope
+  report and artifact recording unless you need an explicit export or override.
 - `scripts/full-regression.sh` is the canonical full-suite state and failure
   tracker.
 - When fixing a heuristic or fallback bug, add a regression that proves the
@@ -85,6 +87,11 @@ Use the structured JSON records for all downstream work:
   the fixer has machine-readable context from the start
 - **Diffing runs**: compare JSON output across runs to distinguish new
   regressions from pre-existing failures
+
+For scoped `nova test` runs, use the printed `Scope` and `Recorded` blocks to
+confirm exact scope and stored paths. `--failed --from-last` is exact-scope
+snapshot replay only, and `nova test tests/` / `examples/` is still not
+canonical full regression.
 
 ## After Running Regressions
 

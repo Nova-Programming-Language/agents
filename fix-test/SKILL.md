@@ -38,6 +38,10 @@ Run the failing test in isolation. Record:
 If not reproducible in isolation, note it — may be an ordering or
 environment dependency.
 
+When reproducing with `nova test`, keep the same exact scope. Use the printed
+`Scope` block to confirm it, the `Recorded` block to find stored artifacts, and
+`--failed --from-last` only as exact-scope snapshot replay.
+
 ### 3. Diagnose root cause
 
 Trace from symptom to root cause. This step must not be skipped.

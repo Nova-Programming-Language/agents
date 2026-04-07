@@ -5,6 +5,13 @@ canonical full-suite tracker.
 
 ## Targeted Validation
 
+Use one of three command families: targeted file/filter runs, directory/subtree
+runs, or canonical full regression through `scripts/full-regression.sh`.
+
+For the first two, `nova test` already records exact-scope local state by
+default. Use `--report-json` or `--artifacts-dir` only for explicit exports or
+overrides.
+
 Rust crate validation:
 
 ```bash
@@ -18,6 +25,14 @@ Targeted Nova interpreter/test-runner validation:
 cargo run -- test tests/unit/ --skip-compiled
 cargo run -- test tests/compile_errors/
 cargo run -- test tests/unit/math_tests.nova
+cargo run -- test tests/unit/ --filter select
+```
+
+Directory/subtree validation:
+
+```bash
+cargo run -- test tests/unit/concurrency/ --skip-compiled
+cargo run -- test tests/build/
 ```
 
 Compiled differential validation:
@@ -34,6 +49,14 @@ CLI/test-runner failure investigation:
 cargo run -- test --failed
 cargo run -- test --failed --from-last
 ```
+
+Scoped `nova test` notes:
+
+- use the printed `Scope` and `Recorded` blocks to confirm exact scope and
+  stored paths
+- `--from-last` reads the current exact-scope snapshot only
+- `nova test tests/` and `nova test examples/` are still scoped `nova test`
+  runs, not canonical full regression
 
 ## Canonical Full Regression
 
