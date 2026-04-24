@@ -54,6 +54,9 @@ Different syntax or AST node spelling is not enough by itself.
 
 - Special-casing a construct only because it has a distinct AST node or surface
   spelling.
+- Routing a few familiar or built-in types through a direct path while sending
+  all remaining types through a generic fallback, without naming the first
+  semantic divergence that requires that split.
 - Adding a parallel lowering or runtime path without naming the semantic
   divergence that requires it.
 - Reusing a local implementation detail to justify a broader bad pattern.

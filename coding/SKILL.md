@@ -17,12 +17,13 @@ Read in this order:
 1. `docs/agent-rules.md`
 2. the relevant spec files under `docs/specs/`
 3. the relevant architecture docs under `docs/architecture/`
-4. `../references/source-of-truth.md`
-5. `../references/artifact-freshness.md`
-6. `../references/runtime-evidence.md` for reproducible runtime bugs
-7. `../references/semantic-family.md` when related constructs may share a family
-8. `references/nova-semantics.md` when language semantics matter
-9. the affected code paths
+4. `docs/architecture/semantic-families.md` when a change may affect a named family across frontend, lowering, and backends
+5. `../references/source-of-truth.md`
+6. `../references/artifact-freshness.md`
+7. `../references/runtime-evidence.md` for reproducible runtime bugs
+8. `../references/semantic-family.md` when related constructs may share a family
+9. `references/nova-semantics.md` when language semantics matter
+10. the affected code paths
 
 If the spec or architecture is ambiguous, stop and ask.
 
@@ -48,6 +49,12 @@ Flag missing Common Change Patterns coverage as a documentation gap.
 - Rebuild artifacts before validation.
 - Gather runtime evidence before changing code for reproducible bugs.
 - Check for a shared semantic family before adding construct-specific paths.
+- If `docs/architecture/semantic-families.md` names the affected family, update
+  the whole family up to the first explicit divergence point; do not
+  special-case one member above that layer.
+- Do not route a few built-in or familiar types through a direct path while all
+  remaining types use a generic fallback unless the semantic divergence is
+  explicit and documented at that layer.
 - Keep functions to a single responsibility. Decompose beyond ~50 lines
   or 3+ nesting levels into named steps at genuine responsibility boundaries.
 - Refactoring should result in a net reduction in lines of code. If a
@@ -122,7 +129,7 @@ rebuild if needed, state what was rebuilt.
 - Smallest command that proves the change.
 - Then the owning component's test suite broadly.
 - Then broader commands if the feature crosses subsystems.
-- Use `scripts/full-regression.sh check` for full-suite regression.
+- Use `scripts/run-nova-full-regression.sh check` for full-suite regression.
 - Use `cargo check -p <crate>` / `cargo test -p <crate>` for crate-local.
 - Use `../references/artifact-freshness.md` when consuming release artifacts.
 
