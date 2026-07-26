@@ -15,15 +15,17 @@ constraints, architecture documents, and cross-command behavior.
 Read in this order:
 
 1. `docs/agent-rules.md`
-2. the relevant spec files under `docs/specs/`
-3. the relevant architecture docs under `docs/architecture/`
-4. `docs/architecture/semantic-families.md` when a change may affect a named family across frontend, lowering, and backends
-5. `../references/source-of-truth.md`
-6. `../references/artifact-freshness.md`
-7. `../references/runtime-evidence.md` for reproducible runtime bugs
-8. `../references/semantic-family.md` when related constructs may share a family
-9. `references/nova-semantics.md` when language semantics matter
-10. the affected code paths
+2. `../references/package-onboarding.md` when modifying a package repository
+   or package directory
+3. the relevant spec files under `docs/specs/`
+4. the relevant architecture docs under `docs/architecture/`
+5. `docs/architecture/semantic-families.md` when a change may affect a named family across frontend, lowering, and backends
+6. `../references/source-of-truth.md`
+7. `../references/artifact-freshness.md`
+8. `../references/runtime-evidence.md` for reproducible runtime bugs
+9. `../references/semantic-family.md` when related constructs may share a family
+10. `references/nova-semantics.md` when language semantics matter
+11. the affected code paths
 
 If the spec or architecture is ambiguous, stop and ask.
 
@@ -43,6 +45,8 @@ Flag missing Common Change Patterns coverage as a documentation gap.
 ## Implementation Rules
 
 - Implement the spec and architecture, not just the test expectation.
+- For package changes, complete `../references/package-onboarding.md` before
+  editing source, interfaces, manifests, generated docs, examples, or tests.
 - No fallbacks, heuristics, or silent degradation to hide missing data.
 - Do not work around bugs in another component — fix the producer.
 - Stay within the component boundaries from the architecture document.

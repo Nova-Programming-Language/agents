@@ -69,6 +69,15 @@ update STATUS.md and LOG.md.
 The main context does NOT: read source code, write code, run tests, or
 debug. Plan coherence uses AUDIT.md summaries, not source code.
 
+### Delegated Package Onboarding
+
+For any worker touching or validating a package repository, read
+`../references/package-onboarding.md` and include its exact applicable files
+in the worker brief. A generic instruction to "follow repository rules" is not
+enough. Require the worker to report which READMEs it read and whether the
+commands matched package-specific prerequisites. Audit already-started work
+against those READMEs before accepting it.
+
 ## Artifacts
 
 All in `project-notes/<slug>/`:
@@ -99,3 +108,8 @@ the authoritative signal.
 ## Session End
 1. Update STATUS.md.
 2. Append to LOG.md — software work only, not agent workflow.
+
+## References
+
+- `../references/package-onboarding.md` — mandatory delegated onboarding for
+  package-repository work

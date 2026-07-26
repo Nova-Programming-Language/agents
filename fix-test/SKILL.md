@@ -30,6 +30,11 @@ Record in STATUS.md: which failure you are working on and why.
 
 ### 2. Reproduce
 
+For a package-repository failure, first complete
+`../references/package-onboarding.md`. Read the root and target package
+READMEs before choosing the reproduction command; they may define required
+services, native libraries, environment variables, or test modes.
+
 Run the failing test in isolation. Record:
 - The exact command
 - The actual output (error message, wrong value, crash)
@@ -193,5 +198,6 @@ When used standalone, this skill manages its own sequencing.
 
 ## References
 
+- `../references/package-onboarding.md` — required before package failure work
 - `references/failure-log-template.md` — format for tracking fixes
 - `audit/SKILL.md` — audit skill used at step 6

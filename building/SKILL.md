@@ -14,6 +14,8 @@ state, release artifacts, or the pinned Linux/x86_64 container workflow.
 
 - `BUILDING.md`
 - `AGENTS.md`
+- `../references/package-onboarding.md` when building or preparing a package
+  repository
 - `../references/artifact-freshness.md`
 - `references/build-recipes.md`
 
@@ -37,14 +39,17 @@ state, release artifacts, or the pinned Linux/x86_64 container workflow.
 ## Workflow
 
 1. Name the exact command you are about to run.
-2. Use `../references/artifact-freshness.md` to identify the artifacts that
+2. For package work, complete `../references/package-onboarding.md` and honor
+   package-specific prerequisites before building or preparing.
+3. Use `../references/artifact-freshness.md` to identify the artifacts that
    command consumes.
-3. Use `references/build-recipes.md` for the matching host, release, or
+4. Use `references/build-recipes.md` for the matching host, release, or
    container rebuild commands.
-4. Run the validation command.
-5. Report the rebuilt surfaces.
+5. Run the validation command.
+6. Report the rebuilt surfaces.
 
 ## Open These References As Needed
 
 - `../references/artifact-freshness.md`
+- `../references/package-onboarding.md`
 - `references/build-recipes.md`

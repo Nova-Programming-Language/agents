@@ -13,19 +13,23 @@ targeted tests, crate-local tests, or the canonical full regression workflow.
 ## Read First
 
 1. `AGENTS.md`
-2. `docs/guides/tests.md`
-3. `docs/architecture/test-system.md`
-4. `docs/specs/nova-testing-spec.md`
-5. `../references/artifact-freshness.md`
-6. `../references/source-of-truth.md` when the bug involves fallbacks or
+2. `../references/package-onboarding.md` when the target is a package repository
+   or package directory
+3. `docs/guides/tests.md`
+4. `docs/architecture/test-system.md`
+5. `docs/specs/nova-testing-spec.md`
+6. `../references/artifact-freshness.md`
+7. `../references/source-of-truth.md` when the bug involves fallbacks or
    missing required data
-7. `../references/runtime-evidence.md` for reproducible runtime failures
-8. `../references/semantic-family.md` when the bug involves related constructs
-9. `references/full-regression.md`
+8. `../references/runtime-evidence.md` for reproducible runtime failures
+9. `../references/semantic-family.md` when the bug involves related constructs
+10. `references/full-regression.md`
 
 ## Non-Negotiable Rules
 
 - Prefer the smallest validation that proves the change.
+- For package work, complete `../references/package-onboarding.md` before
+  choosing or running the test command.
 - If the chosen command consumes release or runtime artifacts, refresh them
   first or use the canonical script that does it for you.
 - Code and test changes must not leave warnings on the affected validation
