@@ -28,7 +28,7 @@
 Captured after each milestone commit. Used by between-milestones
 regression checks.
 
-- command: [the regression command, e.g. scripts/full-regression.sh check]
+- command: [the regression command, e.g. scripts/run-nova-full-regression.sh check]
 - captured at commit: [hash]
 - passing: [count]
 - failing: [count]

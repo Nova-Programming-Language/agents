@@ -33,7 +33,7 @@ lldb -- target/debug/nova repl
 Targeted Nova test:
 
 ```bash
-lldb -- target/debug/nova test tests/unit/path_or_file.nova --skip-compiled
+lldb -- target/debug/nova test tests/unit/path_or_file.nova --backend interpreter
 ```
 
 Rust REPL tests:

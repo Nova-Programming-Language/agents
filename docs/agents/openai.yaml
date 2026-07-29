@@ -1,4 +1,0 @@
-interface:
-  display_name: "Docs"
-  short_description: "Write and validate Nova documentation and examples"
-  default_prompt: "Use $docs to update and validate these Nova docs or examples."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Merge PR"
+  short_description: "Merge Nova GitHub PRs correctly"
+  default_prompt: "Merge a Nova GitHub pull request with gh, verify the actual merged state, and sync local branches carefully."

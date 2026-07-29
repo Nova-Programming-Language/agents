@@ -63,6 +63,9 @@ Flag missing Common Change Patterns coverage as a documentation gap.
 - Do not commit formatting-only changes. Reformatting lines you didn't
   otherwise modify creates diff churn that obscures real changes and
   pollutes git blame.
+- Code and test changes must not introduce warnings on the affected build or
+  crate-test surfaces. Treat new warnings as failures and either fix them or
+  report an explicit blocker.
 
 ## Naming
 
@@ -131,6 +134,9 @@ rebuild if needed, state what was rebuilt.
 - Then broader commands if the feature crosses subsystems.
 - Use `scripts/run-nova-full-regression.sh check` for full-suite regression.
 - Use `cargo check -p <crate>` / `cargo test -p <crate>` for crate-local.
+- Prefer a warning-deny check such as `RUSTFLAGS="-D warnings" cargo test
+  -p <crate> --no-run` when the change touches Rust code or tests that emit
+  warnings only under test compilation.
 - Use `../references/artifact-freshness.md` when consuming release artifacts.
 
 ## Architecture-Driven Work

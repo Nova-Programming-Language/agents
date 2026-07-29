@@ -6,7 +6,7 @@ canonical full-suite tracker.
 ## Targeted Validation
 
 Use one of three command families: targeted file/filter runs, directory/subtree
-runs, or canonical full regression through `scripts/full-regression.sh`.
+runs, or canonical full regression through `scripts/run-nova-full-regression.sh`.
 
 For the first two, `nova test` already records exact-scope local state by
 default. Use `--report-json` or `--artifacts-dir` only for explicit exports or
@@ -22,7 +22,7 @@ cargo test -p nova-cli <filter>
 Targeted Nova interpreter/test-runner validation:
 
 ```bash
-cargo run -- test tests/unit/ --skip-compiled
+cargo run -- test tests/unit/ --backend interpreter
 cargo run -- test tests/compile_errors/
 cargo run -- test tests/unit/math_tests.nova
 cargo run -- test tests/unit/ --filter select
@@ -31,7 +31,7 @@ cargo run -- test tests/unit/ --filter select
 Directory/subtree validation:
 
 ```bash
-cargo run -- test tests/unit/concurrency/ --skip-compiled
+cargo run -- test tests/unit/concurrency/ --backend interpreter
 cargo run -- test tests/build/
 ```
 
@@ -40,7 +40,7 @@ Compiled differential validation:
 ```bash
 cargo build --release -p nova-async-rt
 make -C runtime
-cargo run -- test tests/unit/ --compiled
+cargo run -- test tests/unit/ --backend c
 ```
 
 CLI/test-runner failure investigation:
@@ -63,13 +63,13 @@ Scoped `nova test` notes:
 Primary commands:
 
 ```bash
-scripts/full-regression.sh check
-scripts/full-regression.sh check --candidate --note "ready for review"
-scripts/full-regression.sh failed
-scripts/full-regression.sh list
-scripts/full-regression.sh show
-scripts/full-regression.sh baseline
-scripts/full-regression.sh baseline set last-run
+scripts/run-nova-full-regression.sh check
+scripts/run-nova-full-regression.sh check --candidate --note "ready for review"
+scripts/run-nova-full-regression.sh failed
+scripts/run-nova-full-regression.sh list
+scripts/run-nova-full-regression.sh show
+scripts/run-nova-full-regression.sh baseline
+scripts/run-nova-full-regression.sh baseline set last-run
 ```
 
 Core semantics:
@@ -92,8 +92,8 @@ Run references:
 
 Default agent loop:
 
-1. `scripts/full-regression.sh check`
-2. `scripts/full-regression.sh failed`
+1. `scripts/run-nova-full-regression.sh check`
+2. `scripts/run-nova-full-regression.sh failed`
 3. pivot to targeted reruns
 4. promote only with `baseline set <run-id>` when intended
 

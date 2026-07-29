@@ -28,9 +28,12 @@ targeted tests, crate-local tests, or the canonical full regression workflow.
 - Prefer the smallest validation that proves the change.
 - If the chosen command consumes release or runtime artifacts, refresh them
   first or use the canonical script that does it for you.
+- Code and test changes must not leave warnings on the affected validation
+  surface. Treat new compiler, build, and test-compilation warnings as failures
+  unless there is a documented blocker.
 - For targeted or directory `nova test` runs, rely on the default exact-scope
   report and artifact recording unless you need an explicit export or override.
-- `scripts/full-regression.sh` is the canonical full-suite state and failure
+- `scripts/run-nova-full-regression.sh` is the canonical full-suite state and failure
   tracker.
 - When fixing a heuristic or fallback bug, add a regression that proves the
   authoritative path is used.
@@ -48,13 +51,16 @@ targeted tests, crate-local tests, or the canonical full regression workflow.
 2. Use `../references/artifact-freshness.md` to check whether the command
    requires a rebuild first.
 3. Use `references/full-regression.md` for the matching command family.
-4. After reproducing a runtime failure, use `../references/runtime-evidence.md`
+4. When validating Rust crate changes, add a warning-deny compile check such
+   as `RUSTFLAGS="-D warnings" cargo test -p <crate> --no-run` if warnings
+   could appear only in test targets.
+5. After reproducing a runtime failure, use `../references/runtime-evidence.md`
    to decide whether the next step should be LLDB or narrow tracing.
-5. If you ran a full regression, use `failed`, `list`, and `show` before
+6. If you ran a full regression, use `failed`, `list`, and `show` before
    opening raw logs.
-6. If related constructs are involved, use `../references/semantic-family.md`
+7. If related constructs are involved, use `../references/semantic-family.md`
    to decide which tests should be paired and where divergence should appear.
-7. Add or update regressions for both the authoritative path and the
+8. Add or update regressions for both the authoritative path and the
    missing-data path when relevant.
 
 ## Failure Interpretation
@@ -68,7 +74,7 @@ Keep the current test-system model in mind:
 
 The standard failure view is machine-first:
 
-- use `scripts/full-regression.sh failed --json` — this is the primary
+- use `scripts/run-nova-full-regression.sh failed --json` — this is the primary
   failure command; always prefer JSON over the plain-text view
 - each failure record includes `classification`, `case_id`, `engine`, `form`,
   `tier`, `file`, `case_name`, `source_case_key`, `status`, `message`,

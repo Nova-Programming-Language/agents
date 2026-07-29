@@ -21,7 +21,7 @@ Repeat for each failure:
 ### 1. Select one failure
 
 Pick the next failure. If working through regression results, run
-`scripts/full-regression.sh failed --json` and use the resulting
+`scripts/run-nova-full-regression.sh failed --json` and use the resulting
 records — specifically `classification`, `owner`, and `phase` — to
 choose the most informative failure first — one whose fix is likely
 to resolve or explain others.

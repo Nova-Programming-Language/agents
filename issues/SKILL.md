@@ -73,7 +73,7 @@ session:
 
 When a regression check produces unexpected failures:
 
-- Run `scripts/full-regression.sh failed --json` to get structured
+- Run `scripts/run-nova-full-regression.sh failed --json` to get structured
   failure records
 - Group records by `owner` or `phase` to identify distinct root causes
   — multiple tests may fail from the same cause

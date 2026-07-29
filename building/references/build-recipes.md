@@ -27,6 +27,14 @@ Release CLI:
 cargo build --release -p nova-cli
 ```
 
+Preferred Nova CLI invocation after that build:
+
+```bash
+target/release/nova check ...
+target/release/nova test ...
+target/release/nova build ...
+```
+
 Runtime artifacts used by compiled/runtime-linked paths:
 
 ```bash
@@ -38,11 +46,14 @@ If the next command is `target/release/nova ...`, rebuild the release CLI
 first. If the next command exercises compiled/runtime-linked behavior, refresh
 both runtime surfaces first.
 
+Use `cargo run -p nova-cli -- ...` only when you intentionally want the debug
+CLI, for example while debugging Rust-side CLI behavior.
+
 ## Canonical Full Regression
 
 ```bash
-scripts/full-regression.sh check
-scripts/full-regression.sh baseline
+scripts/run-nova-full-regression.sh check
+scripts/run-nova-full-regression.sh baseline
 ```
 
 That script already rebuilds:
@@ -75,6 +86,8 @@ Use `prepare` before trusting existing container binaries or runtime artifacts.
 ## Quick Heuristics
 
 - CLI-only or interpreter-only change: start with `cargo check`.
+- Routine Nova package or repo validation: prefer `target/release/nova ...`
+  after rebuilding the release CLI.
 - Runtime or compiled-backend change: rebuild release CLI plus runtime
   libraries, or use the canonical full regression script.
 - Release-path bug: do not trust debug-only validation.

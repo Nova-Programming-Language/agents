@@ -7,6 +7,12 @@ artifacts it is about to execute.
 
 Never assume existing Nova build artifacts are fresh after source edits.
 
+Preferred default:
+
+- use `target/release/nova ...` for normal Nova CLI work
+- use `cargo run -p nova-cli -- ...` only when you intentionally want the
+  debug CLI
+
 Before running validation, answer three questions:
 
 1. What command am I about to run?
@@ -18,12 +24,12 @@ Before running validation, answer three questions:
 | Validation surface | Example command | Rust CLI freshness | Runtime library freshness | Required action |
 | --- | --- | --- | --- | --- |
 | Cargo compile-only | `cargo check -p nova-cli` | handled by Cargo | not relevant | none beyond the command itself |
-| Cargo debug execution | `cargo run -p nova-cli -- test tests/unit/ --skip-compiled` | handled by Cargo for the debug CLI | not guaranteed | no manual CLI rebuild; rebuild runtimes only if the path exercises compiled/runtime-linked behavior |
+| Cargo debug execution | `cargo run -p nova-cli -- test tests/unit/ --backend interpreter` | handled by Cargo for the debug CLI | not guaranteed | debug-only path; prefer release CLI unless you are intentionally validating the debug binary |
 | Cargo crate tests | `cargo test -p nova-cli <filter>` | handled by Cargo for debug test binaries | not guaranteed | no manual CLI rebuild; rebuild runtimes only if the test depends on them |
 | Release CLI execution | `target/release/nova test ...` | not handled automatically | not guaranteed | run `cargo build --release -p nova-cli` first |
-| Compiled/runtime-linked validation | `cargo run -p nova-cli -- test tests/unit/ --compiled` | handled by Cargo for the debug CLI | not handled automatically | rebuild `nova-async-rt` and `runtime` before trusting the result |
-| Release compiled validation | `target/release/nova test --compiled ...` | not handled automatically | not handled automatically | rebuild release CLI plus both runtime libraries first |
-| Canonical full regression | `scripts/full-regression.sh check` | handled by the script | handled by the script | no extra manual rebuild needed |
+| Compiled/runtime-linked validation | `cargo run -p nova-cli -- test tests/unit/ --backend c` | handled by Cargo for the debug CLI | not handled automatically | debug-only path; prefer release CLI unless you are intentionally validating the debug binary; rebuild `nova-async-rt` and `runtime` before trusting the result |
+| Release compiled validation | `target/release/nova test --backend c ...` | not handled automatically | not handled automatically | rebuild release CLI plus both runtime libraries first |
+| Canonical full regression | `scripts/run-nova-full-regression.sh check` | handled by the script | handled by the script | no extra manual rebuild needed |
 | x86 container validation | `scripts/nova-x86-container.sh regression check` | depends on container state | depends on container state | run `scripts/nova-x86-container.sh prepare` before trusting stale container artifacts |
 
 ## Required Refresh Commands
@@ -49,8 +55,12 @@ scripts/nova-x86-container.sh prepare
 
 ## Practical Rules
 
+- For normal repo or package work, invoke Nova through `target/release/nova`
+  after rebuilding it as needed.
 - `cargo run -p nova-cli -- ...` keeps the Rust CLI fresh for that command, but it does not guarantee that `nova-async-rt` or `runtime/libnova_runtime.a` are fresh.
+- `cargo run -p nova-cli -- ...` also recreates large debug artifacts, so do
+  not use it as the routine CLI path.
 - `target/release/nova ...` is always suspicious after source edits unless you just rebuilt it.
 - If compiled backend behavior, runtime ABI, or native linkage is in scope, refresh both runtime artifact surfaces before trusting the result.
-- If you want the safest full-suite path, use `scripts/full-regression.sh` instead of hand-assembling release and runtime rebuilds.
+- If you want the safest full-suite path, use `scripts/run-nova-full-regression.sh` instead of hand-assembling release and runtime rebuilds.
 - When reporting validation, state what was rebuilt or why the command itself guaranteed freshness.

@@ -99,7 +99,7 @@ Use repo judgment:
 For full-suite regression, prefer:
 
 ```bash
-scripts/full-regression.sh check
+scripts/run-nova-full-regression.sh check
 ```
 
 ## Communication Expectations

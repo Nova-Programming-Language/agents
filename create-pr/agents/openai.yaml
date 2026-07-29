@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create PR"
+  short_description: "Create Nova GitHub PRs correctly"
+  default_prompt: "Create or verify a Nova GitHub pull request with gh, avoid duplicates, and confirm the actual PR URL and state."

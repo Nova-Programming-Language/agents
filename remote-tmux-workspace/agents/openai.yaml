@@ -1,0 +1,4 @@
+interface:
+  display_name: "Remote Tmux Workspace"
+  short_description: "Work over SSH using durable tmux shells"
+  default_prompt: "Use $remote-tmux-workspace to inspect and work in a remote SSH repo with a durable tmux shell."

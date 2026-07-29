@@ -25,6 +25,10 @@ Read `../references/artifact-freshness.md` when the reproducer exercises
 release or runtime-linked artifacts.
 Read `../references/runtime-evidence.md` when you need to decide whether to
 keep reading code or pivot to LLDB or tracing.
+Read `references/memory-error-detection.md` when a compiled Nova binary
+crashes with SIGBUS/SIGSEGV in release paths, the fault is near free/release/
+atomic decrement code, or the crash disappears under LLDB. Covers libgmalloc
+usage and the `MALLOC_STRICT_SIZE`/CoreFoundation ARM64 pitfall.
 
 ## Source-of-Truth Triage
 

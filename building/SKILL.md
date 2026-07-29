@@ -20,12 +20,17 @@ state, release artifacts, or the pinned Linux/x86_64 container workflow.
 ## Non-Negotiable Rules
 
 - Decide which command you are about to run before deciding what to rebuild.
+- Prefer `target/release/nova ...` for normal Nova CLI work. Treat
+  `cargo run -p nova-cli -- ...` as a debug-CLI path, not the default.
 - Never trust `target/release/nova` after source edits unless you just rebuilt
   it.
 - Never trust compiled/runtime-linked validation after source edits unless
   `nova-async-rt` and `runtime` were refreshed or a canonical script did it.
 - Use `scripts/nova-x86-container.sh prepare` before trusting stale container
   artifacts.
+- Builds after code or test changes must be warning-free on the affected
+  surface. Treat new compiler or runtime build warnings as failures unless an
+  explicit blocker is recorded.
 - In validation summaries, state what was rebuilt or why the command itself
   guaranteed freshness.
 
