@@ -18,6 +18,10 @@ Criteria details are in `references/structural-checks.md`.
 2. **Structural** — architecture, abstraction, completeness, integrity
 3. **Forward impact** — does this help or hinder upcoming work?
 
+Never certify a tested subset while original acceptance criteria remain.
+Distinguish `scaffolded`, `implemented-but-not-exposed`, `exposed`, and
+`release-verified`; only the last may be reported as fully complete.
+
 ## Inputs
 
 1. **What was asked** — from BRIEF.md, commit message, or user description

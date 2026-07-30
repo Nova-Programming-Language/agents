@@ -87,9 +87,13 @@ Required skill:
 
 Agent actions:
 
-- break the project into milestones or commit-sized increments
+- break the project into cohesive, independently auditable milestones
 - identify owning components and cross-command impact for each milestone
 - define proof commands and negative validation for each milestone
+- for a broad public contract, create a completion matrix that inventories
+  success/failure behavior, engines/surfaces, lifecycle, and packaging
+- define real independently usable release boundaries before exposing only a
+  subset of a promised API or configuration surface
 - run an AI critique pass on the plan draft before human review
 - record blockers, dependencies, and open questions
 
@@ -103,6 +107,8 @@ Exit criteria:
 
 - the next coding step is unambiguous
 - milestone boundaries are explicit
+- no milestone is a thin slice justified only by time, file count, context
+  size, or a failing test
 - required validation is defined in command-level terms, not just directories
 - affected Nova surfaces and proof commands are explicit
 - the plan has an explicit critique verdict before human feedback
@@ -128,7 +134,11 @@ Agent actions:
 - implement the current milestone
 - follow source-of-truth, runtime-evidence, and semantic-family rules
 - update status as reality changes
-- split work into safe commit-sized increments when useful
+- keep test failures inside the current milestone unless evidence proves an
+  external independent defect
+- do not create `a`/`b`, pilot, cleanup, or follow-up phases without plan
+  approval and a measured independent root cause or independently releasable
+  outcome
 
 Required artifact updates:
 
@@ -137,7 +147,8 @@ Required artifact updates:
 
 Exit criteria:
 
-- milestone code is in place
+- every committed milestone criterion is implemented; scaffolding, hidden
+  branches, or one-engine support is not milestone completion
 - current blockers are explicit
 - next validation target is clear
 

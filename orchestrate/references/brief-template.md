@@ -2,15 +2,15 @@
 
 The briefing agent writes `project-notes/<slug>/BRIEF.md`.
 
-One brief = one focused change. Batching independent items causes shallow
-work. The orchestrate pipeline handles sequencing.
+One brief = one cohesive milestone outcome. Keep co-required branches,
+engines, and lifecycle work together when they form one public contract.
+Do not reduce the approved outcome merely to make a smaller brief.
 
-**Scope validation** — check before writing: if acceptance criteria require
-multiple independent root-cause diagnoses, split into separate milestones.
-One milestone = one diagnosis + fix + verification. Signs of too-broad scope:
-independent symptoms with different root causes, multiple "diagnose X then Y"
-steps, fixing one criterion doesn't inform fixing another, issue spans
-multiple components. Note splits in Open Questions for the orchestrator.
+**Scope validation** — split only when measurements establish independent root
+causes or each result is independently auditable and releasable. Time, file
+count, context size, component count, or one failing test is insufficient.
+Never invent `a`/`b`, pilot, cleanup, or follow-up phases; propose a split to
+the orchestrator and preserve the original acceptance criteria until approved.
 
 ```md
 # Task Brief: [milestone name]
@@ -24,6 +24,10 @@ multiple components. Note splits in Open Questions for the orchestrator.
 [Numbered, verifiable. Exact command, expected output, or observable behavior.]
 
 1. ...
+
+For a broad public contract, reference its completion-matrix rows. Include
+success/failure behavior, all promised engines/surfaces, lifecycle, and
+packaging. A subset cannot satisfy the original criteria.
 
 ## Relevant Files
 
@@ -47,6 +51,8 @@ co-required component updates here.]
 
 - [ ] [command] produces [expected output]
 - [ ] [behavior] is observable via [method]
+- [ ] no production placeholder, unconditional unsupported branch, empty
+  success, ignored error, or promised-but-unreachable path remains
 
 ## Behavioral Inventory (refactoring only)
 

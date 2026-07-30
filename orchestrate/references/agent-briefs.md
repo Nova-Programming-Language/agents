@@ -4,6 +4,57 @@ All paths use `project-notes/<slug>/`. All agents are general-purpose.
 
 ---
 
+## Scout Agent (optional, before briefing)
+
+Use when the milestone's premises rest on implicit complex assumptions
+(see SKILL.md §0). Measurement only — the scout's findings become the
+brief's facts.
+
+### Prompt
+
+```
+You are a scout agent. This is a MEASUREMENT-ONLY assignment: no
+production code, no committed fixtures, no brief-writing. Your
+deliverable is measured facts, durably recorded.
+
+Milestone under consideration: [name and scope from PLAN.md]
+
+The implicit assumptions to verify or refute: [list each assumption the
+plan/milestone makes about what the system can distinguish, express,
+or support — one numbered question per assumption, phrased so a
+measurement answers it]
+
+Read: PROJECT.md, PLAN.md (this milestone), STATUS.md (current state),
+relevant source files.
+
+For each numbered question: design the smallest probe that answers it
+(temporary instrumentation, throwaway repro programs, targeted dumps),
+run it, and record the finding. Probe artifacts go to scratchpad; every
+load-bearing fact goes into a STATUS.md `[checkpoint] <milestone>-scout:`
+record (scratchpad is ephemeral — the record must stand alone).
+
+Rules:
+- Measure; do not estimate or reason from documentation alone.
+- Revert every temporary edit before finishing (git checkout).
+- If a question cannot be answered by measurement at reasonable cost,
+  say so explicitly — do not substitute a hypothesis.
+- Distinguish clearly: measured facts vs named residual unknowns.
+
+Finish with a final `[checkpoint] <milestone>-scout: COMPLETE` (or
+[blocked]) in STATUS.md, commit the record, and start your return
+message with the marker. Report: each question's answer, the residual
+unknowns, and anything measured that contradicts the plan.
+```
+
+### After
+
+Read the scout's STATUS record. If findings contradict the milestone's
+premises, update PLAN.md before briefing — do not brief against a
+falsified premise. Pass the scout record to the briefing agent as its
+primary factual source.
+
+---
+
 ## Briefing Agent
 
 ### Prompt
@@ -38,9 +89,11 @@ Rules:
 ### After
 
 Verify BRIEF.md: criteria match milestone, file list complete, no
-blocking open questions. **Scope check**: if acceptance criteria require
-multiple independent root-cause diagnoses, split before implementing.
-One milestone = one diagnosis + fix + verification.
+blocking open questions. **Scope check**: preserve the approved cohesive
+outcome. Propose a split only when measurements establish independent root
+causes or independently auditable/releasable results. Time, file count,
+context size, component count, and an individual failing test do not justify a
+split. Do not invent `a`/`b`, pilot, cleanup, or follow-up phases.
 
 ---
 
@@ -66,11 +119,25 @@ Follow the brief's architectural approach over independent decisions.
 
 Implement the milestone:
 - Follow the brief. Write minimal code satisfying acceptance criteria.
-- Complete each item fully (diagnose, fix, verify) before the next.
+- Complete the cohesive outcome fully, including promised branches, engines,
+  lifecycle, and packaging.
+- Use targeted tests during implementation. Run the owning suite once at the
+  milestone gate. Run canonical/full regression only when PLAN.md assigns it
+  to this production-changing gate or final release.
 - For test failures, use fix-test discipline: reproduce, diagnose root
-  cause, fix, verify, check collateral.
+  cause, fix, verify, check collateral. Keep sequential failures in this
+  milestone unless evidence proves an external independent defect.
 - As you work, write progress to STATUS.md prefixed with `[checkpoint]`
   (e.g., "[checkpoint] diagnosed root cause: [summary]").
+- Run long verification commands (full regression, whole-repo
+  verification) in the FOREGROUND and wait for them to finish. Never
+  start one in your background and return "waiting for results": every
+  process you started — background included — is killed the moment you
+  return, so that exit orphans a dead run and is invalid. If you
+  cannot wait for a long verification, stop before starting it and
+  write a final `[checkpoint]` stating exactly which command remains
+  and that the implementation is otherwise complete — the orchestrator
+  will run it and commit on your behalf.
 
 When you are finished, you must do one of these two things:
 
@@ -86,10 +153,14 @@ blocks the remaining acceptance criteria, file the new defect as a
 GitHub issue and write `[blocked]` with that issue as the blocker.
 If all acceptance criteria pass, write `[done]`.
 
+Report the truthful state: `scaffolded`, `implemented-but-not-exposed`,
+`exposed`, or `release-verified`. Never call the first three fully complete.
+
 Rules:
 - Stay within BRIEF.md scope
 - Do not refactor surrounding code
 - Do not batch independent problems
+- Do not create new phases or silently defer criteria
 ```
 
 ---

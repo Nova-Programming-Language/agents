@@ -80,6 +80,13 @@ fine. The concern is mixed responsibilities, not line count alone.
 Compare the diff against every BRIEF.md criterion, approach step, and
 done-when condition. Flag anything missing or silently descoped.
 
+For broad public contracts, inspect the completion matrix or build an
+equivalent inventory covering success/failure behavior, engines/surfaces,
+lifecycle, and packaging. A subset cannot pass the original criteria.
+
+Classify the result as `scaffolded`, `implemented-but-not-exposed`, `exposed`,
+or `release-verified`. Do not certify the first three as fully complete.
+
 - If listed files were skipped, does the implementation actually work
   without them?
 - If the milestone is architectural, verify the goal is achieved, not
@@ -92,10 +99,17 @@ or explicit user descoping. "Deferred to next milestone" is not valid.
 Architectural shortcuts (fallback to legacy, hardcoded values, wrapping
 instead of migrating) are findings, not passes.
 
-**Verification breadth**: was the owning component's test suite run
-broadly, or only the single target test? Flag narrow verification.
-Shared-code changes should also run consuming components' tests.
-A full regression satisfies this check.
+Search for `pass`, TODO/unimplemented markers, placeholder panics,
+unconditional unsupported results, empty-success responses, ignored errors,
+and test-only dispatch in production paths. Then inspect control flow
+semantically: renamed or indirect placeholders evade text searches. A
+placeholder is acceptable only when explicitly outside the committed public
+contract and unreachable from it.
+
+**Verification breadth**: targeted tests are appropriate during implementation;
+the owning component's suite belongs at the milestone gate. Require
+canonical/full regression only at defined production-changing gates and final
+release. Do not demand repeated full runs after files or checkpoints.
 
 ## Integrity
 

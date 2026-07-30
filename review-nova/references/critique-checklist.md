@@ -34,8 +34,19 @@ projects. Read `../../design/references/document-quality.md` for standards.
 
 ## Implementation Plans
 - Milestones sized and sequenced correctly
+- Cohesive milestones; no `a`/`b`, pilot, cleanup, or follow-up slicing without
+  independently releasable value or measured independent root causes
+- Time, file count, context size, component count, and a failing test are not
+  split criteria
 - Cross-command impact, affected surfaces, authoritative links
+- Completion matrix for broad public contracts: success/failure,
+  engines/surfaces, lifecycle, packaging, and truthful state
+- Public APIs/configuration are exposed only at a complete independently usable
+  release boundary
 - Proof as exact commands (not test directories)
+- Targeted tests during implementation, owning suite at milestone gate, and
+  canonical/full regression only at defined production-changing gates/final
+  release
 - Negative validation, loud-failure validation
 - Interpreter/compiled parity, build prerequisites
 - Blocker handling, next-step granularity

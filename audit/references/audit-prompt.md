@@ -27,6 +27,8 @@ Steps:
 1. Run `git diff [base-commit]..HEAD` to see all changes
 2. FUNCTIONAL: For each acceptance criterion, run validation commands
    and determine pass/fail/cannot_verify with exact evidence
+   For broad contracts, verify every completion-matrix cell; do not pass a
+   subset while the original criteria remain.
 3. STRUCTURAL: Evaluate per structural-checks.md — architecture
    (component ownership, change pattern completeness, invariant
    preservation), abstraction, completeness, integrity, refactoring
@@ -42,6 +44,8 @@ Read coding/SKILL.md and regressions/SKILL.md for project conventions.
 Rules:
 - Evaluate independently — do not assume correctness
 - Every criterion gets pass/fail with evidence (file:line, commands)
+- Classify the truthful state and reserve "fully complete" for
+  `release-verified`
 - Report structural issues even if functional criteria pass
 - When evaluating architecture, check the architecture document's Common
   Change Patterns section to verify the implementation updated every

@@ -25,6 +25,18 @@ Use `N/A` with a reason when a link does not apply.
 - AC1:
 - AC2:
 
+## Completion Semantics
+
+- `scaffolded`: declarations or structure exist; behavior is incomplete
+- `implemented-but-not-exposed`: all committed branches work internally but
+  are not public
+- `exposed`: the independently usable public boundary and all promised
+  branches are implemented and tested
+- `release-verified`: all acceptance criteria, completion-matrix cells, package
+  checks, and final regression gates pass
+
+Only `release-verified` may be reported as fully complete.
+
 ## Nova Delivery Context
 
 ### Affected Nova Surfaces

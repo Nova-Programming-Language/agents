@@ -86,6 +86,13 @@ name a concrete software task.
 - PLAN.md is the source of truth for milestone sequencing.
 - STATUS.md is tactical and short.
 - LOG.md is append-only.
+- Default to cohesive, independently auditable milestones. Do not split work
+  because of elapsed time, file count, context size, or one newly failing test.
+  A split requires independently releasable value or measured independent root
+  causes. Do not invent `a`/`b`, pilot, cleanup, or follow-up phases without
+  explicit plan approval.
+- Broad public contracts require a completion matrix covering success and
+  failure behavior, engines/surfaces, lifecycle, and packaging.
 - Architecture drafts and plans must pass AI critique before human review.
 - Validation must prove acceptance criteria with exact commands.
 - If artifacts drift from reality, update them before continuing.

@@ -106,7 +106,7 @@ interpreter and C backend:
 target/release/nova test tests/unit/path_or_file.nova --backend c
 ```
 
-Do not trust compiled differential results after source edits unless the
+Do not trust compiled results after source edits unless the
 runtime-linked artifacts were refreshed first. Use
 `../references/artifact-freshness.md` to decide whether `nova-async-rt` and
 `runtime` need a rebuild before trusting `--backend c` output.

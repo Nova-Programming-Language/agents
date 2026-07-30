@@ -36,7 +36,9 @@ references and commands used.]
 [Line-by-line comparison of BRIEF.md against the diff. Every item in
 the brief must be accounted for.]
 
+- Truthful state: [scaffolded | implemented-but-not-exposed | exposed | release-verified]
 - Acceptance criteria: [all addressed | missing — list which]
+- Completion matrix: [all applicable cells proven | missing — list which | N/A]
 - Implementation approach steps: [all done | missing — list which]
 - Done-when conditions: [all met | missing — list which]
 - Files listed in brief: [all touched | skipped — list which]
@@ -46,6 +48,8 @@ the brief must be accounted for.]
 - Deferred items: [none | list — for each, state whether deferral is
   backed by a verifiable blocker or is a judgment call. Judgment-call
   deferrals are not accepted.]
+- Placeholder audit: [clean | issues — include semantic branch inspection,
+  not grep alone]
 
 ### Structural Assessment
 

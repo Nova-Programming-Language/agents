@@ -45,6 +45,16 @@ Flag missing Common Change Patterns coverage as a documentation gap.
 ## Implementation Rules
 
 - Implement the spec and architecture, not just the test expectation.
+- Report state truthfully: `scaffolded`, `implemented-but-not-exposed`,
+  `exposed`, or `release-verified`. Never call a partial state complete.
+- Do not expose a public API or configuration variant until all behavior
+  promised at that release boundary is implemented and tested across required
+  engines/surfaces, unless the approved plan defines a real independently
+  usable release boundary.
+- No production placeholders: `pass`, TODO/unimplemented markers, placeholder
+  panics, unconditional unsupported results, empty-success responses, ignored
+  errors, or test-only dispatch for committed contract paths. Search for them,
+  then semantically inspect every branch; grep alone cannot prove completeness.
 - For package changes, complete `../references/package-onboarding.md` before
   editing source, interfaces, manifests, generated docs, examples, or tests.
 - No fallbacks, heuristics, or silent degradation to hide missing data.
@@ -133,9 +143,10 @@ For shared behavior, audit: `nova run`, `nova check`, `nova repl`,
 Before validation: name the command, identify which artifacts it executes,
 rebuild if needed, state what was rebuilt.
 
-- Smallest command that proves the change.
-- Then the owning component's test suite broadly.
-- Then broader commands if the feature crosses subsystems.
+- Use targeted tests repeatedly while implementing.
+- Run the owning component's suite once at the milestone gate.
+- Run broader/canonical regression only at approved production-changing
+  milestone gates and final release, not after each file or checkpoint.
 - Use `scripts/run-nova-full-regression.sh check` for full-suite regression.
 - Use `cargo check -p <crate>` / `cargo test -p <crate>` for crate-local.
 - Prefer a warning-deny check such as `RUSTFLAGS="-D warnings" cargo test
@@ -151,7 +162,9 @@ do not reintroduce deprecated fallbacks, record blockers explicitly.
 ## Depth-First Work
 
 Complete each fix fully (diagnose, fix, verify) before starting the next.
-No batching. If 3+ independent items, use `fix-test` for sequencing.
+Keep sequential failures within the current milestone unless evidence proves
+independent root causes. Do not invent subphases because of time, file count,
+context size, or a failing test.
 
 ## When Invoked by Orchestrate
 
