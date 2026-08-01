@@ -1,6 +1,6 @@
 ---
 name: debug-nova
-description: Debug Nova frontend, interpreter, REPL, or test failures with repo-specific LLDB entrypoints and breakpoint maps; use for deterministic crashes, wrong values, or control-flow bugs.
+description: Debug Nova frontend, interpreter, REPL, compiled C-backend native binaries, or test failures with repo-specific LLDB entrypoints and breakpoint maps; use for deterministic crashes, wrong values, source-line stepping, or control-flow bugs.
 ---
 
 # Debug Nova
@@ -15,6 +15,7 @@ This is the default skill for:
 - deterministic runtime failures
 - wrong values at a known program point
 - REPL regressions
+- compiled C-backend behavior that needs source-line stepping or breakpoints
 - metadata-install or dispatch bugs
 - targeted crash or panic triage
 
@@ -50,6 +51,8 @@ that required source-of-truth data was missing.
 3. Choose the debug surface:
    - frontend compile/validation for lowered-module production bugs
    - interpreter/runtime for post-compile wrong behavior
+   - compiled C-backend native binary when source-line stepping or external
+     debugger breakpoints are the fastest evidence path
 4. Stop broad code reading once the next useful fact is a live value or branch
    decision.
 5. Use `references/lldb-recipes.md` for launch commands.
@@ -64,6 +67,9 @@ that required source-of-truth data was missing.
 - Prefer LLDB when one breakpoint can answer the question.
 - Prefer narrow tracing only when the bug spans many iterations, async
   boundaries, or timing-sensitive flow.
+- For compiled Nova binaries, use `nova build --backend c --debug-symbols`
+  and debug the produced executable. Treat this as line-table/source-location
+  support for external debuggers, not as a full Nova variable debug-info model.
 - When the failure is metadata-related, inspect the active unit, span, node ID,
   call-site entry, and symbol lookup result together.
 - If structured data is supposed to answer the question, inspect that data

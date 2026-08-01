@@ -1,4 +1,4 @@
 interface:
   display_name: "Debug Nova"
-  short_description: "Debug Nova failures with LLDB and repo breakpoints"
-  default_prompt: "Use $debug-nova to debug this Nova failure with repo-specific workflows."
+  short_description: "Debug Nova failures and compiled binaries with LLDB"
+  default_prompt: "Use $debug-nova to debug this Nova failure or compiled native binary with repo-specific LLDB workflows."

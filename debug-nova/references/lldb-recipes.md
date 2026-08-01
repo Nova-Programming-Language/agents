@@ -36,6 +36,39 @@ Targeted Nova test:
 lldb -- target/debug/nova test tests/unit/path_or_file.nova --backend interpreter
 ```
 
+Compiled C-backend program with Nova source-line breakpoints:
+
+```bash
+cargo run -p nova-cli -- build path/to/program.nova --backend c --debug-symbols -o /tmp/nova-debug-probe -v
+lldb -- /tmp/nova-debug-probe
+```
+
+Inside LLDB:
+
+```text
+breakpoint set --file program.nova --line 12
+run
+frame info
+frame variable
+thread step-over
+thread step-in
+thread step-out
+```
+
+Notes:
+
+- Prefer `nova build` over `nova run` for debugger sessions because `build`
+  leaves a stable executable to pass to LLDB.
+- `--debug-symbols` is C-backend-only. It emits debuggable C object flags and
+  source `#line` directives; on macOS it also emits a `.dSYM` bundle.
+- Treat this as line-number/source-location debugger support, not full Nova
+  variable debug info. Source-backed params and locals may be visible as C
+  locals, while backend temporaries and module globals use generated C symbols.
+- `thread step-in` can stop once in a generated prologue pseudo-file before
+  reaching the first Nova statement; one `thread step-over` usually reaches the
+  Nova source line. Source breakpoints and function step-over should stay on
+  Nova lines.
+
 Rust REPL tests:
 
 ```bash
