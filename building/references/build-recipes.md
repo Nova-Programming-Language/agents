@@ -16,8 +16,8 @@ cargo build -p nova-cli
 cargo test -p nova-cli
 ```
 
-These keep debug Rust artifacts fresh. They do not refresh `target/release/nova`
-or the runtime libraries used by compiled/runtime-linked paths.
+These keep debug Rust artifacts fresh. They do not refresh the release CLI or
+the runtime libraries used by compiled/runtime-linked paths.
 
 ## Release Surfaces
 
@@ -30,9 +30,9 @@ cargo build --release -p nova-cli
 Preferred Nova CLI invocation after that build:
 
 ```bash
-target/release/nova check ...
-target/release/nova test ...
-target/release/nova build ...
+cargo run --release -q -p nova-cli -- check ...
+cargo run --release -q -p nova-cli -- test ...
+cargo run --release -q -p nova-cli -- build ...
 ```
 
 Runtime artifacts used by compiled/runtime-linked paths:
@@ -42,12 +42,14 @@ cargo build --release -p nova-async-rt
 make -C runtime
 ```
 
-If the next command is `target/release/nova ...`, rebuild the release CLI
-first. If the next command exercises compiled/runtime-linked behavior, refresh
-both runtime surfaces first.
+Invoking the CLI through Cargo builds it as part of the command, so the
+release CLI cannot be stale for that invocation. If the command exercises
+compiled/runtime-linked behavior, refresh both runtime surfaces first --
+Cargo does not do that for you.
 
-Use `cargo run -p nova-cli -- ...` only when you intentionally want the debug
-CLI, for example while debugging Rust-side CLI behavior.
+Use the debug CLI, `cargo run -q -p nova-cli -- ...`, only when you
+intentionally want it, for example while debugging Rust-side CLI behavior. It
+builds a separate set of large debug artifacts.
 
 ## Canonical Full Regression
 
@@ -58,8 +60,8 @@ scripts/run-nova-full-regression.sh baseline
 
 That script already rebuilds:
 
-- `target/release/nova`
-- `target/release/libnova_async_rt.*`
+- the release `nova` CLI
+- the release `libnova_async_rt.*`
 - `runtime/libnova_runtime.a`
 
 ## x86 Container
@@ -86,8 +88,9 @@ Use `prepare` before trusting existing container binaries or runtime artifacts.
 ## Quick Heuristics
 
 - CLI-only or interpreter-only change: start with `cargo check`.
-- Routine Nova package or repo validation: prefer `target/release/nova ...`
-  after rebuilding the release CLI.
+- Routine Nova package or repo validation: prefer
+  `cargo run --release -q -p nova-cli -- ...`, which builds the release CLI as
+  part of the command.
 - Runtime or compiled-backend change: rebuild release CLI plus runtime
   libraries, or use the canonical full regression script.
 - Release-path bug: do not trust debug-only validation.

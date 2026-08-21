@@ -34,8 +34,8 @@ Use the narrowest reproducer first:
 ```bash
 cargo test -p nova-interpreter lowered_module_contract -- --nocapture
 cargo build --release -p nova-cli
-target/release/nova check path/to/file.nova
-target/release/nova run path/to/file.nova
+cargo run --release -q -p nova-cli -- check path/to/file.nova
+cargo run --release -q -p nova-cli -- run path/to/file.nova
 ```
 
 Cross-command audit after a metadata fix:

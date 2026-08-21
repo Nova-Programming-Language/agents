@@ -97,6 +97,25 @@ Default agent loop:
 3. pivot to targeted reruns
 4. promote only with `baseline set <run-id>` when intended
 
+## Comparison Verdict Versus Absolute Result
+
+These answer different questions, and only one of them is what a reader assumes
+"the regression passed" means:
+
+- **Comparison**: `new_failures`, `fixed_failures`, `unchanged_failures` in
+  `last-run-vs-baseline.json`, the `clean versus baseline` line, and the exit
+  status. All are relative to the recorded baseline.
+- **Absolute**: the per-suite and total pass/fail counts in the run manifest.
+
+A run with four long-standing failures that are already recorded in the
+baseline reports `new_failures: 0`, prints `clean versus baseline`, and exits
+zero. It is a correct result and it is not a clean suite. Promoting a baseline
+with failures in it converts those failures into the expected state, so they
+vanish from every later verdict while still failing.
+
+State the absolute failure count whenever you report a regression result, and
+identify the known-failing cases by name so they stay visible.
+
 ## Full Regression Artifacts
 
 Stable aliases under `tests/.nova/full-regression/`:

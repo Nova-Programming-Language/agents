@@ -64,3 +64,14 @@ Validation should identify:
 - paired tests for related constructs when needed
 
 “Tests under this directory should pass” is not enough by itself.
+
+When reporting a result, say what actually happened rather than what the tool
+concluded:
+
+- how many tests ran (`tests run:` — a run that selected nothing exits zero and
+  reports `tests run:       0`)
+- how many failed in total, not only how many are new
+- for a comparison-based suite, both numbers: "no new regressions" describes a
+  delta against a baseline and is compatible with a non-zero failure count
+
+A suite that reports no new regressions has not reported a passing suite.

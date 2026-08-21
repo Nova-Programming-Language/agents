@@ -22,10 +22,18 @@ state, release artifacts, or the pinned Linux/x86_64 container workflow.
 ## Non-Negotiable Rules
 
 - Decide which command you are about to run before deciding what to rebuild.
-- Prefer `target/release/nova ...` for normal Nova CLI work. Treat
-  `cargo run -p nova-cli -- ...` as a debug-CLI path, not the default.
-- Never trust `target/release/nova` after source edits unless you just rebuilt
-  it.
+- Invoke the Nova CLI by build profile, not by path:
+  `cargo run --release -q -p nova-cli -- ...` for normal work, and
+  `cargo run -q -p nova-cli -- ...` only when you deliberately want the debug
+  CLI. Cargo resolves the target directory itself, so this keeps working when
+  build artifacts are redirected elsewhere; a hardcoded `target/release/nova`
+  does not.
+- Running through Cargo makes the CLI current for that invocation, so it cannot
+  be stale after a source edit. It does not refresh `nova-async-rt` or
+  `runtime/libnova_runtime.a`.
+- If you do invoke a built binary by path, resolve it rather than assuming
+  `target/`: `cargo metadata --format-version 1 --no-deps` reports
+  `target_directory`, and the repository scripts honor `NOVA_BIN`.
 - Never trust compiled/runtime-linked validation after source edits unless
   `nova-async-rt` and `runtime` were refreshed or a canonical script did it.
 - Use `scripts/nova-x86-container.sh prepare` before trusting stale container

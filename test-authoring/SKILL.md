@@ -84,26 +84,26 @@ special regression bucket. Use explicit annotations instead.
 Run the narrowest command that proves the new test:
 
 ```bash
-target/release/nova test tests/unit/path_or_file.nova --backend interpreter
-target/release/nova test tests/compile_errors/path_or_file.nova
-target/release/nova test tests/build/path_or_file.nova
+cargo run --release -q -p nova-cli -- test tests/unit/path_or_file.nova --backend interpreter
+cargo run --release -q -p nova-cli -- test tests/compile_errors/path_or_file.nova
+cargo run --release -q -p nova-cli -- test tests/build/path_or_file.nova
 ```
 
 For normal targeted or directory `nova test` runs, rely on the default
 exact-scope report and artifact recording unless you need an explicit export or
 override.
 
-Build the release CLI first if it may be stale:
-
-```bash
-cargo build --release -p nova-cli
-```
+A passing run is not proof that anything ran. Check the `tests run:` line in
+the summary and confirm it is non-zero and roughly the count you expected. A
+target that exists but selects nothing -- an empty directory, or a `--filter`
+that matches no case -- exits zero and prints `tests run:       0`. A target
+named on the command line that does not exist is an error and exits non-zero.
 
 Use compiled differential validation when the change can diverge between the
 interpreter and C backend:
 
 ```bash
-target/release/nova test tests/unit/path_or_file.nova --backend c
+cargo run --release -q -p nova-cli -- test tests/unit/path_or_file.nova --backend c
 ```
 
 Do not trust compiled results after source edits unless the

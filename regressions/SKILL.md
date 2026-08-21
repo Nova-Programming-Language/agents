@@ -39,6 +39,17 @@ targeted tests, crate-local tests, or the canonical full regression workflow.
   report and artifact recording unless you need an explicit export or override.
 - `scripts/run-nova-full-regression.sh` is the canonical full-suite state and failure
   tracker.
+- Never report a comparison verdict as an absolute one. "Clean versus
+  baseline", `new_failures: 0`, and an exit code of zero all mean *nothing got
+  worse*. None of them mean *nothing is failing*: a run can print
+  `Full regression complete: clean versus baseline.`, exit zero, and still have
+  a non-zero `unchanged_failures` count and a non-zero absolute failure total.
+  The script's exit status tracks new failures against the recorded baseline,
+  not the absolute count.
+- Report both numbers, always: how many cases failed in total, and how many of
+  those are new. Name the known-failing set rather than letting it disappear
+  into "clean". A promoted baseline records existing failures as expected, so
+  after a promotion they stop being visible in the verdict entirely.
 - When fixing a heuristic or fallback bug, add a regression that proves the
   authoritative path is used.
 - When required data should exist, add a missing-data regression that fails
@@ -99,7 +110,9 @@ Use the structured JSON records for all downstream work:
   regressions from pre-existing failures
 
 For scoped `nova test` runs, use the printed `Scope` and `Recorded` blocks to
-confirm exact scope and stored paths. `--failed --from-last` is exact-scope
+confirm exact scope and stored paths, and the `tests run:` line to confirm the
+run was not empty: a scope that selects nothing exits zero and reports
+`tests run:       0`, which reads as success at a glance. `--failed --from-last` is exact-scope
 snapshot replay only, and `nova test tests/` / `examples/` is still not
 canonical full regression.
 
