@@ -54,6 +54,8 @@ the brief must be accounted for.]
 ### Structural Assessment
 
 - Architecture: [clean | issues — describe]
+- Fix placement (when the diff repairs a failure): [clean | issues — name the
+  component that owns the violated contract and the one the fix landed in]
 - Abstraction: [clean | issues — describe what should be unified or split]
 - Semantic families: [unified | divergence — describe]
 - Patterns: [consistent | breaks — describe]
@@ -74,6 +76,8 @@ findings that need action.]
 
 - [Milestone or action]:
   - [what needs to happen to resolve finding N]
+  - [owning component, when the finding belongs to a layer other than the one
+    audited — a remediation that repairs it here instead is not a remediation]
 ```
 
 ## Notes
@@ -83,6 +87,9 @@ findings that need action.]
 - Commands used should be exact and re-runnable so findings can be
   verified independently.
 - The remediation mapping connects findings to actionable next steps.
+- A finding owned by another component or an earlier milestone still gets
+  recorded here, with its owner named. Exposure is not authorship, and the
+  milestone that surfaced a defect does not inherit the fix site.
   If the orchestrator needs to spawn a fix agent, this section tells
   it what to include in the brief.
 - Prior audit sections in the same file provide history. The agent may

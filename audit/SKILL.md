@@ -18,6 +18,12 @@ Criteria details are in `references/structural-checks.md`.
 2. **Structural** — architecture, abstraction, completeness, integrity
 3. **Forward impact** — does this help or hinder upcoming work?
 
+When the diff fixes a failure, the structural dimension includes **fix
+placement**: a fix is clean only when it sits in the component whose contract
+was violated. A patch that compensates downstream for an upstream defect fails
+this dimension even when every test passes — it leaves the original defect in
+place and adds a second one. See `../references/failure-attribution.md`.
+
 Never certify a tested subset while original acceptance criteria remain.
 Distinguish `scaffolded`, `implemented-but-not-exposed`, `exposed`, and
 `release-verified`; only the last may be reported as fully complete.
@@ -37,6 +43,8 @@ The audit agent reports findings. It does not fix code.
 
 ## References
 
+- `../references/failure-attribution.md` — component ownership versus
+  milestone ownership; what a wrong-layer fix looks like
 - `references/audit-prompt.md` — agent prompt template
 - `references/audit-template.md` — output format
 - `references/structural-checks.md` — all evaluation criteria

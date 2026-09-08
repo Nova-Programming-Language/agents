@@ -81,6 +81,20 @@ this milestone touches with health assessment.]
 
 [Default is inline code — only abstract when multiple call sites exist.]
 
+## Attribution Context
+
+[Which components this milestone sits between, and which suite proves each.
+A worker that knows the layer below it is green at a named commit can localize
+its own failures instead of guessing. Fill this from the failure-attribution
+reference.]
+
+- Layer below: [component] — proven green by [command] at [commit]
+- Layer above / consumers: [component] — proven by [command]
+- Boundary fixtures this milestone owns: [producer-side test],
+  [consumer-side test]
+- Out-of-scope components: [list] — defects here are filed and reported as
+  blockers, never worked around in this milestone's code
+
 ## Declared Regressions
 
 [Must be declared BEFORE implementation. Each names a resolving milestone.]

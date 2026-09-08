@@ -26,6 +26,10 @@ Read `../references/artifact-freshness.md` when the reproducer exercises
 release or runtime-linked artifacts.
 Read `../references/runtime-evidence.md` when you need to decide whether to
 keep reading code or pivot to LLDB or tracing.
+Read `../references/failure-attribution.md` before applying any fix, whenever
+the defect surfaced in a different component from the one that produced the
+bad value, or when the session runs inside a milestone whose ownership of the
+failure is not yet established.
 Read `references/memory-error-detection.md` when a compiled Nova binary
 crashes with SIGBUS/SIGSEGV in release paths, the fault is near free/release/
 atomic decrement code, or the crash disappears under LLDB. Covers libgmalloc
@@ -42,6 +46,37 @@ Before changing code, answer these in the debug session:
 
 Do not conclude a debug session with “use a heuristic” when the real finding is
 that required source-of-truth data was missing.
+
+## Attribution Before Fix
+
+A debugger answers *where the wrong value became observable*. That is not the
+same as *which component owns the defect*, and the gap between them is where
+abstraction violations get introduced — the breakpoint that finally showed the
+bad value is the most tempting place to correct it, and usually the wrong one.
+
+Before editing, answer:
+
+1. Which component's contract does this violate, and where is that contract
+   written?
+2. Is the frame where it surfaced the frame that produced it? Walk back to the
+   producer rather than fixing at the observation point.
+3. If the owning component is out of scope for this session or milestone, what
+   is the blocker, and what is the issue to file?
+
+The rules that follow — including the milestone-versus-component split and the
+forbidden compensating fixes — are in `../references/failure-attribution.md`.
+
+Two failure modes are specific to debugging:
+
+- **Fixing at the breakpoint.** Adding a guard, a clamp, or a re-derivation in
+  the consumer because that is where the debugger stopped. The producer keeps
+  emitting the bad value and every other consumer keeps receiving it.
+- **Fixing at the wrong repository.** A defect in the toolchain repaired by
+  shaping package code around it, or the reverse. Fix it at the source; if the
+  source is not in scope, report the blocker.
+
+A defect that a new caller exposes belongs to the component whose contract it
+violates, not to the caller that reached it first. Exposure is not authorship.
 
 ## Workflow
 
@@ -76,11 +111,17 @@ that required source-of-truth data was missing.
   before inspecting derived names or side tables.
 - Treat missing required data as a producer/install bug first, not as a signal
   to patch in fallback inference.
+- Fix at the owning component, not at the frame where the value was observed.
+  When the two differ, say so explicitly in the report — the distinction is
+  what tells the next reader whether the defect is closed or merely masked.
+- Land the regression test in the owning component. A test that only pins the
+  symptom at the surfacing site leaves the contract unproven.
 
 ## Open These References As Needed
 
 - `../references/source-of-truth.md`
 - `../references/artifact-freshness.md`
 - `../references/runtime-evidence.md`
+- `../references/failure-attribution.md`
 - `references/lldb-recipes.md`
 - `references/breakpoints.md`

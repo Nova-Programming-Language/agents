@@ -30,10 +30,10 @@ Steps:
    For broad contracts, verify every completion-matrix cell; do not pass a
    subset while the original criteria remain.
 3. STRUCTURAL: Evaluate per structural-checks.md — architecture
-   (component ownership, change pattern completeness, invariant
-   preservation), abstraction, completeness, integrity, refactoring
-   integrity, semantic families, patterns (naming, comments), function
-   size, scope
+   (component ownership, fix placement, change pattern completeness,
+   invariant preservation), abstraction, completeness, integrity,
+   refactoring integrity, semantic families, patterns (naming, comments),
+   function size, scope
 4. FORWARD IMPACT: Does this help or hinder upcoming milestones?
 5. Append a dated section to project-notes/[slug]/AUDIT.md per
    audit/references/audit-template.md
@@ -52,6 +52,11 @@ Rules:
   co-required component
 - When evaluating architecture, check that component invariants are
   preserved and not-responsible-for boundaries are respected
+- If the diff repairs a failure, compare the diagnosis's named root cause
+  against where the diff lands. A fix that compensates downstream for an
+  upstream defect is a structural finding even when every test passes, and a
+  diff touching a component the diagnosis never named is the tell. See
+  references/failure-attribution.md
 - Do not fix code or modify source files
 - Only write to project-notes/[slug]/AUDIT.md
 ```

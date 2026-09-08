@@ -79,6 +79,12 @@ Rules:
 - Acceptance criteria must be verifiable
 - List every file to read or modify with its role
 - Populate Abstraction Context from architecture doc + neighboring code
+- Populate Attribution Context: name the component below this milestone and
+  the command that proves it green at a named commit, the consumers above it,
+  the boundary fixtures this milestone owns on both sides of its seams, and
+  the components that are out of scope. Read references/failure-attribution.md
+  first. A worker given this can localize its own failures; a worker without
+  it attributes by guess and fixes at whatever layer is convenient.
 - If architecture doc has Common Change Patterns, identify the matching
   pattern and list co-required updates in Implementation Approach
 - For refactoring milestones, populate Behavioral Inventory
@@ -127,6 +133,17 @@ Implement the milestone:
 - For test failures, use fix-test discipline: reproduce, diagnose root
   cause, fix, verify, check collateral. Keep sequential failures in this
   milestone unless evidence proves an external independent defect.
+- Attribute every failure before fixing it, per
+  references/failure-attribution.md: which component's contract was
+  violated decides WHERE the fix goes; which milestone owns the work decides
+  who does it now. The fix goes in the owning component. If that component
+  is outside this brief's scope, do not compensate for it here — file the
+  defect and write [blocked] naming it. A patch that works around an
+  upstream defect downstream will be rejected at audit even if every test
+  passes.
+- If a failure crosses a component boundary that has no fixture on both
+  sides, adding that fixture is part of this milestone's work, not
+  follow-up. Attribution by opinion is not an acceptable substitute.
 - As you work, write progress to STATUS.md prefixed with `[checkpoint]`
   (e.g., "[checkpoint] diagnosed root cause: [summary]").
 - Run long verification commands (full regression, whole-repo

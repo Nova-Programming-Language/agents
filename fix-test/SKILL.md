@@ -26,6 +26,11 @@ records — specifically `classification`, `owner`, and `phase` — to
 choose the most informative failure first — one whose fix is likely
 to resolve or explain others.
 
+The record's `owner` is a starting hypothesis, not a verdict. It says where
+the failure surfaced; step 3 establishes which component's contract it
+violates, and those differ often enough that accepting `owner` as the answer
+is how fixes land in the wrong layer.
+
 Record in STATUS.md: which failure you are working on and why.
 
 ### 2. Reproduce
@@ -64,7 +69,13 @@ Trace from symptom to root cause. This step must not be skipped.
 - Identify WHY — logic error, missing case, wrong data, stale
   contract, upstream bug?
 - If root cause is in another component, record as blocker with
-  evidence — do not work around it
+  evidence — do not work around it. The fix site is decided by which
+  contract was violated, never by which file is convenient to change; see
+  `../references/failure-attribution.md` for the four buckets and the
+  forbidden compensating fixes.
+- A defect that this test newly exposed — because it reached a path nothing
+  reached before — belongs to the component whose contract it violates, not
+  to the test or the caller that found it. Exposure is not authorship.
 - If the architecture document has a "Common Change Patterns" section,
   check whether the original change that introduced the bug followed
   the pattern. Often a test failure means one component was updated
@@ -73,7 +84,13 @@ Trace from symptom to root cause. This step must not be skipped.
 The diagnosis must name:
 - The root cause (one sentence)
 - The file and line where the defect lives
+- Which component owns the violated contract, and where that contract is
+  written — this is the fix site
 - Whether this is a local fix or requires upstream changes
+- Which suite or fixture decided the attribution. If the failure crossed a
+  component boundary that has no test on both sides, say so: the missing
+  fixture is why the next failure on that seam will be argued rather than
+  located.
 
 ### 3a. File discovered bugs
 
@@ -122,6 +139,12 @@ component elsewhere is not a fix.
   paths), widen further — run tests for the components that consume
   that shared code.
 - If a regression suite command exists, run it and compare.
+- The regression test lands in the component that owns the defect. A test
+  that only pins the symptom where it surfaced leaves the violated contract
+  unproven and lets the same defect reappear through a different caller.
+- Re-run the exposing path too. It confirms the symptom is gone and that the
+  attribution was right; if the symptom survives a fix at the owning
+  component, the attribution was wrong and step 3 is not finished.
 
 If the fix introduced new failures, diagnose and fix those before
 proceeding — they are part of THIS fix.
@@ -131,8 +154,10 @@ proceeding — they are part of THIS fix.
 Run the `audit` skill against this fix. The audit checks:
 
 - **Functional**: does the target test now pass?
-- **Structural**: is this a root-cause fix or a symptom fix? Does it
-  introduce shortcuts, silent failures, or incomplete error handling?
+- **Structural**: is this a root-cause fix or a symptom fix? Is it at the
+  component that owns the violated contract, or at the one where the failure
+  happened to surface? Does it introduce shortcuts, silent failures, or
+  incomplete error handling?
 - **Completeness**: does the fix match the diagnosed root cause, or
   did it drift into a different approach?
 - **Collateral**: any new failures or out-of-scope changes?
@@ -182,6 +207,16 @@ can be batched."
 - **Audit before commit.** Every fix is audited. No exceptions.
 - **Commit before moving on.** A fix is not done until it is committed.
 - **Root cause required.** "Made the test pass" is not a diagnosis.
+- **A flaky test is a bug.** A nondeterministic failure has a
+  deterministic cause; passing on retry hides it, never disproves it.
+  Reproduce with a stress loop (vary --test-threads, iterate the test
+  binary directly), then diagnose. If the cause is out of scope for the
+  current fix, file an issue with frequency and repro conditions — never
+  rerun-until-green and move on.
+- **Fix at the owning component.** Not at the frame where the value was
+  observed, not in the consumer that received it, and not in the package
+  that happens to be in scope. Compensating downstream for an upstream
+  defect trades one defect for two and hides the first.
 - **No symptom fixes.** Nil checks, clamps, defaults, try/catch that
   hide the problem are not fixes.
 - **No test modification.** The test is usually right and the code
@@ -201,5 +236,8 @@ When used standalone, this skill manages its own sequencing.
 ## References
 
 - `../references/package-onboarding.md` — required before package failure work
+- `../references/failure-attribution.md` — which component owns the defect,
+  which milestone owns the work, and why the fix cannot move to a more
+  convenient layer
 - `references/failure-log-template.md` — format for tracking fixes
 - `audit/SKILL.md` — audit skill used at step 6

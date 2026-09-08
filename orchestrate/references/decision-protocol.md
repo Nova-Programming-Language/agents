@@ -2,6 +2,14 @@
 
 Read the latest AUDIT.md section and route.
 
+Attribute before routing. For any failure, establish which component's
+contract was violated and which milestone owns the work — they are separate
+questions, and the first one decides where a fix may land. The procedure is
+`../../references/failure-attribution.md`. Routing a failure without
+attributing it produces the two most expensive outcomes available here: a fix
+applied at the layer that surfaced the defect rather than the one that owns
+it, and a milestone credited with work it did not do.
+
 ## Pass
 
 All dimensions clean.
@@ -20,6 +28,15 @@ applicable completion-matrix cell is proven.
 Any dimension has issues. Escalate to the user with AUDIT.md findings,
 failed dimension(s), and recommended remediation. Wait for user direction.
 No automatic retries.
+
+The escalation names the attribution: the violated contract, the component
+that owns it, the milestone that owns the work, and which suite or fixture
+decided that. If no fixture covers the boundary the failure crossed, say so —
+the missing fixture is part of the remediation, because without it the next
+failure on that seam is attributed by argument again.
+
+A recommended remediation that repairs a lower layer's defect in the current
+layer is not a remediation. Say plainly that the fix belongs elsewhere.
 
 ## Structural Issues (functional pass)
 
@@ -65,7 +82,10 @@ every file, checkpoint, or documentation-only milestone.
 Classify every change:
 
 - **Unexpected regression** — passing at baseline, now failing, not
-  declared in PLAN.md. Escalate.
+  declared in PLAN.md. Escalate. Attribute it before proposing any fix: the
+  current milestone may have broken it, or may merely have exposed a latent
+  defect in a lower layer by reaching it with an input nothing sent before.
+  Both escalate; they do not share a fix site. Exposure is not authorship.
 - **Declared regression** — all four conditions: named in PLAN.md before
   implementation, named a resolving milestone, milestone still exists,
   recorded in STATUS.md. If any condition fails → unexpected.
@@ -74,6 +94,10 @@ Classify every change:
 No retroactive declarations, vague declarations, open-ended resolution,
 or baseline updates before classification. Ambiguity defaults to
 unexpected — escalate.
+
+Never resolve a classification by weakening the failing test, by compensating
+for the failure in the current milestone's code, or by re-running until it
+passes. Each of those converts a locatable defect into an unlocatable one.
 
 ### 2. Plan coherence
 

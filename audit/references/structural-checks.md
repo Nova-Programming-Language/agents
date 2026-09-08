@@ -23,6 +23,16 @@ Read the relevant `docs/architecture/` document before evaluating.
 - **Invariant preservation**: for each touched component, check the
   stated invariants still hold. Flag weakened invariants (e.g., adding
   fallbacks where the architecture says "fail loudly") even if tests pass.
+- **Fix placement**: when the diff repairs a failure, does it sit in the
+  component whose contract was violated? Read the diagnosis — in the commit
+  message, STATUS.md, or BRIEF.md — and compare the named root cause against
+  where the diff actually lands. A fix in the consumer for a producer's bad
+  output, a guard at the call site for an invariant the callee should
+  enforce, or a package-side workaround for a toolchain defect are all
+  findings, and they are findings *even when the target test passes* —
+  passing is what makes them attractive. The tell is a diff that changes a
+  component the diagnosis never named. See
+  `../../references/failure-attribution.md`.
 
 ## Abstraction
 
@@ -126,6 +136,14 @@ Catches code that appears to work but hides problems.
   of correcting it. "Defensive" checks hiding upstream contract violations.
   Modified test expectations — verify they're correct, not just matching
   wrong output.
+- **Wrong-layer regression tests**: a regression test that pins the symptom
+  where it surfaced rather than the contract where it was violated. It
+  passes, and the same defect returns through the next caller. Flag it with
+  the component the test belongs in.
+- **Silent cross-component repair**: a diff that fixes another component's
+  defect without the diagnosis, issue, or declared-regression record that
+  makes it traceable. The repair may be correct; absorbing it into this
+  milestone unrecorded is the finding.
 - **Shallow fixes**: no identifiable root cause in the diff's causal
   chain. Symptom suppression instead of prevention. Batched unrelated
   changes. Missing root-cause in STATUS.md or commit message.

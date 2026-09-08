@@ -72,7 +72,11 @@ correctness, structural quality, and forward impact, then appends a
 dated section to `project-notes/<slug>/AUDIT.md`.
 
 ### 4. Evaluate (orchestrator)
-Read the latest AUDIT.md section. Route per `references/decision-protocol.md`:
+Read the latest AUDIT.md section. Before routing a failure, attribute it —
+which component's contract was violated, and which milestone owns the work.
+See `../references/failure-attribution.md`; the two are separate questions and
+the answer to the first decides where any fix may land. Route per
+`references/decision-protocol.md`:
 - **Pass** — proceed to commit.
 - **Fail** — escalate to user with the audit findings.
 - **Incomplete** — the worker returned findings instead of a patch.
@@ -111,6 +115,33 @@ in the worker brief. A generic instruction to "follow repository rules" is not
 enough. Require the worker to report which READMEs it read and whether the
 commands matched package-specific prerequisites. Audit already-started work
 against those READMEs before accepting it.
+
+## Attributing Failures
+
+A failure reaching the orchestrator gets attributed before it gets routed, and
+the attribution is read off which suite or fixture failed — not off which file
+a worker found it convenient to change. The full procedure, its four buckets,
+and the fixture requirement that makes them decidable are in
+`../references/failure-attribution.md`.
+
+Two orchestrator-level obligations follow from it:
+
+- **Milestones carry entry and exit gates.** A milestone starts by running the
+  prior milestones' suites and recording the counts in STATUS.md, and closes
+  by passing its own suite with every prior suite still green at a recorded
+  commit. Without those recorded points, "newly exposed" is an assertion
+  instead of a bisect, and nothing after the first red baseline can be
+  attributed at all. A milestone that would start on a red baseline does not
+  start; escalate instead.
+- **The fix site is not negotiable by convenience.** When a worker reports a
+  failure owned by a lower layer or another package, do not accept a patch
+  that compensates for it downstream. That trades one defect for two and
+  hides the first. Route it: the owning component is repaired, or the work is
+  filed and the milestone reports blocked.
+
+An audit that passes because a defect was worked around at the wrong layer has
+not passed. Treat a downstream compensation for an upstream defect as a
+failing structural dimension.
 
 ## Long-Running Verification
 
@@ -219,3 +250,6 @@ the authoritative signal.
 
 - `../references/package-onboarding.md` — mandatory delegated onboarding for
   package-repository work
+- `../references/failure-attribution.md` — which component owns a defect,
+  which milestone owns the work, and why the fix cannot move to a more
+  convenient layer
