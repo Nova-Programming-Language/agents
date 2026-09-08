@@ -85,7 +85,12 @@ name a concrete software task.
 - PROJECT.md is the durable source of project truth.
 - PLAN.md is the source of truth for milestone sequencing.
 - STATUS.md is tactical and short.
-- LOG.md is append-only.
+- LOG.md is append-only. It is the ONLY place history accumulates.
+- STATUS.md is point-in-time state, not a log. Rewrite it; never append a dated
+  section to it. When a milestone closes, move its checkpoints to LOG.md and
+  delete them from STATUS.md. If STATUS.md has grown past roughly 150 lines or
+  carries superseded checkpoints, migrate before doing anything else — a status
+  file nobody rewrites is where stale claims survive.
 - Default to cohesive, independently auditable milestones. Do not split work
   because of elapsed time, file count, context size, or one newly failing test.
   A split requires independently releasable value or measured independent root
