@@ -48,6 +48,11 @@ git pull --rebase origin main
 
 ## Commit Policy
 
+- Never create a commit whose only content is session bookkeeping —
+  STATUS.md checkpoints, project-notes/audit records, gate-result notes.
+  Commits must carry product value external users care about: code,
+  tests, or user-facing documentation. Keep bookkeeping edits in the
+  working tree and fold them into the next product commit.
 - Draft the message from the actual dirty worktree, not from the ticket title.
 - Commit messages describe **what changed in the software and why** — not
   the agent process that produced the change. Do not include: validation

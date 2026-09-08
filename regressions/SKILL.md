@@ -39,6 +39,18 @@ targeted tests, crate-local tests, or the canonical full regression workflow.
   report and artifact recording unless you need an explicit export or override.
 - `scripts/run-nova-full-regression.sh` is the canonical full-suite state and failure
   tracker.
+- A flaky test is a bug. There is no such thing as a transient flake: a
+  nondeterministic failure has a deterministic cause (race, timing assumption,
+  ordering dependency, resource contention) and must be diagnosed and fixed
+  like any other failure. Never rerun-until-green, never label-and-skip, and
+  never treat a retry-pass as satisfying a "proceed only if no failures"
+  gate. If the cause cannot be found this session, file an issue with the
+  reproduction evidence (frequency, seeds, thread counts) — an unfixed flake
+  is an open bug, not noise.
+- Start a full run (or any multi-hour command) detached so background-task
+  kills cannot take it down, and watch it with the Monitor tool — see
+  "Starting a Long Run Detached" in `references/full-regression.md` for the
+  exact pattern and the two observed failure modes it avoids.
 - Never report a comparison verdict as an absolute one. "Clean versus
   baseline", `new_failures: 0`, and an exit code of zero all mean *nothing got
   worse*. None of them mean *nothing is failing*: a run can print

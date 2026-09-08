@@ -97,6 +97,49 @@ Default agent loop:
 3. pivot to targeted reruns
 4. promote only with `baseline set <run-id>` when intended
 
+## Starting a Long Run Detached (survives task kills)
+
+A full run takes ~25–40 minutes (more with the cargo workspace suite chained
+after it). Two failure modes lose the run if it is launched carelessly, both
+observed 2026-08-29:
+
+1. Background Bash calls are killed at the ~10-minute cap **by process
+   group**, so a `nohup`'d job launched inside the same
+   `run_in_background` call as its watcher dies with the watcher (nohup
+   only shields SIGHUP). Never bundle the job and its watcher in one call.
+2. Silent background sleep-loop watchers get reaped as idle even when
+   bounded below the cap.
+
+The pattern that survives:
+
+```bash
+# 1. Launch in a QUICK FOREGROUND Bash call (returns immediately; the
+#    child survives across tool calls on macOS — setsid does not exist there):
+nohup bash -c 'scripts/run-nova-full-regression.sh check \
+  && cargo test --workspace --exclude nova-codegen-llvm; \
+  echo "GATE_EXIT_CODE=$?"' > "$SCRATCHPAD/full-gate.log" 2>&1 < /dev/null &
+disown $!
+echo $! > "$SCRATCHPAD/full-gate-pid"
+```
+
+2. Watch with the **Monitor tool**, not a background sleep loop: a poll
+   loop (sleep 30) that emits shard-count progress
+   (`find <run-dir>/tests-shards -name report.json | wc -l` against the
+   shard total), fires immediately on failure signatures
+   (`test result: FAILED`, `error: test failed`,
+   `new regressions detected`), and exits with a terminal event when the
+   pid dies, printing the log's last `GATE_EXIT_CODE` /
+   `clean versus baseline` lines. Set the Monitor timeout to the full
+   expected duration (up to 60 minutes); re-arm on expiry.
+
+3. The `echo "GATE_EXIT_CODE=$?"` trailer gives the watcher an
+   unambiguous terminal signature; cover failure states in the filter,
+   not just success.
+
+If the session loses the log anyway, the run itself is durable:
+`tests/.nova/full-regression/runs/<run-id>/` plus `list` / `show` recover
+everything, and a per-shard `report.json` count tells you how far it got.
+
 ## Comparison Verdict Versus Absolute Result
 
 These answer different questions, and only one of them is what a reader assumes
