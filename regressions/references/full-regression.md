@@ -146,18 +146,27 @@ These answer different questions, and only one of them is what a reader assumes
 "the regression passed" means:
 
 - **Comparison**: `new_failures`, `fixed_failures`, `unchanged_failures` in
-  `last-run-vs-baseline.json`, the `clean versus baseline` line, and the exit
-  status. All are relative to the recorded baseline.
-- **Absolute**: the per-suite and total pass/fail counts in the run manifest.
+  `last-run-vs-baseline.json`, and the verdict (`regression`, `clean`,
+  `stable_failing`, `no_baseline`). All are relative to the recorded baseline.
+- **Absolute**: the failure `total` in `failures.json`, the per-suite counts in
+  the run manifest, and the process exit status.
 
-A run with four long-standing failures that are already recorded in the
-baseline reports `new_failures: 0`, prints `clean versus baseline`, and exits
-zero. It is a correct result and it is not a clean suite. Promoting a baseline
-with failures in it converts those failures into the expected state, so they
-vanish from every later verdict while still failing.
+`check` exits `0` if and only if zero cases failed, and `1` if any case failed.
+The status follows the absolute total, not the comparison.
+
+Two consequences worth holding onto:
+
+- A run with four long-standing failures already recorded in the baseline
+  reports `new_failures: 0` and a non-regression verdict. That is a correct
+  comparison result, it is not a clean suite, and it exits `1`.
+- A missing baseline does not fail a run. `no_baseline` with zero failures
+  exits `0`; promote a baseline when you want comparisons, not to make a run
+  pass.
 
 State the absolute failure count whenever you report a regression result, and
-identify the known-failing cases by name so they stay visible.
+identify the known-failing cases by name so they stay visible. When the
+question is whether anything got worse, read `summary.new_failures` from the
+comparison artifact rather than the exit status.
 
 ## Full Regression Artifacts
 
