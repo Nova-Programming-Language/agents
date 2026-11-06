@@ -32,8 +32,8 @@ Before running validation, answer three questions:
 | Debug CLI execution | `cargo run -q -p nova-cli -- test tests/unit/ --backend interpreter` | handled by Cargo for the debug CLI | not guaranteed | debug-only; prefer the release CLI unless you are intentionally validating the debug binary |
 | Cargo crate tests | `cargo test -p nova-cli <filter>` | handled by Cargo for debug test binaries | not guaranteed | no manual CLI rebuild; rebuild runtimes only if the test depends on them |
 | Release CLI execution | `cargo run --release -q -p nova-cli -- test ...` | handled by Cargo for the release CLI | not guaranteed | the CLI is built as part of the command; runtime surfaces are not |
-| Compiled/runtime-linked validation | `cargo run -q -p nova-cli -- test tests/unit/ --backend c` | handled by Cargo for the debug CLI | not handled automatically | debug-only; prefer the release CLI; rebuild `nova-async-rt` and `runtime` before trusting the result |
-| Release compiled validation | `cargo run --release -q -p nova-cli -- test --backend c ...` | handled by Cargo for the release CLI | not handled automatically | rebuild both runtime libraries first |
+| Compiled/runtime-linked validation (default mode or `--backend c`) | `cargo run -q -p nova-cli -- test tests/unit/` | handled by Cargo for the debug CLI | not handled automatically | debug-only; prefer the release CLI; rebuild `nova-async-rt` and `runtime` before trusting the result |
+| Release compiled validation (default mode or `--backend c`) | `cargo run --release -q -p nova-cli -- test ...` | handled by Cargo for the release CLI | not handled automatically | rebuild both runtime libraries first |
 | Canonical full regression | `scripts/run-nova-full-regression.sh check` | handled by the script | handled by the script | no extra manual rebuild needed |
 | x86 container validation | `scripts/nova-x86-container.sh regression check` | depends on container state | depends on container state | run `scripts/nova-x86-container.sh prepare` before trusting stale container artifacts |
 

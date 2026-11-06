@@ -174,3 +174,6 @@ it removes, flag it — the refactor is adding complexity, not reducing it.
 - Does the diff contain formatting-only changes to lines that were not
   otherwise modified? Flag as diff churn — it obscures real changes and
   pollutes git blame.
+- Was a formatter applied beyond the files intentionally written or modified
+  for the task? Flag crate-wide or workspace-wide formatting as out-of-scope
+  churn unless it was explicitly required.

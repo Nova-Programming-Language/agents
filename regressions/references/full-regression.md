@@ -35,13 +35,22 @@ cargo run -- test tests/unit/concurrency/ --backend interpreter
 cargo run -- test tests/build/
 ```
 
-Compiled differential validation:
+Compiled differential validation (bare `nova test` runs the interpreter and
+the C backend; a second `--backend c` run is not needed for C coverage):
 
 ```bash
 cargo build --release -p nova-async-rt
 make -C runtime
-cargo run -- test tests/unit/ --backend c
+cargo run -- test tests/unit/
 ```
+
+In the report (`last_run.json`, `--report-json`, `schema_version` 2) each
+differential program case carries `compiled` and `interpreter` (`outcome`,
+`exit_code`) and `divergence` (`kind`, `detail`); the summary prints the
+per-engine breakdown under `build tests` (`divergences` counts engine
+divergences only; `not compared` counts cases whose engines never ran side by
+side, such as build errors and timeouts). Read engine outcomes from those
+fields, never from `message`.
 
 CLI/test-runner failure investigation:
 

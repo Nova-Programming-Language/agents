@@ -77,6 +77,10 @@ Flag missing Common Change Patterns coverage as a documentation gap.
 - Do not commit formatting-only changes. Reformatting lines you didn't
   otherwise modify creates diff churn that obscures real changes and
   pollutes git blame.
+- Run formatters only on files intentionally written or modified for the task.
+  Do not run crate-wide or workspace-wide formatting unless explicitly
+  required. Review the resulting diff and revert formatting changes outside
+  the intended edits.
 - Code and test changes must not introduce warnings on the affected build or
   crate-test surfaces. Treat new warnings as failures and either fix them or
   report an explicit blocker.

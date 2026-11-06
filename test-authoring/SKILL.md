@@ -100,16 +100,22 @@ that matches no case -- exits zero and prints `tests run:       0`. A target
 named on the command line that does not exist is an error and exits non-zero.
 
 Use compiled differential validation when the change can diverge between the
-interpreter and C backend:
+interpreter and C backend. Bare `nova test` already runs the C backend (unit
+tests on both engines, programs as interpreter-vs-C differential cases), so
+do not add a second `--backend c` run for C coverage:
 
 ```bash
-cargo run --release -q -p nova-cli -- test tests/unit/path_or_file.nova --backend c
+cargo run --release -q -p nova-cli -- test tests/unit/path_or_file.nova
 ```
+
+A differential case's report record carries `compiled`, `interpreter`, and
+`divergence` (e.g. `interpreter rejected, compiled exit 0`); read engine
+outcomes from those fields, not from `message`.
 
 Do not trust compiled results after source edits unless the
 runtime-linked artifacts were refreshed first. Use
 `../references/artifact-freshness.md` to decide whether `nova-async-rt` and
-`runtime` need a rebuild before trusting `--backend c` output.
+`runtime` need a rebuild before trusting compiled (C backend) output.
 
 Execution mode matters: bare `nova test` runs interpreter plus compiled
 differential; `--backend interpreter` is interpreter only; `--backend c` is

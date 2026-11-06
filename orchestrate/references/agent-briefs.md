@@ -176,6 +176,8 @@ Report the truthful state: `scaffolded`, `implemented-but-not-exposed`,
 Rules:
 - Stay within BRIEF.md scope
 - Do not refactor surrounding code
+- Format only files intentionally written or modified for this milestone; do
+  not run crate-wide or workspace-wide formatting unless explicitly required
 - Do not batch independent problems
 - Do not create new phases or silently defer criteria
 ```
