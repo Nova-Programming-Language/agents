@@ -109,6 +109,8 @@ State what, why, and what it prevents. See `references/document-quality.md`.
 - For semantic families, state whether they share one form, a core with
   specialization, or a true split at the first divergence layer.
 - Forbid secondary inference and silent degradation explicitly.
+- Implement each rule as one judgment called from every site it applies
+  to, not as per-site copies.
 - Run `review-nova` before requesting human feedback.
 - If a spec is ambiguous, ask — don't freeze ambiguity into architecture.
 

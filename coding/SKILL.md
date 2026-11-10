@@ -129,7 +129,9 @@ specialization over separate paths.
 
 ## Component Workflow
 
-1. State the semantic rule being changed.
+1. State the semantic rule being changed, and list every site that
+   enforces it. If it has several implementations, consolidate them
+   before changing it.
 2. Identify the owning component.
 3. Identify every user-facing path affected.
 4. For runtime bugs, collect runtime evidence before broad code reading.

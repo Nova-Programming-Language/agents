@@ -147,6 +147,11 @@ Catches code that appears to work but hides problems.
 - **Shallow fixes**: no identifiable root cause in the diff's causal
   chain. Symptom suppression instead of prevention. Batched unrelated
   changes. Missing root-cause in STATUS.md or commit message.
+- **Class coverage**: name the rule the defect violated and list every site
+  in the codebase (not just the diff) that enforces or depends on it. A
+  site in the same class the fix doesn't cover is a finding; several
+  independent implementations of one rule are a finding. Re-audits check
+  the class, not only the prior probes.
 - **Error paths**: new error conditions without tests. Generic error
   messages. Missing negative validation from the brief.
 

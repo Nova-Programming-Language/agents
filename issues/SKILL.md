@@ -125,8 +125,11 @@ Verified: <exact command and result>"
 Every close comment must include:
 - The commit hash
 - The root cause (one sentence)
-- The fix (one sentence)
+- The fix (one sentence), and which sites of the violated rule it covers
 - The verification command and its output
+
+Use "Fixes #N" only when every site of the class is covered; otherwise
+"refs #N", and leave the issue open listing the uncovered sites.
 
 Do not close without verification. If the fix is committed but not yet
 verified in a broader regression, say so in the comment and leave the

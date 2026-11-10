@@ -83,6 +83,8 @@ Trace from symptom to root cause. This step must not be skipped.
 
 The diagnosis must name:
 - The root cause (one sentence)
+- The rule it violates, and every site that enforces or depends on that
+  rule (file:line), including other implementations of the same check
 - The file and line where the defect lives
 - Which component owns the violated contract, and where that contract is
   written — this is the fix site
@@ -98,6 +100,9 @@ During diagnosis you will often find bugs that are unrelated to the
 current failure — upstream contract violations, adjacent defects,
 stale assumptions in other components. Do not ignore them and do not
 fix them inline (that is scope creep).
+
+Sites in the same class as the current defect are not discovered bugs;
+they are part of this fix.
 
 For each discovered bug:
 - File a GitHub issue using the `issues` skill
@@ -117,12 +122,17 @@ Implement the fix:
 - Fix the root cause, not the symptom
 - Do not modify test expectations to match wrong behavior
 - Do not add workarounds or defensive checks that hide the problem
-- Keep the fix minimal — do not fix discovered bugs inline, they
-  have their own issues now
+- Keep the fix minimal over the class, not the instance — do not fix
+  unrelated discovered bugs inline, they have their own issues now
+- If the rule is implemented in several places, the duplication is the
+  root cause: route every site through one shared check. If that is out
+  of scope, the commit says "partial fix", lists the uncovered sites, and
+  does not say "Fixes"
 
 ### 5. Verify
 
-Run the target test. It must pass.
+Run the target test. It must pass. Add tests across the class's sites,
+not only the original repro.
 
 Then verify the component broadly. The goal is not just proving the
 target test passes — it is proving the component still works across

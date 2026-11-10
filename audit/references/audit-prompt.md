@@ -57,6 +57,8 @@ Rules:
   upstream defect is a structural finding even when every test passes, and a
   diff touching a component the diagnosis never named is the tell. See
   references/failure-attribution.md
+- For a repair, report class coverage: the violated rule, every site it
+  applies to, and whether each is fixed, unaffected, or uncovered
 - Do not fix code or modify source files
 - Only write to project-notes/[slug]/AUDIT.md
 ```
