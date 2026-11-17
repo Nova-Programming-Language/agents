@@ -24,6 +24,10 @@ was violated. A patch that compensates downstream for an upstream defect fails
 this dimension even when every test passes — it leaves the original defect in
 place and adds a second one. See `../references/failure-attribution.md`.
 
+"Pre-existing" means first "differs from the approved text", then a
+regression against the project's recorded base. Never judge it against the
+previous round's tip.
+
 Never certify a tested subset while original acceptance criteria remain.
 Distinguish `scaffolded`, `implemented-but-not-exposed`, `exposed`, and
 `release-verified`; only the last may be reported as fully complete.

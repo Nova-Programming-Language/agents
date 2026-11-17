@@ -29,6 +29,10 @@ Any dimension has issues. Escalate to the user with AUDIT.md findings,
 failed dimension(s), and recommended remediation. Wait for user direction.
 No automatic retries.
 
+At most one fix round per step. If the re-audit fails, or the fix round
+itself introduced a blocker, the step returns to design and the user is
+told; it does not get a second fix round.
+
 The escalation names the attribution: the violated contract, the component
 that owns it, the milestone that owns the work, and which suite or fixture
 decided that. If no fixture covers the boundary the failure crossed, say so —

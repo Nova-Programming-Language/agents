@@ -111,6 +111,17 @@ State what, why, and what it prevents. See `references/document-quality.md`.
 - Forbid secondary inference and silent degradation explicitly.
 - Implement each rule as one judgment called from every site it applies
   to, not as per-site copies.
+- If a rule depends on a fact that the representation its consumers already
+  read does not carry (a type, an IR node, a lookup key, a runtime value
+  layout), the first change makes that representation carry it, or records
+  the fact once, with a single producer, where every consumer reads it. A
+  consumer that finds no record raises an internal error. Never re-derive the
+  fact per site from other data, and never keep it in a parallel structure
+  that each consumer must remember to consult.
+- A decision made in one phase and needed in a later one (a value-changing
+  conversion, a resolved target, an ownership choice) is recorded once where
+  it is decided and applied at one point per consumer; no later phase or
+  engine derives it again.
 - Run `review-nova` before requesting human feedback.
 - If a spec is ambiguous, ask — don't freeze ambiguity into architecture.
 

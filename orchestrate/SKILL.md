@@ -42,6 +42,13 @@ whose premises are already established.
 Never ratify a scope fence whose discriminating facts have not been
 measured to exist inside it.
 
+**Design is required (not optional)** when a milestone implements a rule
+that changes run-time values, or that must be enforced in more than one
+engine or entry point. A design states the representation, the single home
+of the rule, and the internal error raised when it is bypassed; it gets a
+`review-nova` critique before the brief. No brief is written from approved
+rule text alone.
+
 ### 1. Brief (agent)
 Spawn a briefing agent (`references/agent-briefs.md`). It reads project
 artifacts and source files, then writes `project-notes/<slug>/BRIEF.md`.
@@ -106,6 +113,28 @@ debug. Plan coherence uses AUDIT.md summaries, not source code.
 Exception: long-running verification commands are the orchestrator's to
 run (as session background tasks), because sub-agents cannot host them
 reliably — see Long-Running Verification.
+
+Rule texts are frozen while a step is open. A new ruling queues to the next
+step boundary unless it contradicts the step in flight, in which case the
+step returns to design. One rule is never implemented on two parallel
+branches; merge first.
+
+### Choosing the Agent's Model
+
+The orchestrator picks each spawned agent's model; don't ask the user. Pass
+`model` on the Agent call:
+
+| Work | Model | Why |
+|---|---|---|
+| Audits (step 3), class-coverage audits, review-nova critiques of spec drafts and plans | `fable` | Highest-stakes judgement. A different model from the implementer also gives a reading that isn't anchored on the implementer's reasoning. |
+| Milestone briefs (step 1) | `fable` | The brief fixes the representation, the single home of each rule and the acceptance; errors there cause the repeated audit failures. (User request, 2026-11-16.) The brief's review-nova critique still runs, so brief and critique are both fable. |
+| Implementation (step 2), scouts, debugging, spec drafting | `opus` (or inherit) | Long, multi-step code and spec work. |
+| Mechanical work: filing issues from written notes, repro sweeps, disk/build/state checks, copying results | `sonnet` | The inputs are already written down; the task needs no deep judgement. |
+
+Forks (`subagent_type: "fork"`) always run on the orchestrator's model.
+A running agent keeps its model, so a change applies only to agents spawned
+after it. If an agent on the cheaper tier misses something, or an audit
+underperforms, change the mix and record it in LOG.md.
 
 ### Delegated Package Onboarding
 

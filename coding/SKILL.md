@@ -131,7 +131,9 @@ specialization over separate paths.
 
 1. State the semantic rule being changed, and list every site that
    enforces it. If it has several implementations, consolidate them
-   before changing it.
+   before changing it. If there is no single place to consolidate into
+   (the fact lives in side tables or is rebuilt per site), stop and report
+   a design gap; do not add another site.
 2. Identify the owning component.
 3. Identify every user-facing path affected.
 4. For runtime bugs, collect runtime evidence before broad code reading.

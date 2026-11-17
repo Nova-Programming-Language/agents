@@ -151,7 +151,9 @@ Catches code that appears to work but hides problems.
   in the codebase (not just the diff) that enforces or depends on it. A
   site in the same class the fix doesn't cover is a finding; several
   independent implementations of one rule are a finding. Re-audits check
-  the class, not only the prior probes.
+  the class, not only the prior probes. If a re-audit finds an earlier
+  finding's class reopened at a new shape, report **"no single home"** as a
+  structural blocker: the remediation is design, not more sites.
 - **Error paths**: new error conditions without tests. Generic error
   messages. Missing negative validation from the brief.
 
