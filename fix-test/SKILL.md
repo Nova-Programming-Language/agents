@@ -20,15 +20,15 @@ Repeat for each failure:
 
 ### 1. Select one failure
 
-Pick the next failure. If working through regression results, run
-`scripts/run-nova-full-regression.sh failed --json` and use the resulting
-records — specifically `classification`, `owner`, and `phase` — to
+Pick the next failure. If working through regression results, get the
+structured failure records from the regression tooling (profile §Regression)
+and use their classification, owner, and phase fields to
 choose the most informative failure first — one whose fix is likely
 to resolve or explain others.
 
-The record's `owner` is a starting hypothesis, not a verdict. It says where
+The record's owner is a starting hypothesis, not a verdict. It says where
 the failure surfaced; step 3 establishes which component's contract it
-violates, and those differ often enough that accepting `owner` as the answer
+violates, and those differ often enough that accepting the owner field as the answer
 is how fixes land in the wrong layer.
 
 Record in STATUS.md: which failure you are working on and why.
@@ -48,17 +48,19 @@ Run the failing test in isolation. Record:
 If not reproducible in isolation, note it — may be an ordering or
 environment dependency.
 
-When reproducing with `nova test`, keep the same exact scope. A reproduction
-that selects nothing looks identical to one that passes, so check `tests run:`
-is non-zero before concluding a failure does not reproduce. Use the printed
-`Scope` block to confirm the scope, the `Recorded` block to find stored artifacts, and
-`--failed --from-last` only as exact-scope snapshot replay.
+Run the reproduction with the project's single-test command (profile §Tests)
+and keep the same exact scope. A reproduction that selects nothing looks
+identical to one that passes, so confirm the run count is non-zero before
+concluding a failure does not reproduce. Profile §Tests says how the runner
+reports scope, run count, and stored artifacts, and which replay options
+reproduce an exact earlier scope.
 
 ### 3. Diagnose root cause
 
 Trace from symptom to root cause. This step must not be skipped.
 
-- Read the relevant architecture document in `docs/architecture/` to
+- Find the governing architecture doc per
+  `../references/architecture-docs.md` (record a doc gap if none) to
   identify which component owns the behavior being tested. Use the
   component's **Invariant** and **Not responsible for** sections to
   determine whether the defect is in the component itself or in an
@@ -105,7 +107,8 @@ Sites in the same class as the current defect are not discovered bugs;
 they are part of this fix.
 
 For each discovered bug:
-- File a GitHub issue using the `issues` skill
+- File an issue in the project's tracker (profile §Repository) using the
+  `issues` skill
 - Include the evidence you already have (file:line, what's wrong)
 - Label it with the correct subsystem
 - Reference the current issue if related
@@ -140,15 +143,16 @@ its major code paths. A fix that passes one test but breaks the
 component elsewhere is not a fix.
 
 - Identify which component owns the code you changed, using the
-  architecture document if one exists.
-- Run the component's test suite or a representative subset that
+  governing architecture doc (or the doc gap recorded at step 3).
+- Run the component's test suite (profile §Tests) or a representative subset that
   exercises its major code paths. For example, if you fixed a bug
   in the type checker, run the type checking tests broadly, not
   just the one test that was failing.
 - If the fix touched shared code (utilities, data structures, common
   paths), widen further — run tests for the components that consume
   that shared code.
-- If a regression suite command exists, run it and compare.
+- If a regression suite command exists (profile §Regression), run it and
+  compare.
 - The regression test lands in the component that owns the defect. A test
   that only pins the symptom where it surfaced leaves the violated contract
   unproven and lets the same defect reappear through a different caller.
@@ -184,9 +188,9 @@ include:
 - The root cause (one sentence)
 - The fix (one sentence)
 - The verification command
-- Issue reference: `Fixes #N` if this fully resolves the issue, or
-  `Progress on #N` if the issue covers multiple failures and this
-  commit addresses one of them
+- Issue reference, in the tracker's syntax (profile §Repository): the
+  closing form if this fully resolves the issue, or the progress form if
+  the issue covers multiple failures and this commit addresses one of them
 
 This creates a clean, revertible checkpoint per fix. If a later fix
 goes wrong, earlier fixes are safely committed.
@@ -219,8 +223,8 @@ can be batched."
 - **Root cause required.** "Made the test pass" is not a diagnosis.
 - **A flaky test is a bug.** A nondeterministic failure has a
   deterministic cause; passing on retry hides it, never disproves it.
-  Reproduce with a stress loop (vary --test-threads, iterate the test
-  binary directly), then diagnose. If the cause is out of scope for the
+  Reproduce with a stress loop (vary test parallelism, iterate the single
+  test directly; how is in profile §Tests), then diagnose. If the cause is out of scope for the
   current fix, file an issue with frequency and repro conditions — never
   rerun-until-green and move on.
 - **Fix at the owning component.** Not at the frame where the value was
@@ -245,6 +249,8 @@ When used standalone, this skill manages its own sequencing.
 
 ## References
 
+- `../references/project-profile.md` — where project commands live (cited as
+  "profile §Section")
 - `../references/package-onboarding.md` — required before package failure work
 - `../references/failure-attribution.md` — which component owns the defect,
   which milestone owns the work, and why the fix cannot move to a more

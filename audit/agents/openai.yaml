@@ -1,4 +1,4 @@
 interface:
   display_name: "Audit"
-  short_description: "Audit changes for correctness, structure, and impact"
+  short_description: "Gate finished work against its brief before commit"
   default_prompt: "Use audit to verify recent code changes"

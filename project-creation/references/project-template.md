@@ -37,19 +37,11 @@ Use `N/A` with a reason when a link does not apply.
 
 Only `release-verified` may be reported as fully complete.
 
-## Nova Delivery Context
+## Delivery Context
 
-### Affected Nova Surfaces
+### Affected Command Surfaces
 
-- `nova run`:
-- `nova check`:
-- `nova repl`:
-- `nova test`:
-- `nova doc`:
-- `nova-test-runner`:
-- interpreter-only execution:
-- compiled backend execution:
-- docs/examples:
+- [one line per surface listed in profile §Command surfaces]:
 
 Mark `yes`, `no`, or `N/A` and add short notes when useful.
 
@@ -57,9 +49,8 @@ Mark `yes`, `no`, or `N/A` and add short notes when useful.
 
 - spec docs:
 - architecture docs:
-- metadata contract docs:
-- `prelude.novi` impact:
-- runtime ABI or native-library impact:
+- contract docs:
+- project-specific sources (profile §Delivery checks):
 
 ### Observable Semantic Change
 
@@ -90,12 +81,7 @@ Mark `yes`, `no`, or `N/A` and add short notes when useful.
 
 ## Owning Components
 
-- frontend
-- interpreter
-- codegen-c
-- CLI
-- test runner
-- docs
+- [components from the architecture map (profile §Paths) that own this work]
 
 ## Locked Decisions
 

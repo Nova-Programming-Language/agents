@@ -1,8 +1,11 @@
-# Memory-Error Detection for Compiled Nova Binaries
+# Memory-Error Detection for Compiled Native Binaries
 
-Use this reference when a compiled Nova program crashes with SIGBUS, SIGSEGV,
+Use this reference when a compiled program crashes with SIGBUS, SIGSEGV,
 or double-free/UAF symptoms and the cause is not obvious from source. Applies
-to binaries produced by `nova build` (C backend or LLVM backend) on macOS.
+to native binaries produced by the project's compiled backends (profile
+§Build, §Debugging) on macOS. The project's runtime layout, sanitizer caveats,
+and leak-check environment are in profile §Debugging and §Environments (see
+`../../references/project-profile.md`).
 
 ## When to Reach for libgmalloc
 
@@ -62,7 +65,7 @@ frame 5: __CFInitialize
 
 The byte-aligned fault address (typically ending in `…f6f`) and the
 pre-`main()` backtrace are the signature. This is a documented
-libgmalloc/CoreFoundation incompatibility, not a bug in the Nova binary.
+libgmalloc/CoreFoundation incompatibility, not a bug in the binary under test.
 
 Use default vector alignment (16-byte) instead by simply omitting
 `MALLOC_STRICT_SIZE`. The libgmalloc banner already warns:
@@ -94,67 +97,70 @@ lldb-launched inferior on recent macOS; set it with `env` inside lldb.
 
 ## Distinguishing Real Bugs From libgmalloc Artifacts
 
-Before concluding that libgmalloc has surfaced a Nova bug, verify:
+Before concluding that libgmalloc has surfaced a real bug, verify:
 
-1. The crash reproduces on the Nova binary **without** `MALLOC_STRICT_SIZE`.
-2. The faulting frame is in Nova runtime or user code, not in
+1. The crash reproduces on the binary under test **without** `MALLOC_STRICT_SIZE`.
+2. The faulting frame is in the project's runtime or user code, not in
    `libsystem_info.dylib`, `CoreFoundation`, or another system library's
    initializer.
 3. The crash is after `main()`, not during dyld init.
-4. Symbolize the crash site against the Nova binary's symbols — do not map
-   raw offsets against Nova symbols when the instruction pointer lives in
-   a system library address range.
+4. Symbolize the crash site against the binary's own symbols — do not map
+   raw offsets against the binary's symbols when the instruction pointer
+   lives in a system library address range.
 
 If the crash only reproduces with `MALLOC_STRICT_SIZE=1` and the frames are
-in system libraries, it is a libgmalloc/CoreFoundation artifact — not a Nova
-bug. Re-run with vector alignment to confirm.
+in system libraries, it is a libgmalloc/CoreFoundation artifact — not a
+project bug. Re-run with vector alignment to confirm.
 
 ## ASAN for Isolated C-Only Components
 
 AddressSanitizer is a better tool than libgmalloc when the bug is confined to
-the C runtime (`runtime/src/*.c`) or can be exercised from a standalone C
-test binary. ASAN gives allocation/free stack traces and full heap metadata
+a C runtime component (location in profile §Debugging) or can be exercised
+from a standalone C test binary. ASAN gives allocation/free stack traces and full heap metadata
 with lower overhead than libgmalloc, and it does not touch dyld-init
 alignment assumptions.
 
 Use ASAN when:
 
 - the bug reproduces from a C-only test harness that links just the C
-  runtime sources (no Rust, no compiled Nova output)
+  runtime sources (no other languages, no compiled program output)
 - you need alloc/free history for every pointer (libgmalloc requires
   `MallocStackLogging` and is less ergonomic)
 - you want leak detection in addition to UAF/overflow
 
 Avoid ASAN when the reproducer exercises:
 
-- the full `nova build` binary (mixes Rust, C runtime, green-thread
-  scheduler, and `setjmp`/`longjmp` panic paths — ASAN interceptors
-  interact badly with cross-language longjmp and custom stack switches)
-- signal handlers installed by the Nova runtime (ASAN installs its own
-  SIGSEGV/SIGBUS handler that will mask or conflict with Nova's)
+- a full compiled binary whose runtime mixes languages, switches stacks
+  (green threads), or unwinds with `setjmp`/`longjmp` — ASAN interceptors
+  interact badly with cross-language longjmp and custom stack switches
+- signal handlers installed by the project's runtime (ASAN installs its own
+  SIGSEGV/SIGBUS handler that will mask or conflict with the runtime's)
+
+Profile §Debugging says which of these apply to the project's compiled
+binaries.
 
 Basic workflow for isolated C components:
 
 ```bash
 clang -O1 -g -fsanitize=address -fno-omit-frame-pointer \
-    -I runtime/include \
-    runtime/src/<file>.c test_harness.c -o test_harness
+    -I <runtime include dir> \
+    <runtime src dir>/<file>.c test_harness.c -o test_harness
 ./test_harness   # ASAN errors print with full alloc/free backtraces
 ```
 
 For leak checking on macOS, ASAN's built-in LSAN is not fully supported on
-Darwin — prefer running under Linux (pinned container in `references/
-nova-delivery-checks.md`) when leak detection is required.
+Darwin — prefer running under Linux (the pinned Linux environment in profile
+§Environments) when leak detection is required.
 
 ## Tool Selection Summary
 
 | Situation | Tool |
 |-----------|------|
-| Bug in full `nova build` binary | libgmalloc |
+| Bug in full compiled binary | libgmalloc |
 | Bug in C runtime unit test | ASAN |
 | Crash near free/release/atomic decrement | libgmalloc first |
 | UAF with alloc-site evidence needed | ASAN if isolatable, else `MallocStackLogging` |
-| Leak detection | ASAN in pinned Linux container |
+| Leak detection | ASAN in pinned Linux environment |
 | Signal-sensitive crash that dies outside LLDB | libgmalloc (hard trap at exact instruction) |
 
 ## Crash Reports

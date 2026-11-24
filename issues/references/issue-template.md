@@ -1,6 +1,7 @@
 # Issue Body Template
 
-Use this structure when creating issues with `gh issue create`.
+Use this structure when creating issues in the project's tracker
+(profile §Repository).
 
 ```md
 ## Summary
@@ -31,7 +32,7 @@ Use this structure when creating issues with `gh issue create`.
 
 ## Ownership Hypothesis
 
-- Subsystem: [frontend | interpreter | c-backend | tests | cli | runtime | docs]
+- Subsystem: [one subsystem label from profile §Repository]
 - Likely cause: [one sentence — what is probably wrong]
 
 ## Context
@@ -46,5 +47,6 @@ Use this structure when creating issues with `gh issue create`.
 - Every field should be filled. If genuinely unknown, write "unknown"
   with what you tried — not just blank.
 - The reproduction must be exact and runnable. "Do X then Y then Z" is
-  not a reproduction — `nova check tests/build/foo.nova` is.
+  not a reproduction — a single command that runs one named test or input
+  file (profile §Tests) is.
 - One defect per issue. If you found two bugs, file two issues.

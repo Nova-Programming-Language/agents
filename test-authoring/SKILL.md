@@ -1,71 +1,56 @@
 ---
 name: test-authoring
-description: Write or update Nova tests with the correct form, annotations, and validation flow; use when adding unit, program, or diagnostic coverage in the Nova repo.
+description: Write or update project tests with the correct form, annotations, and validation flow; use when adding unit, program, or diagnostic coverage in the repo.
 ---
 
 # Test Authoring
 
 ## When to Use
 
-Use this skill when a Nova change needs new tests, updated annotations, or a
-decision about where a test belongs under `tests/` or `examples/`.
+Use this skill when a change needs new tests, updated annotations, or a
+decision about where a test belongs in the project's test layout.
+
+Test layout, kinds, file conventions, annotations, and run commands come from
+profile §Tests; find the profile per `../references/project-profile.md`.
 
 ## Source of Truth
 
 Read these in order before choosing a test strategy:
 
-1. `docs/specs/nova-testing-spec.md`
-2. `docs/architecture/test-system.md`
-3. `docs/guides/tests.md`
-4. `../references/artifact-freshness.md` when compiled or runtime-linked
+1. the project's test spec, test-system architecture doc, and test guide
+   (profile §Tests)
+2. `../references/artifact-freshness.md` when compiled or runtime-linked
    validation is in scope
 
 The spec defines language-level test semantics. The architecture and guide
-define how `nova test` classifies files, records cases, and treats annotations.
+define how the test runner classifies files, records cases, and treats
+annotations.
 
 ## Choose the Right Test Surface
 
-Use the smallest test surface that proves the behavior:
+Use the smallest test surface that proves the behavior. Profile §Tests lists
+the test kinds (for example diagnostic, unit, program, end-to-end examples),
+their typical placement, and any path-based tier defaults and overrides.
+End-to-end examples are for public workflows, not a substitute for focused
+unit or diagnostic coverage.
 
-- `diagnostic` for expected compiler failures and message checks
-- `unit` for `struct ... implements UnitTest` behavior and helper methods
-- `program` for whole-program `fn main()` execution
-- `examples/` for end-to-end examples and public workflows, not as a
-  substitute for focused unit or diagnostic coverage
-
-Typical placement:
-
-- `tests/compile_errors/` for diagnostic cases
-- `tests/unit/` for `UnitTest`-based runtime cases
-- `tests/build/` or targeted directories for program execution
-- `examples/**` for e2e-facing example programs
-
-Tier defaults matter:
-
-- `examples/**` and `tests/e2e/**` default to `tier=e2e`
-- everything else defaults to `tier=standard`
-- `# E2E` and `# STANDARD` override the path default
+Directory placement is a convention, not the semantic source of truth: test
+form and engine come from the file contents plus annotation semantics.
 
 ## Required Annotation Rules
 
-Load `references/placement-and-annotations.md` when you need the quick
-placement and annotation matrix.
+Follow the annotation rules in profile §Tests: which annotations apply to
+which test form, and whether each applies to the next test or the whole file.
 
-Core rules:
+Common authoring mistakes:
 
-- `# ERROR` and `# ERROR: pattern` are for diagnostic tests only
-- `# PENDING-ERROR` is for known-future diagnostics and is tracked, not
-  enforced
-- `# SKIP` and `# PANICS` apply to the next `test_*` method
-- `# expect-output:` applies to the next `test_*` method and its following
-  `#` lines define stdout exactly
-- `# REQUIRES: --coverage` and `# REQUIRES: --coverage=branch` request
-  coverage instrumentation for that file
-- `# SKIP_COMPILED: reason` and `# COMPILED_ONLY` control compiled-run
-  behavior
-
-Do not rely on removed operational semantics like `tests/aspirational` as a
-special regression bucket. Use explicit annotations instead.
+- putting a per-test annotation (such as a skip) on a helper and expecting it
+  to affect another test
+- using a diagnostic-only annotation in a runtime test instead of a
+  diagnostic file
+- storing blocked work in a special suite instead of using explicit skip or
+  pending annotations
+- relying on directory name alone when the file content actually changes form
 
 ## Authoring Checklist
 
@@ -74,67 +59,33 @@ special regression bucket. Use explicit annotations instead.
 3. Cover edge and failure behavior, not only the happy path.
 4. Keep skipped tests parseable and type-checkable; skip is not a syntax
    escape hatch.
-5. If a file mixes `fn main()` and `UnitTest`, expect multiple case records.
-6. Test changes must not introduce Rust or Nova test-runner warnings on the
-   affected crate/test surface. Fix unused helpers, unreachable branches,
+5. Know how the runner records cases for the file's form (profile §Tests).
+6. Test changes must not introduce compiler or test-runner warnings on the
+   affected component/test surface. Fix unused helpers, unreachable branches,
    stale imports, and annotation warnings instead of leaving them for later.
 
 ## Validation Workflow
 
-Run the narrowest command that proves the new test:
+Run the narrowest command that proves the new test (profile §Tests: how to
+run one test or one file).
 
-```bash
-cargo run --release -q -p nova-cli -- test tests/unit/path_or_file.nova --backend interpreter
-cargo run --release -q -p nova-cli -- test tests/compile_errors/path_or_file.nova
-cargo run --release -q -p nova-cli -- test tests/build/path_or_file.nova
-```
+A passing run is not proof that anything ran. Check the runner's executed-test
+count in the summary and confirm it is non-zero and roughly the count you
+expected; a target that selects nothing may still exit zero (profile §Tests).
 
-For normal targeted or directory `nova test` runs, rely on the default
-exact-scope report and artifact recording unless you need an explicit export or
-override.
+Use differential validation across execution engines or backends when the
+change can diverge between them, using the run modes profile §Tests
+describes. Read engine outcomes from the structured report fields, not from
+free-text messages.
 
-A passing run is not proof that anything ran. Check the `tests run:` line in
-the summary and confirm it is non-zero and roughly the count you expected. A
-target that exists but selects nothing -- an empty directory, or a `--filter`
-that matches no case -- exits zero and prints `tests run:       0`. A target
-named on the command line that does not exist is an error and exits non-zero.
-
-Use compiled differential validation when the change can diverge between the
-interpreter and C backend. Bare `nova test` already runs the C backend (unit
-tests on both engines, programs as interpreter-vs-C differential cases), so
-do not add a second `--backend c` run for C coverage:
-
-```bash
-cargo run --release -q -p nova-cli -- test tests/unit/path_or_file.nova
-```
-
-A differential case's report record carries `compiled`, `interpreter`, and
-`divergence` (e.g. `interpreter rejected, compiled exit 0`); read engine
-outcomes from those fields, not from `message`.
-
-Do not trust compiled results after source edits unless the
-runtime-linked artifacts were refreshed first. Use
-`../references/artifact-freshness.md` to decide whether `nova-async-rt` and
-`runtime` need a rebuild before trusting compiled (C backend) output.
-
-Execution mode matters: bare `nova test` runs interpreter plus compiled
-differential; `--backend interpreter` is interpreter only; `--backend c` is
-compiled only; legacy `--skip-compiled` / `--compiled` remain compatibility
-aliases; `--failed --from-last` is exact-scope snapshot replay only.
+Do not trust compiled results after source edits unless the runtime-linked
+artifacts were refreshed first. Use `../references/artifact-freshness.md` and
+profile §Build to decide which artifacts need a rebuild.
 
 For broader confirmation, hand off to the regression workflow skill and use
-the canonical suite entrypoint:
+the canonical suite entrypoint from profile §Regression. Do not describe a
+scoped test run over a directory as canonical full regression.
 
-```bash
-scripts/run-nova-full-regression.sh check
-```
-
-Do not describe `nova test tests/` or `nova test examples/` as canonical full
-regression; those are still scoped `nova test` runs.
-
-When authoring Rust-side tests, use a warning-deny compile check for the
-affected crate if ordinary test output could hide test-only warnings:
-
-```bash
-RUSTFLAGS="-D warnings" cargo test -p <crate> --no-run
-```
+When the test runner's ordinary output could hide test-only compiler
+warnings, use the warning-deny compile check from profile §Build for the
+affected component.

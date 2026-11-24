@@ -1,11 +1,11 @@
 ---
 name: create-pr
-description: Use this skill when the user asks to create, open, submit, verify, or check a GitHub pull request in the Nova repo. This skill uses the gh CLI to avoid duplicate PRs, ensures the branch is pushed, creates the PR only when no PR already exists for the head branch, and verifies the actual PR number, URL, and state before reporting success.
+description: Use this skill when the user asks to create, open, submit, verify, or check a GitHub pull request in the project repo. This skill uses the gh CLI to avoid duplicate PRs, ensures the branch is pushed, creates the PR only when no PR already exists for the head branch, and verifies the actual PR number, URL, and state before reporting success.
 ---
 
 # Create PR
 
-Use this skill for GitHub pull request creation and verification in the Nova
+Use this skill for GitHub pull request creation and verification in the project
 repository.
 
 This is a narrow workflow skill. It is not for general git commits or generic
@@ -16,10 +16,12 @@ GitHub browsing. Use it when the task is specifically to:
 - get the real PR URL/number/state
 - avoid duplicate PRs for the same head branch
 
-This skill is Nova-specific where it matters:
+Project-specific facts come from profile §Repository (see
+`../references/project-profile.md`): the remote, the default base branch
+(written `<default>` below), and any PR title/body conventions. Throughout:
 
 - use `gh` for all PR operations
-- treat `main` as the default base branch unless the user says otherwise
+- treat `<default>` as the base branch unless the user says otherwise
 - push the working branch before creation
 - verify the actual PR object after creation
 
@@ -40,7 +42,7 @@ Run:
 git fetch origin
 git branch --show-current
 git status --short
-git rev-list --left-right --count HEAD...origin/main
+git rev-list --left-right --count HEAD...origin/<default>
 ```
 
 Also inspect the target branch if it is not the current branch.
@@ -78,14 +80,14 @@ policy before retrying.
 
 Use `gh pr create` with explicit `--base` and `--head`.
 
-For Nova, default the base to `main` unless the user explicitly asks for a
-different target branch.
+Default the base to `<default>` (profile §Repository) unless the user
+explicitly asks for a different target branch.
 
 Typical form:
 
 ```bash
 gh pr create \
-  --base main \
+  --base <default> \
   --head <branch> \
   --title "<title>" \
   --body "<body>"
@@ -95,8 +97,9 @@ Use `--draft` only when the user asks for a draft or the work is explicitly not
 ready.
 
 Write the PR title/body from the actual branch contents. Keep them factual and
-software-focused. In Nova, the PR body should summarize the actual software
-changes and validation, not agent process notes.
+software-focused. The PR body should summarize the actual software changes and
+validation, not agent process notes; follow any PR conventions in profile
+§Repository.
 
 ### 5. Verify the PR object exists
 
@@ -142,9 +145,9 @@ If `gh pr create` behaves unexpectedly:
 If no PR object exists afterward, creation did not complete. Do not report a
 PR URL unless it comes from a real `gh` PR object.
 
-## Nova-Specific Defaults
+## Defaults
 
-- Base branch is normally `main`.
+- Base branch is the profile's default branch.
 - Prefer one PR per working branch.
 - If the branch already has an open PR, update that PR rather than creating a
   second one.

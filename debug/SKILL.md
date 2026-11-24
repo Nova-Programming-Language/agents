@@ -1,22 +1,27 @@
 ---
-name: debug-nova
-description: Debug Nova frontend, interpreter, REPL, compiled C-backend native binaries, or test failures with repo-specific LLDB entrypoints and breakpoint maps; use for deterministic crashes, wrong values, source-line stepping, or control-flow bugs.
+name: debug
+description: Debug toolchain, runtime, REPL, compiled native binaries, or test failures with the project's debugger entrypoints and breakpoint maps; use for deterministic crashes, wrong values, source-line stepping, or control-flow bugs.
 ---
 
-# Debug Nova
+# Debug
 
 ## When to Use
 
-Use this skill when a Nova bug is reproducible and a debugger can answer the
+Use this skill when a bug is reproducible and a debugger can answer the
 question faster than adding temporary prints.
+
+Project-specific facts (build commands, debugger entrypoints, debug surfaces,
+breakpoint maps, memory-error tools) come from the project profile; see
+`../references/project-profile.md` for how to find it. This skill names the
+section, as "profile §Debugging".
 
 This is the default skill for:
 
 - deterministic runtime failures
 - wrong values at a known program point
-- REPL regressions
-- compiled C-backend behavior that needs source-line stepping or breakpoints
-- metadata-install or dispatch bugs
+- regressions on any debug surface listed in profile §Debugging (for example
+  an interactive shell, a compiled native binary that needs source-line
+  stepping, or metadata/dispatch paths)
 - targeted crash or panic triage
 
 Read `../references/source-of-truth.md` when the bug looks like fallback
@@ -25,14 +30,14 @@ derived answers.
 Read `../references/artifact-freshness.md` when the reproducer exercises
 release or runtime-linked artifacts.
 Read `../references/runtime-evidence.md` when you need to decide whether to
-keep reading code or pivot to LLDB or tracing.
+keep reading code or pivot to a debugger or tracing.
 Read `../references/failure-attribution.md` before applying any fix, whenever
 the defect surfaced in a different component from the one that produced the
 bad value, or when the session runs inside a milestone whose ownership of the
 failure is not yet established.
-Read `references/memory-error-detection.md` when a compiled Nova binary
+Read `references/memory-error-detection.md` when a compiled native binary
 crashes with SIGBUS/SIGSEGV in release paths, the fault is near free/release/
-atomic decrement code, or the crash disappears under LLDB. Covers libgmalloc
+atomic decrement code, or the crash disappears under the debugger. Covers libgmalloc
 usage and the `MALLOC_STRICT_SIZE`/CoreFoundation ARM64 pitfall.
 
 ## Source-of-Truth Triage
@@ -80,33 +85,33 @@ violates, not to the caller that reached it first. Exposure is not authorship.
 
 ## Workflow
 
-1. Build a fresh debug target with `cargo build -p nova-cli`.
+1. Build a fresh debug target with the debug-build command in profile §Build.
 2. If the reproducer exercises compiled/runtime-linked behavior, refresh the
    runtime artifacts first by following `../references/artifact-freshness.md`.
-3. Choose the debug surface:
-   - frontend compile/validation for lowered-module production bugs
-   - interpreter/runtime for post-compile wrong behavior
-   - compiled C-backend native binary when source-line stepping or external
-     debugger breakpoints are the fastest evidence path
+3. Choose the debug surface from the list in profile §Debugging: the stage
+   that produces the bad data, the stage that executes it, or a compiled
+   native binary when source-line stepping or external debugger breakpoints
+   are the fastest evidence path.
 4. Stop broad code reading once the next useful fact is a live value or branch
    decision.
-5. Use `references/lldb-recipes.md` for launch commands.
-6. Use `references/breakpoints.md` for the file/line map.
+5. Use `references/lldb-recipes.md` for generic debugger technique and the
+   launch commands in profile §Debugging.
+6. Use the breakpoint map in profile §Debugging (see `references/breakpoints.md`).
 7. Inspect structured data before derived names or side tables.
-8. Rerun the narrowest reproducer without LLDB after understanding the defect.
+8. Rerun the narrowest reproducer without the debugger after understanding the defect.
 
 ## Session Rules
 
 - Prefer inspecting variables and stack frames over adding print statements.
 - Confirm the exact command, working directory, and input file before stepping.
-- Prefer LLDB when one breakpoint can answer the question.
+- Prefer the debugger when one breakpoint can answer the question.
 - Prefer narrow tracing only when the bug spans many iterations, async
   boundaries, or timing-sensitive flow.
-- For compiled Nova binaries, use `nova build --backend c --debug-symbols`
-  and debug the produced executable. Treat this as line-table/source-location
-  support for external debuggers, not as a full Nova variable debug-info model.
-- When the failure is metadata-related, inspect the active unit, span, node ID,
-  call-site entry, and symbol lookup result together.
+- For compiled binaries, build with the debug-symbols command in profile
+  §Debugging and debug the produced executable. Respect the limits of that
+  debug info as the profile states them.
+- When the failure matches a failure type in profile §Debugging, inspect the
+  values it lists for that type together.
 - If structured data is supposed to answer the question, inspect that data
   before inspecting derived names or side tables.
 - Treat missing required data as a producer/install bug first, not as a signal

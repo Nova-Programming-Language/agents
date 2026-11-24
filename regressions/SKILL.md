@@ -1,29 +1,33 @@
 ---
 name: regressions
-description: Run targeted or full Nova regression workflows; use when verifying behavior, tracking full-suite regressions across sessions, or using the pinned x86 container.
+description: Run targeted or full regression workflows; use when verifying behavior, tracking full-suite regressions across sessions, or using the project's pinned container.
 ---
 
 # Regression Test
 
 ## When to Use
 
-Use this skill when validating Nova behavior after code changes, whether through
+Use this skill when validating behavior after code changes, whether through
 targeted tests, crate-local tests, or the canonical full regression workflow.
+
+Test and regression commands, result locations, and failure-record formats
+come from the project profile (`../references/project-profile.md`). Never
+guess a test or regression command; if the profile lacks the section a step
+needs, ask the user.
 
 ## Read First
 
-1. `AGENTS.md`
+1. The project's rules file (profile §Rules)
 2. `../references/package-onboarding.md` when the target is a package repository
    or package directory
-3. `docs/guides/tests.md`
-4. `docs/architecture/test-system.md`
-5. `docs/specs/nova-testing-spec.md`
-6. `../references/artifact-freshness.md`
-7. `../references/source-of-truth.md` when the bug involves fallbacks or
+3. The project's test guide, test-system architecture doc, and testing spec
+   (profile §Paths, §Tests)
+4. `../references/artifact-freshness.md`
+5. `../references/source-of-truth.md` when the bug involves fallbacks or
    missing required data
-8. `../references/runtime-evidence.md` for reproducible runtime failures
-9. `../references/semantic-family.md` when the bug involves related constructs
-10. `references/full-regression.md`
+6. `../references/runtime-evidence.md` for reproducible runtime failures
+7. `../references/semantic-family.md` when the bug involves related constructs
+8. `references/full-regression.md`
 
 ## Non-Negotiable Rules
 
@@ -35,10 +39,11 @@ targeted tests, crate-local tests, or the canonical full regression workflow.
 - Code and test changes must not leave warnings on the affected validation
   surface. Treat new compiler, build, and test-compilation warnings as failures
   unless there is a documented blocker.
-- For targeted or directory `nova test` runs, rely on the default exact-scope
-  report and artifact recording unless you need an explicit export or override.
-- `scripts/run-nova-full-regression.sh` is the canonical full-suite state and failure
-  tracker.
+- For targeted or directory test runs, rely on the test runner's default
+  result recording unless you need an explicit export or override (profile
+  §Tests).
+- The full-regression script (profile §Regression) is the canonical
+  full-suite state and failure tracker.
 - A flaky test is a bug. There is no such thing as a transient flake: a
   nondeterministic failure has a deterministic cause (race, timing assumption,
   ordering dependency, resource contention) and must be diagnosed and fixed
@@ -51,28 +56,28 @@ targeted tests, crate-local tests, or the canonical full regression workflow.
   kills cannot take it down, and watch it with the Monitor tool — see
   "Starting a Long Run Detached" in `references/full-regression.md` for the
   exact pattern and the two observed failure modes it avoids.
-- The `check` exit status is absolute: `0` iff zero cases failed, `1` if any
-  case failed. It is the failure `total` from `failures.json`, not a
-  comparison. A missing baseline does not fail the run. A `clean` verdict
-  against a baseline that records existing failures still exits `1`.
+- Know what the full-regression exit status means. Profile §Regression states
+  whether it is absolute (any failing case fails the run) or a comparison
+  against the baseline, and how a missing baseline is treated.
 - Never report a comparison verdict as an absolute one. "Clean versus
-  baseline", `new_failures: 0`, and `stable_failing` all mean *nothing got
-  worse*. None of them mean *nothing is failing*. Only the failure total, and
-  the exit status that follows it, answer that.
+  baseline", zero new failures, and a stable-failing verdict all mean *nothing
+  got worse*. None of them mean *nothing is failing*. Only the absolute failure
+  total, and an exit status that follows it, answer that.
 - Report both numbers, always: how many cases failed in total, and how many of
   those are new. Name the known-failing set rather than letting it disappear
   into "clean". A promoted baseline records existing failures as expected, so
-  after a promotion they stop being visible in the *verdict* — but they still
-  fail the run.
+  after a promotion they stop being visible in the *verdict* — but they are
+  still failing.
 - To ask whether anything got worse rather than whether anything failed, read
-  `summary.new_failures` from the comparison artifact. Never infer it from the
-  exit status.
+  the new-failure count from the comparison artifact (profile §Regression).
+  Never infer it from the exit status.
 - When fixing a heuristic or fallback bug, add a regression that proves the
   authoritative path is used.
 - When required data should exist, add a missing-data regression that fails
   loudly instead of passing through fallback behavior.
-- After reproducing a runtime failure, pivot to LLDB or narrow tracing instead
-  of broad code reading unless the issue is clearly architectural.
+- After reproducing a runtime failure, pivot to the debugger (profile
+  §Debugging) or narrow tracing instead of broad code reading unless the issue
+  is clearly architectural.
 - When the issue involves related constructs, add paired tests that prove the
   shared behavior and any intended divergence.
 
@@ -83,13 +88,13 @@ targeted tests, crate-local tests, or the canonical full regression workflow.
 2. Use `../references/artifact-freshness.md` to check whether the command
    requires a rebuild first.
 3. Use `references/full-regression.md` for the matching command family.
-4. When validating Rust crate changes, add a warning-deny compile check such
-   as `RUSTFLAGS="-D warnings" cargo test -p <crate> --no-run` if warnings
-   could appear only in test targets.
+4. When validating code changes where warnings could appear only in test
+   targets, add a warning-as-error compile check of those targets (profile
+   §Build).
 5. After reproducing a runtime failure, use `../references/runtime-evidence.md`
-   to decide whether the next step should be LLDB or narrow tracing.
-6. If you ran a full regression, use `failed`, `list`, and `show` before
-   opening raw logs.
+   to decide whether the next step should be the debugger or narrow tracing.
+6. If you ran a full regression, use the regression tool's failure, run-list,
+   and run-detail views (profile §Regression) before opening raw logs.
 7. If related constructs are involved, use `../references/semantic-family.md`
    to decide which tests should be paired and where divergence should appear.
 8. Add or update regressions for both the authoritative path and the
@@ -97,41 +102,42 @@ targeted tests, crate-local tests, or the canonical full regression workflow.
 
 ## Failure Interpretation
 
-Keep the current test-system model in mind:
-
-- canonical identity is `engine + form + tier + file + case_name`
-- failing statuses are `fail`, `not_compilable`, `discovery_error`, and
-  `infra_error`
-- one file may legitimately produce multiple cases across engines/forms
+Keep the project's test-system model in mind (profile §Regression): what
+identifies a test case canonically, which statuses count as failing, and
+whether one test file may legitimately produce several cases (for example
+across engines or forms).
 
 The standard failure view is machine-first:
 
-- use `scripts/run-nova-full-regression.sh failed --json` — this is the primary
-  failure command; always prefer JSON over the plain-text view
-- each failure record includes `classification`, `case_id`, `engine`, `form`,
-  `tier`, `file`, `case_name`, `source_case_key`, `status`, `message`,
-  `owner`, `phase`, `artifacts`, and `rerun_hint`
+- use the regression tool's structured (JSON) failure view (profile
+  §Regression) as the primary failure command; always prefer it over a
+  plain-text view
+- each failure record carries the fields profile §Regression lists, typically
+  a classification, case identity, status, message, likely owner, failing
+  phase, per-case artifacts, and a rerun hint
 - classifications are relative to the chosen comparison target, typically
-  `baseline`
-- prefer per-case `artifacts` over grepping `full-run.log`; the run log is archival
+  the baseline
+- prefer per-case artifacts over grepping the full run log; the run log is
+  archival
 
-Use the structured JSON records for all downstream work:
+Use the structured records for all downstream work:
 
 - **Fixing**: pass records to `fix-test` — classification, owner, and phase
   fields let it prioritize which failure to tackle first
-- **Triaging**: group records by `owner` or `phase` to partition failures
+- **Triaging**: group records by owner or phase to partition failures
   across components or subsystems before assigning work
-- **Filing issues**: attach the relevant JSON record to each GitHub issue so
-  the fixer has machine-readable context from the start
-- **Diffing runs**: compare JSON output across runs to distinguish new
+- **Filing issues**: attach the relevant record to each issue in the
+  project's tracker (profile §Repository) so the fixer has machine-readable
+  context from the start
+- **Diffing runs**: compare structured output across runs to distinguish new
   regressions from pre-existing failures
 
-For scoped `nova test` runs, use the printed `Scope` and `Recorded` blocks to
-confirm exact scope and stored paths, and the `tests run:` line to confirm the
-run was not empty: a scope that selects nothing exits zero and reports
-`tests run:       0`, which reads as success at a glance. `--failed --from-last` is exact-scope
-snapshot replay only, and `nova test tests/` / `examples/` is still not
-canonical full regression.
+For scoped test runs, use what the test runner prints (profile §Tests) to
+confirm the exact scope, where results were stored, and that the run was not
+empty: a scope that selects nothing can exit zero and report zero tests run,
+which reads as success at a glance. Replaying the last failures re-reads a
+snapshot of that scope only, and a scoped run over the whole test tree is
+still not canonical full regression.
 
 ## After Running Regressions
 
@@ -139,8 +145,8 @@ When failures are found:
 
 - To fix them: use `fix-test` — one failure at a time, root-cause
   diagnosis, audit, commit per fix
-- To track them externally: use `issues` — file one GitHub issue per
-  distinct root cause with the structured failure data
+- To track them externally: use `issues` — file one issue per distinct
+  root cause with the structured failure data
 - To investigate non-obvious failures: use `bug-report` for local
   investigation notes before filing
 
@@ -154,3 +160,4 @@ be fixed in this session or filed as an issue for a future session.
 - `../references/runtime-evidence.md`
 - `../references/semantic-family.md`
 - `references/full-regression.md`
+- `../references/project-profile.md`

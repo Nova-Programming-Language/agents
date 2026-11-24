@@ -15,7 +15,7 @@ Prefer `tmux` over `screen` when available: it has better scriptable session cre
 
 ## Session Setup
 
-Use a stable session name derived from the task or repo, for example `codex-nova-errmsg`.
+Use a stable session name derived from the task or repo, for example `codex-<repo>-<task>`.
 
 Create or reuse a wide detached session rooted at the repo:
 
@@ -26,8 +26,10 @@ ssh USER@HOST 'tmux has-session -t SESSION 2>/dev/null || tmux new-session -d -s
 Set remote shell defaults once per session:
 
 ```bash
-ssh USER@HOST 'tmux send-keys -t SESSION "export NO_COLOR=1 GIT_PAGER=cat CARGO_TERM_COLOR=never" C-m'
+ssh USER@HOST 'tmux send-keys -t SESSION "export NO_COLOR=1 GIT_PAGER=cat" C-m'
 ```
+
+Add the project's own tool color/pager variables when its toolchain has them.
 
 Check that it exists:
 
@@ -69,10 +71,10 @@ ssh USER@HOST 'tmux resize-window -t SESSION -x 220 -y 60'
 
 ## Long Commands
 
-For builds/tests, write logs on the remote side and tail them through clean SSH:
+For builds/tests, write logs on the remote side and tail them through clean SSH. Take `TEST_COMMAND` from the project profile (§Tests or §Build; see `../references/project-profile.md`) or from the user:
 
 ```bash
-ssh USER@HOST 'tmux send-keys -t SESSION "cd /path/to/repo && cargo test > /tmp/codex-test.log 2>&1; printf \"\\n__CODEX_DONE:\$?__\\n\"" C-m'
+ssh USER@HOST 'tmux send-keys -t SESSION "cd /path/to/repo && TEST_COMMAND > /tmp/codex-test.log 2>&1; printf \"\\n__CODEX_DONE:\$?__\\n\"" C-m'
 ssh USER@HOST 'tail -200 /tmp/codex-test.log'
 ```
 

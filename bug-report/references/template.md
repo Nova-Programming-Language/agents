@@ -1,4 +1,4 @@
-# Nova Bug Report Template
+# Bug Report Template
 
 ## Summary
 
@@ -25,7 +25,7 @@ Describe the observed behavior and include the key error text or symptom.
 ## Scope
 
 - affected commands
-- whether this is frontend, interpreter, CLI, runtime, or test-system visible
+- which project component it is visible in
 - whether the problem blocks other workflows
 
 ## Ownership Hypothesis
@@ -37,7 +37,7 @@ State the most likely subsystem responsible and why.
 - branch or commit tested
 - whether the worktree was clean or dirty
 - whether a clean rebuild was performed
-- whether the bug still reproduces on current main
+- whether the bug still reproduces on the current default branch
 
 ## Next Action
 

@@ -1,18 +1,20 @@
 ---
 name: issues
-description: Report and fix bugs via GitHub issues; use when filing new issues from findings, picking up existing issues to fix, or triaging issue backlogs. Covers the full lifecycle from discovery through verified close.
+description: Report and fix bugs via the project's issue tracker (e.g. GitHub issues); use when filing new issues from findings, picking up existing issues to fix, or triaging issue backlogs. Covers the full lifecycle from discovery through verified close.
 ---
 
 # Issues
 
 ## When to Use
 
-- Filing a bug or defect as a GitHub issue
+- Filing a bug or defect as an issue in the project's tracker
 - Picking up an existing issue to fix
 - Triaging a set of issues
 - Closing issues with verified evidence
 
-Uses `gh` CLI for all GitHub operations.
+The tracker, its CLI, and its label set are in profile §Repository (see
+`../references/project-profile.md`). The command examples below use GitHub's
+`gh` CLI; translate them for another tracker.
 
 ## Report: Filing Issues
 
@@ -26,35 +28,28 @@ should be tracked:
    discipline if the reproduction is non-trivial.
 
 2. **Create the issue** using `references/issue-template.md` for
-   structure. File with `gh issue create`.
+   structure. File with the tracker's create command (`gh issue create` on
+   GitHub).
 
 3. **Assign to a component.** Every issue must have exactly one
    subsystem label. This is how agents find work and how triage
    routes issues. Apply the label based on where the defect is,
    not where the symptom appears:
 
-   Subsystem labels: `frontend`, `interpreter`, `c-backend`, `tests`,
-   `cli`, `runtime`, `docs`
-
-   To decide the correct component:
-   - If the stack trace or error points to a specific crate or module,
-     use that component
-   - If the failure is in codegen output, label `c-backend`
-   - If the failure is in type checking, resolution, or lowering,
-     label `frontend`
-   - If the failure is in runtime behavior (interpreter execution),
-     label `interpreter`
-   - If the failure is in test infrastructure (not the code under
-     test), label `tests`
+   The subsystem labels, and which kinds of failure map to which label,
+   are in profile §Repository. To decide the correct component:
+   - If the stack trace or error points to a specific module or package,
+     use the component that owns it (the architecture map, profile §Paths)
+   - Otherwise apply the profile's failure-kind → label rules
    - If uncertain, make your best hypothesis and note it in the issue
      body — triage will correct it if wrong
 
-   Also apply severity and source labels:
-   - Severity: `bug`, `enhancement`, `blocker`
-   - Source: `audit`, `regression`, `manual`
+   Also apply a severity label (bug, enhancement, blocker) and a source
+   label (audit, regression, manual), using the project's names for them
+   from profile §Repository.
 
    ```
-   gh issue create --label "c-backend" --label "bug" --label "regression" ...
+   gh issue create --label "<subsystem>" --label "<severity>" --label "<source>" ...
    ```
 
 4. **Link context.** If the issue came from an audit, regression run,
@@ -73,13 +68,13 @@ session:
 
 When a regression check produces unexpected failures:
 
-- Run `scripts/run-nova-full-regression.sh failed --json` to get structured
-  failure records
-- Group records by `owner` or `phase` to identify distinct root causes
+- Get the structured failure records from the regression tooling
+  (profile §Regression)
+- Group records by their owner/phase fields to identify distinct root causes
   — multiple tests may fail from the same cause
 - One issue per distinct root cause, not per failing test
 - Include the regression command, baseline, and current results
-- Paste the relevant JSON failure record(s) into the issue body so the
+- Paste the relevant structured failure record(s) into the issue body so the
   fixer has machine-readable context from the start
 
 ### What makes a good issue
@@ -146,7 +141,7 @@ If an issue blocks another component or milestone:
 
 ## Claiming: Preventing Duplicate Work
 
-Multiple agents may share a single GitHub account, so assignment
+Multiple agents may share a single tracker account, so assignment
 cannot distinguish between them. Claims use comments with a unique
 session identifier instead.
 
@@ -192,11 +187,11 @@ the issue's current label:
 
 1. Relabel the issue to the correct subsystem:
    ```
-   gh issue edit <number> --remove-label "c-backend" --add-label "frontend"
+   gh issue edit <number> --remove-label "<old-subsystem>" --add-label "<new-subsystem>"
    ```
 2. Comment with the diagnosis so the next agent doesn't repeat it:
    ```
-   gh issue comment <number> --body "🔀 Reassigned from c-backend to frontend by session <session-id>.
+   gh issue comment <number> --body "🔀 Reassigned from <old-subsystem> to <new-subsystem> by session <session-id>.
 
    Diagnosis: [root cause summary]
    Evidence: [file:line, command output]
@@ -237,8 +232,8 @@ For each issue:
   (not where the symptom appears) and remove the others.
 - Does the label look correct based on the title and body? A quick
   read is enough — full diagnosis happens during fixing, not triage.
-- If you can tell the label is wrong from the title alone (e.g.,
-  "C backend panic" labeled `frontend`), relabel it now.
+- If you can tell the label is wrong from the title alone (e.g., a
+  code-generator panic labeled with the parser's subsystem), relabel it now.
 
 This pass is fast — you are reading titles and labels, not code.
 Comment on any relabeled issue with your reasoning.
@@ -248,7 +243,7 @@ Comment on any relabeled issue with your reasoning.
 When an agent is working a specific component, filter:
 
 ```
-gh issue list --state open --label "c-backend" --json number,title,labels
+gh issue list --state open --label "<subsystem>" --json number,title,labels
 ```
 
 Only claim issues labeled for your component. If during diagnosis you
@@ -257,10 +252,10 @@ reassignment workflow (see Reassigning to a different component).
 
 ### Prioritizing within a component
 
-1. `blocker` first — these block other work
-2. `bug` + `regression` — regressions from recent changes
-3. `bug` — other defects
-4. `enhancement` — last
+1. blocker first — these block other work
+2. bug + regression — regressions from recent changes
+3. bug — other defects
+4. enhancement — last
 
 Within the same priority, prefer issues with more evidence (exact
 reproduction, file:line references) — they are faster to fix.
@@ -284,3 +279,5 @@ resolved. Close them with evidence if so.
 ## References
 
 - `references/issue-template.md` — issue body structure
+- `../references/project-profile.md` — profile §Repository holds the tracker
+  and labels

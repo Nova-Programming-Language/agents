@@ -1,18 +1,20 @@
 ---
 name: merge-pr
-description: Use this skill when the user asks to merge, land, close out, or verify the merge of a GitHub pull request in the Nova repo. This skill uses the gh CLI to confirm the real PR object, verify mergeability and state, merge with the intended strategy, and then verify that the PR is actually merged and that origin/main moved.
+description: Use this skill when the user asks to merge, land, close out, or verify the merge of a GitHub pull request in the project repo. This skill uses the gh CLI to confirm the real PR object, verify mergeability and state, merge with the intended strategy, and then verify that the PR is actually merged and that the remote default branch moved.
 ---
 
 # Merge PR
 
-Use this skill for merging GitHub pull requests in the Nova repository.
+Use this skill for merging GitHub pull requests in the project repository.
 
-This skill is Nova-specific where it matters:
+Project-specific facts come from profile §Repository (see
+`../references/project-profile.md`): the remote, the default branch (written
+`<default>` below), and the default merge strategy. Throughout:
 
 - use `gh` for PR operations
-- treat `main` as the default merge target unless the user says otherwise
-- prefer a normal merge commit for Nova unless the user explicitly asks for
-  squash or rebase
+- treat `<default>` as the merge target unless the user says otherwise
+- use the profile's merge strategy unless the user explicitly asks for another;
+  if the profile names none, ask
 - verify the actual merged PR state and the updated remote branch before
   reporting success
 - do not trample dirty local worktrees while syncing local branches after merge
@@ -24,7 +26,7 @@ Use this skill when the task is specifically to:
 - merge a PR
 - verify whether a PR was actually merged
 - determine why a PR cannot be merged yet
-- sync local `main` after a PR merge
+- sync local `<default>` after a PR merge
 
 Do not use this skill for PR creation. Use the companion `create-pr` skill for
 that.
@@ -33,8 +35,8 @@ that.
 
 - Use `gh` for all GitHub PR merge operations.
 - Do not claim a PR is merged until `gh pr view` shows `state: MERGED`.
-- Do not assume a successful command means local `main` is current; verify
-  `origin/main`.
+- Do not assume a successful command means local `<default>` is current;
+  verify `origin/<default>`.
 - Do not switch or rebase a dirty local branch without checking whether that
   would preserve local worktree changes.
 
@@ -84,19 +86,16 @@ If merge is blocked, report the blocker instead of forcing the merge.
 
 ### 3. Merge the PR
 
-For Nova, default to a normal merge commit unless the user explicitly asks for
-another strategy.
+Use the profile's merge strategy unless the user explicitly asks for another.
 
 Typical form:
 
 ```bash
-gh pr merge <number> --merge
+gh pr merge <number> --merge|--squash|--rebase
 ```
 
-Only use:
-
-- `--squash` when the user explicitly wants a squash merge
-- `--rebase` when the user explicitly wants a rebase merge
+Use a strategy other than the profile's only when the user explicitly asks
+for it.
 
 If branch deletion is desired, request it explicitly through the `gh` flags
 used at merge time rather than assuming.
@@ -117,7 +116,7 @@ Do not report success until all of these are present:
 
 ### 5. Sync local state carefully
 
-If the user wants local `main` synced after merge:
+If the user wants local `<default>` synced after merge:
 
 1. Inspect the local worktree first.
 
@@ -125,14 +124,14 @@ If the user wants local `main` synced after merge:
 git status --short
 git branch --show-current
 git fetch origin
-git rev-list --left-right --count HEAD...origin/main
+git rev-list --left-right --count HEAD...origin/<default>
 ```
 
 2. If the worktree is clean, fast-path sync:
 
 ```bash
-git switch main
-git pull --rebase origin main
+git switch <default>
+git pull --rebase origin <default>
 ```
 
 3. If the worktree is dirty:
@@ -141,12 +140,12 @@ git pull --rebase origin main
 - preserve local changes first
 - explain exactly what is blocking the sync
 
-## Nova-Specific Defaults
+## Defaults
 
-- Base branch is normally `main`.
-- Merge strategy is normally `--merge`.
+- Base branch is the profile's default branch.
+- Merge strategy is the profile's; ask if it names none.
 - A merged PR should usually be followed by a fetch and branch-divergence check
-  against `origin/main`.
+  against `origin/<default>`.
 - If local worktree changes exist, especially generated files, do not hide them
   during post-merge sync.
 
@@ -165,7 +164,7 @@ before deciding on the next step.
 Do not:
 
 - report a PR as merged based only on command exit status
-- assume local `main` moved just because GitHub merged the PR
+- assume local `<default>` moved just because GitHub merged the PR
 - force a merge strategy the user did not ask for
 - switch/rebase through a dirty local worktree without preserving it
 
@@ -175,7 +174,7 @@ A correct merge result looks like:
 
 - `Merged PR #123: https://github.com/org/repo/pull/123`
 - `Merge commit: abcdef123`
-- `Local main is now X behind origin/main`
+- `Local <default> is now X behind origin/<default>`
 
 or, if blocked:
 

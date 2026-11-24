@@ -68,8 +68,10 @@ Read in order:
 1. project-notes/[slug]/PROJECT.md — goals, criteria, constraints
 2. project-notes/[slug]/PLAN.md — milestone [name]: scope, proof commands
 3. project-notes/[slug]/STATUS.md — current state, baseline
-4. Relevant docs/architecture/ document — component ownership, invariants,
-   change patterns. Use for Abstraction Context and co-required updates.
+4. Governing architecture doc(s) (location: profile §Paths), found per
+   references/architecture-docs.md — component ownership, invariants, change
+   patterns. Use for Abstraction Context and co-required updates. Name any
+   doc gap and any required doc update in the brief.
 5. Source files from PLAN.md
 
 Write project-notes/[slug]/BRIEF.md per orchestrate/references/brief-template.md.
@@ -115,8 +117,9 @@ Milestone: [name]
 Read in order:
 1. project-notes/[slug]/BRIEF.md — your task spec
 2. project-notes/[slug]/PLAN.md — milestone [name] scope and proof
-3. The relevant architecture document in docs/architecture/ — component
-   ownership, invariants, not-responsible-for boundaries, change patterns
+3. The governing architecture doc(s) named in BRIEF.md — component
+   ownership, invariants, not-responsible-for boundaries, change patterns;
+   doc gaps and required doc updates per references/architecture-docs.md
 4. Source files listed in BRIEF.md
 
 [If domain coding rules exist:]
@@ -166,8 +169,8 @@ When you are finished, you must do one of these two things:
 
 You must always finish with one of these. There is no other way to
 end your work. If you fixed part of the problem but a new defect
-blocks the remaining acceptance criteria, file the new defect as a
-GitHub issue and write `[blocked]` with that issue as the blocker.
+blocks the remaining acceptance criteria, file the new defect in
+the project's issue tracker (profile §Repository) and write `[blocked]` with that issue as the blocker.
 If all acceptance criteria pass, write `[done]`.
 
 Report the truthful state: `scaffolded`, `implemented-but-not-exposed`,
@@ -177,7 +180,8 @@ Rules:
 - Stay within BRIEF.md scope
 - Do not refactor surrounding code
 - Format only files intentionally written or modified for this milestone; do
-  not run crate-wide or workspace-wide formatting unless explicitly required
+  not run repo-wide or package-wide formatting unless explicitly required
+  (formatter scope: profile §Formatting)
 - Do not batch independent problems
 - Do not create new phases or silently defer criteria
 ```

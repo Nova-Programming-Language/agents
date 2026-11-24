@@ -1,37 +1,42 @@
 ---
 name: coding
-description: Implement or modify the Nova toolchain safely; use when changing interpreter, frontend, codegen, CLI, tests, or architecture-driven behavior in the Nova repo.
+description: Implement or modify the project's toolchain or code safely; use when changing interpreter, frontend, codegen, CLI, tests, or architecture-driven behavior in the repo.
 ---
 
 # Coding
 
 ## When to Use
 
-Use this skill for Nova repo implementation work — respecting semantic
+Use this skill for repo implementation work — respecting semantic
 constraints, architecture documents, and cross-command behavior.
+
+Project-specific commands, paths, and rules come from the project profile;
+find it per `../references/project-profile.md`.
 
 ## Source of Truth
 
 Read in this order:
 
-1. `docs/agent-rules.md`
+1. the project's rules file (profile §Rules)
 2. `../references/package-onboarding.md` when modifying a package repository
    or package directory
-3. the relevant spec files under `docs/specs/`
-4. the relevant architecture docs under `docs/architecture/`
-5. `docs/architecture/semantic-families.md` when a change may affect a named family across frontend, lowering, and backends
+3. the relevant spec files (profile §Paths)
+4. the relevant architecture docs (profile §Paths)
+5. the project's semantic-families doc (profile §Paths) when a change may affect a named family across frontend, lowering, and backends
 6. `../references/source-of-truth.md`
 7. `../references/artifact-freshness.md`
 8. `../references/runtime-evidence.md` for reproducible runtime bugs
 9. `../references/semantic-family.md` when related constructs may share a family
-10. `references/nova-semantics.md` when language semantics matter
+10. the project's language-semantics notes (profile §Rules) when language
+    semantics matter
 11. the affected code paths
 
 If the spec or architecture is ambiguous, stop and ask.
 
 ## Using Architecture Documents
 
-Before implementing, read the relevant architecture document to answer:
+Find the governing doc for each file you will change per
+`../references/architecture-docs.md`, then answer:
 
 1. **Which component owns this?** Check owned state, invariants, and
    "Not responsible for" boundaries.
@@ -40,7 +45,10 @@ Before implementing, read the relevant architecture document to answer:
 3. **What is forbidden?** Check Missing-Data Behavior / Forbidden Fallbacks.
    Reconstructing data from secondary evidence is a forbidden shortcut.
 
-Flag missing Common Change Patterns coverage as a documentation gap.
+If no doc governs the change, or the doc can't answer these, it is a doc
+gap — handle it per that reference. If your change moves ownership, changes a
+boundary or invariant, or has no matching Common Change Pattern, update the
+doc in the same change (same reference, "When a change must update the doc").
 
 ## Implementation Rules
 
@@ -63,7 +71,7 @@ Flag missing Common Change Patterns coverage as a documentation gap.
 - Rebuild artifacts before validation.
 - Gather runtime evidence before changing code for reproducible bugs.
 - Check for a shared semantic family before adding construct-specific paths.
-- If `docs/architecture/semantic-families.md` names the affected family, update
+- If the project's semantic-families doc names the affected family, update
   the whole family up to the first explicit divergence point; do not
   special-case one member above that layer.
 - Do not route a few built-in or familiar types through a direct path while all
@@ -78,11 +86,11 @@ Flag missing Common Change Patterns coverage as a documentation gap.
   otherwise modify creates diff churn that obscures real changes and
   pollutes git blame.
 - Run formatters only on files intentionally written or modified for the task.
-  Do not run crate-wide or workspace-wide formatting unless explicitly
-  required. Review the resulting diff and revert formatting changes outside
-  the intended edits.
+  Do not run package-wide or workspace-wide formatting unless explicitly
+  required (profile §Formatting). Review the resulting diff and revert
+  formatting changes outside the intended edits.
 - Code and test changes must not introduce warnings on the affected build or
-  crate-test surfaces. Treat new warnings as failures and either fix them or
+  component-test surfaces. Treat new warnings as failures and either fix them or
   report an explicit blocker.
 
 ## Naming
@@ -143,8 +151,8 @@ specialization over separate paths.
 
 ## Cross-Command Audit
 
-For shared behavior, audit: `nova run`, `nova check`, `nova repl`,
-`nova test`, `nova doc`, `nova-test-runner`, compiled backend paths.
+For shared behavior, audit every user-facing command surface and execution
+path listed in profile §Command surfaces, not one happy path.
 
 ## Validation Strategy
 
@@ -155,11 +163,11 @@ rebuild if needed, state what was rebuilt.
 - Run the owning component's suite once at the milestone gate.
 - Run broader/canonical regression only at approved production-changing
   milestone gates and final release, not after each file or checkpoint.
-- Use `scripts/run-nova-full-regression.sh check` for full-suite regression.
-- Use `cargo check -p <crate>` / `cargo test -p <crate>` for crate-local.
-- Prefer a warning-deny check such as `RUSTFLAGS="-D warnings" cargo test
-  -p <crate> --no-run` when the change touches Rust code or tests that emit
-  warnings only under test compilation.
+- Use the full-suite regression command from profile §Regression.
+- Use the component-local check and test commands from profile §Build and
+  §Tests.
+- Prefer the warning-deny check from profile §Build when the change touches
+  code or tests that emit warnings only under test compilation.
 - Use `../references/artifact-freshness.md` when consuming release artifacts.
 
 ## Architecture-Driven Work
@@ -186,4 +194,4 @@ rules, record the conflict and follow the brief — the audit catches problems.
 - `../references/artifact-freshness.md`
 - `../references/runtime-evidence.md`
 - `../references/semantic-family.md`
-- `references/nova-semantics.md`
+- `../references/project-profile.md`

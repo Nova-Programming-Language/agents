@@ -29,7 +29,8 @@ a new project.
 
 ## Read First
 
-- `docs/agent-rules.md`
+- the project profile (`../references/project-profile.md` says how to find it)
+- the project's rules file (profile §Rules)
 - `references/stage-checklists.md`
 - `references/project-template.md`
 - `references/plan-template.md`
@@ -47,10 +48,10 @@ a new project.
 | Stage | Required skills |
 |---|---|
 | Requirements | `project-creation`, `prd` when needed |
-| Architecture | `project-creation`, `design`, `review-nova` |
-| Implementation Plan | `project-creation`, `review-nova` |
+| Architecture | `project-creation`, `design`, `critique` |
+| Implementation Plan | `project-creation`, `critique` |
 | Implementation | `coding` directly, or via `orchestrate` for agent-driven work |
-| Validation | `regressions`, `building`; `debug-nova` when needed |
+| Validation | `regressions`, `building`; `debug` when needed |
 | Commit/push | `checkin` |
 
 See `references/stage-checklists.md` for exit criteria per stage.
@@ -104,7 +105,8 @@ name a concrete software task.
 
 ## Open These References As Needed
 
-- `../references/nova-delivery-checks.md`
+- `../references/project-profile.md`; the project's delivery checks (profile
+  §Delivery checks)
 - `references/stage-checklists.md`
 - `references/project-template.md`
 - `references/plan-template.md`

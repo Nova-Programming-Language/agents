@@ -1,8 +1,9 @@
 # Project Stage Checklists
 
 Use this file after reading `PROJECT.md`, `PLAN.md`, and `STATUS.md`.
-Use `../../references/nova-delivery-checks.md` when filling or critiquing the
-project artifacts.
+Use the project's delivery checks (profile §Delivery checks, per
+`../../references/project-profile.md`) when filling or critiquing the project
+artifacts.
 
 ## Requirements
 
@@ -17,7 +18,8 @@ Agent actions:
 - identify the owning components
 - decide whether `PRD.md` is required or `PRD: N/A` is the correct choice
 - if needed, create or update `PRD.md`
-- record affected Nova surfaces and authoritative docs explicitly
+- record affected command surfaces (profile §Command surfaces) and
+  authoritative docs explicitly
 - record required links for PRD, architecture docs, and implementation plan
 - create the project folder and seed the artifacts if they do not exist
 
@@ -32,7 +34,7 @@ Exit criteria:
 - acceptance criteria are explicit
 - in-scope and out-of-scope are explicit
 - the PRD link is either real or `N/A` with a reason
-- affected Nova surfaces and authoritative docs are explicit
+- affected command surfaces and authoritative docs are explicit
 - required links section exists and no entry is implicit
 - current lifecycle stage is recorded
 
@@ -47,7 +49,7 @@ Required skills:
 
 - `project-creation`
 - `design` when architecture docs need to be created or updated
-- `review-nova` before human feedback
+- `critique` before human feedback
 
 Agent actions:
 
@@ -55,7 +57,7 @@ Agent actions:
 - if not, create or update the required architecture docs
 - run an AI critique pass on the resulting draft before human review
 - record authoritative docs and locked design decisions in `PROJECT.md`
-- record affected Nova surfaces and contract boundaries explicitly
+- record affected command surfaces and contract boundaries explicitly
 - identify shared semantic families, divergence points, and source-of-truth
   boundaries
 
@@ -68,7 +70,7 @@ Required artifact updates:
 Exit criteria:
 
 - authoritative architecture source is linked
-- affected Nova surfaces and contract boundaries are explicit
+- affected command surfaces and contract boundaries are explicit
 - missing-data behavior and forbidden fallbacks are clear
 - the draft has an explicit critique verdict before human feedback
 - any required architecture doc updates are done or an explicit blocker exists
@@ -83,7 +85,7 @@ Escalate if:
 Required skill:
 
 - `project-creation`
-- `review-nova` before human feedback
+- `critique` before human feedback
 
 Agent actions:
 
@@ -110,7 +112,7 @@ Exit criteria:
 - no milestone is a thin slice justified only by time, file count, context
   size, or a failing test
 - required validation is defined in command-level terms, not just directories
-- affected Nova surfaces and proof commands are explicit
+- affected command surfaces and proof commands are explicit
 - the plan has an explicit critique verdict before human feedback
 
 Escalate if:
@@ -166,7 +168,7 @@ Required skills:
 
 Conditional skill:
 
-- `debug-nova`
+- `debug`
 
 Agent actions:
 

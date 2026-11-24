@@ -1,6 +1,6 @@
 ---
 name: checkin
-description: Create commits, rebase onto upstream, and push Nova repo changes; use when the user asks to commit, sync, or publish work.
+description: Create commits, rebase onto upstream, and push project repo changes; use when the user asks to commit, sync, or publish work.
 ---
 
 # Checkin
@@ -23,23 +23,26 @@ or publish work to the remote repository.
 
 ## Required Inspection Commands
 
+The remote and default branch come from profile §Repository (see
+`../references/project-profile.md`); below they are `origin` and `<default>`.
+
 ```bash
 git fetch origin
 git branch --show-current
-git rev-list --left-right --count HEAD...origin/main
-git log --oneline --decorate --left-right HEAD...origin/main -n 10
+git rev-list --left-right --count HEAD...origin/<default>
+git log --oneline --decorate --left-right HEAD...origin/<default> -n 10
 git status --short
 git diff --stat
 ```
 
 ## Rebase Policy
 
-- If local is behind upstream, recommend rebasing onto `origin/main` before
-  push.
+- If local is behind upstream, recommend rebasing onto `origin/<default>`
+  before push.
 - Prefer:
 
 ```bash
-git pull --rebase origin main
+git pull --rebase origin <default>
 ```
 
 - Do not create a merge commit unless the user explicitly wants that.
@@ -63,11 +66,13 @@ git pull --rebase origin main
   agents. Prefer messages that capture the concrete behavior change, important
   semantic or ownership clues, key validation commands, and any still-relevant
   blockers when that context will help a later coding session.
-- Reference GitHub issues in the commit message:
-  - If the commit fully fixes an issue: `Fixes #123` (GitHub auto-closes it)
-  - If the commit partially addresses an issue: `Progress on #123` or
-    `Addresses #123 — [what this commit does toward the fix]`
-  - If the commit is related but does not fix: `Related to #123`
+- Reference tracker issues in the commit message, using the tracker's
+  linking syntax from profile §Repository:
+  - If the commit fully fixes an issue: the closing form (the tracker
+    auto-closes it)
+  - If the commit partially addresses an issue: a progress form, saying
+    what this commit does toward the fix
+  - If the commit is related but does not fix: a related-to form
   - Check the issue tracker before committing — if the work was driven by
     an issue, the commit must reference it. Do not leave the connection
     implicit.
@@ -98,14 +103,12 @@ git push origin <branch>
 
 Use repo judgment:
 
-- small CLI/interpreter change: rerun targeted `cargo check` or targeted tests
+- small change: rerun the targeted build check (profile §Build) or targeted
+  tests (profile §Tests)
 - broader change: suggest or run the relevant regression workflow
 
-For full-suite regression, prefer:
-
-```bash
-scripts/run-nova-full-regression.sh check
-```
+For full-suite regression, use the full-regression command in profile
+§Regression.
 
 ## Communication Expectations
 

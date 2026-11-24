@@ -1,116 +1,75 @@
 # Regression Workflows
 
 Use this file after deciding whether you need targeted validation or the
-canonical full-suite tracker.
+canonical full-suite tracker. The concrete commands, flags, paths, and
+artifact names are in the project profile
+(`../../references/project-profile.md`): test commands in §Tests, full
+regression in §Regression, containers in §Environments.
 
 ## Targeted Validation
 
 Use one of three command families: targeted file/filter runs, directory/subtree
-runs, or canonical full regression through `scripts/run-nova-full-regression.sh`.
+runs, or canonical full regression through the full-regression script
+(profile §Regression).
 
-For the first two, `nova test` already records exact-scope local state by
-default. Use `--report-json` or `--artifacts-dir` only for explicit exports or
-overrides.
+For the first two, check profile §Tests for whether the test runner records
+scoped results by default; use its explicit export or artifact-directory
+options only for exports or overrides.
 
-Rust crate validation:
+Kinds of targeted validation, each with commands in profile §Tests:
 
-```bash
-cargo check -p nova-cli
-cargo test -p nova-cli <filter>
-```
+- **Crate/unit validation**: compile check plus filtered unit tests for the
+  changed crate or module.
+- **Targeted test-runner validation**: one directory, one file, or one
+  name filter, optionally pinned to a single engine or backend.
+- **Directory/subtree validation**: a subtree of the test tree.
+- **Compiled differential validation**: refresh the runtime libraries first
+  (`../../references/artifact-freshness.md`), then run the tests in the mode
+  that exercises every engine. Read per-engine outcomes and divergence from
+  the structured report fields profile §Tests names, never from the
+  human-readable message.
+- **Failure investigation**: rerun the last failures, or replay them from the
+  last recorded snapshot without executing.
 
-Targeted Nova interpreter/test-runner validation:
+Scoped run notes:
 
-```bash
-cargo run -- test tests/unit/ --backend interpreter
-cargo run -- test tests/compile_errors/
-cargo run -- test tests/unit/math_tests.nova
-cargo run -- test tests/unit/ --filter select
-```
-
-Directory/subtree validation:
-
-```bash
-cargo run -- test tests/unit/concurrency/ --backend interpreter
-cargo run -- test tests/build/
-```
-
-Compiled differential validation (bare `nova test` runs the interpreter and
-the C backend; a second `--backend c` run is not needed for C coverage):
-
-```bash
-cargo build --release -p nova-async-rt
-make -C runtime
-cargo run -- test tests/unit/
-```
-
-In the report (`last_run.json`, `--report-json`, `schema_version` 2) each
-differential program case carries `compiled` and `interpreter` (`outcome`,
-`exit_code`) and `divergence` (`kind`, `detail`); the summary prints the
-per-engine breakdown under `build tests` (`divergences` counts engine
-divergences only; `not compared` counts cases whose engines never ran side by
-side, such as build errors and timeouts). Read engine outcomes from those
-fields, never from `message`.
-
-CLI/test-runner failure investigation:
-
-```bash
-cargo run -- test --failed
-cargo run -- test --failed --from-last
-```
-
-Scoped `nova test` notes:
-
-- use the printed `Scope` and `Recorded` blocks to confirm exact scope and
-  stored paths
-- `--from-last` reads the current exact-scope snapshot only
-- `nova test tests/` and `nova test examples/` are still scoped `nova test`
-  runs, not canonical full regression
+- use what the runner prints to confirm exact scope and stored paths
+- replaying the last failures reads the current scope's snapshot only
+- a scoped run over the whole test or examples tree is still a scoped run,
+  not canonical full regression
 
 ## Canonical Full Regression
 
-Primary commands:
+Primary commands (profile §Regression): run-and-compare (optionally marked as
+a candidate with a note), the failure view, the run list, run detail,
+run-and-promote baseline, and promote-an-existing-run as baseline.
 
-```bash
-scripts/run-nova-full-regression.sh check
-scripts/run-nova-full-regression.sh check --candidate --note "ready for review"
-scripts/run-nova-full-regression.sh failed
-scripts/run-nova-full-regression.sh list
-scripts/run-nova-full-regression.sh show
-scripts/run-nova-full-regression.sh baseline
-scripts/run-nova-full-regression.sh baseline set last-run
-```
+Core semantics to confirm in profile §Regression:
 
-Core semantics:
+- a check run records an immutable full run and compares it against the
+  baseline and other reference runs
+- the failure view is the primary machine-readable failure output
+- the run list and run detail recover cross-session run context
+- promoting a recorded run to baseline does not rerun it
+- per-case failure artifacts are stored alongside the suite reports; prefer
+  those over the full run log when drilling into one failing case
 
-- `check` or `run` records an immutable full run and compares it against
-  `baseline`, `previous-run`, and `best-recorded`
-- `failed` is the primary machine-readable failure view
-- `list` and `show` recover cross-session run context
-- `baseline set <run-ref>` promotes a recorded run without rerunning
-- full regression stores per-case failure artifacts alongside the suite reports;
-  prefer those over `full-run.log` when drilling into one failing case
-
-Run references:
-
-- `last-run`
-- `previous-run`
-- `last-clean`
-- `baseline`
-- `best-recorded`
+Run references (named runs such as the last run, the previous run, the last
+clean run, the baseline, the best recorded run) are listed in profile
+§Regression.
 
 Default agent loop:
 
-1. `scripts/run-nova-full-regression.sh check`
-2. `scripts/run-nova-full-regression.sh failed`
+1. run the full-regression check
+2. read the failure view
 3. pivot to targeted reruns
-4. promote only with `baseline set <run-id>` when intended
+4. promote a baseline only deliberately, from a named recorded run
 
 ## Starting a Long Run Detached (survives task kills)
 
-A full run takes ~25–40 minutes (more with the cargo workspace suite chained
-after it). Two failure modes lose the run if it is launched carelessly, both
-observed 2026-08-29:
+A full run can take tens of minutes or more (profile §Regression gives the
+expected duration). Two failure modes lose the run if it is launched
+carelessly, both observed 2026-08-29:
 
 1. Background Bash calls are killed at the ~10-minute cap **by process
    group**, so a `nohup`'d job launched inside the same
@@ -123,126 +82,75 @@ The pattern that survives:
 
 ```bash
 # 1. Launch in a QUICK FOREGROUND Bash call (returns immediately; the
-#    child survives across tool calls on macOS — setsid does not exist there):
-nohup bash -c 'scripts/run-nova-full-regression.sh check \
-  && cargo test --workspace --exclude nova-codegen-llvm; \
+#    child survives across tool calls on macOS — setsid does not exist there).
+#    <gate command> is the full-regression gate from profile §Regression.
+nohup bash -c '<gate command>; \
   echo "GATE_EXIT_CODE=$?"' > "$SCRATCHPAD/full-gate.log" 2>&1 < /dev/null &
 disown $!
 echo $! > "$SCRATCHPAD/full-gate-pid"
 ```
 
 2. Watch with the **Monitor tool**, not a background sleep loop: a poll
-   loop (sleep 30) that emits shard-count progress
-   (`find <run-dir>/tests-shards -name report.json | wc -l` against the
-   shard total), fires immediately on failure signatures
-   (`test result: FAILED`, `error: test failed`,
-   `new regressions detected`), and exits with a terminal event when the
-   pid dies, printing the log's last `GATE_EXIT_CODE` /
-   `clean versus baseline` lines. Set the Monitor timeout to the full
-   expected duration (up to 60 minutes); re-arm on expiry.
+   loop (sleep 30) that emits progress (the progress signal profile
+   §Regression names, such as completed shards against the shard total),
+   fires immediately on failure signatures (the failure strings profile
+   §Regression lists), and exits with a terminal event when the
+   pid dies, printing the log's last `GATE_EXIT_CODE` line and verdict
+   line. Set the Monitor timeout to the full expected duration (up to
+   60 minutes); re-arm on expiry.
 
 3. The `echo "GATE_EXIT_CODE=$?"` trailer gives the watcher an
    unambiguous terminal signature; cover failure states in the filter,
    not just success.
 
-If the session loses the log anyway, the run itself is durable:
-`tests/.nova/full-regression/runs/<run-id>/` plus `list` / `show` recover
-everything, and a per-shard `report.json` count tells you how far it got.
+If the session loses the log anyway, the run itself is durable when the
+regression tool records runs: the recorded run directory (profile
+§Regression) plus the run list and run detail views recover everything, and
+the progress signal tells you how far it got.
 
 ## Comparison Verdict Versus Absolute Result
 
 These answer different questions, and only one of them is what a reader assumes
 "the regression passed" means:
 
-- **Comparison**: `new_failures`, `fixed_failures`, `unchanged_failures` in
-  `last-run-vs-baseline.json`, and the verdict (`regression`, `clean`,
-  `stable_failing`, `no_baseline`). All are relative to the recorded baseline.
-- **Absolute**: the failure `total` in `failures.json`, the per-suite counts in
-  the run manifest, and the process exit status.
+- **Comparison**: new, fixed, and unchanged failure counts in the
+  baseline-comparison artifact, and the verdict (regression, clean,
+  stable-failing, no-baseline). All are relative to the recorded baseline.
+- **Absolute**: the total failure count, the per-suite counts in the run
+  manifest, and — when it follows the total — the process exit status.
 
-`check` exits `0` if and only if zero cases failed, and `1` if any case failed.
-The status follows the absolute total, not the comparison.
+Profile §Regression names the artifacts and fields for each, and says which
+one the exit status follows.
 
 Two consequences worth holding onto:
 
-- A run with four long-standing failures already recorded in the baseline
-  reports `new_failures: 0` and a non-regression verdict. That is a correct
-  comparison result, it is not a clean suite, and it exits `1`.
-- A missing baseline does not fail a run. `no_baseline` with zero failures
-  exits `0`; promote a baseline when you want comparisons, not to make a run
-  pass.
+- A run whose long-standing failures are already recorded in the baseline
+  reports zero new failures and a non-regression verdict. That is a correct
+  comparison result; it is not a clean suite.
+- A missing baseline is a bookkeeping state, not a failure. Promote a baseline
+  when you want comparisons, not to make a run pass.
 
 State the absolute failure count whenever you report a regression result, and
 identify the known-failing cases by name so they stay visible. When the
-question is whether anything got worse, read `summary.new_failures` from the
+question is whether anything got worse, read the new-failure count from the
 comparison artifact rather than the exit status.
 
 ## Full Regression Artifacts
 
-Stable aliases under `tests/.nova/full-regression/`:
-
-- `refs.json`
-- `last-run-manifest.json`
-- `last-run-failures.json`
-- `last-run-vs-baseline.json`
-- `last-run-vs-previous.json`
-- `last-run-vs-best-recorded.json`
-- `runs/<run-id>/`
+Profile §Regression lists the stable artifact locations (reference-run map,
+last-run manifest, last-run failures, comparisons against baseline, previous,
+and best-recorded runs, and per-run directories), the structured failure
+record format with an example, and the meaning of each field.
 
 Structured failure entries carry enough context to classify, triage, and fix
-failures without parsing raw compiler output. Example record from
-`failed --json`:
+failures without parsing raw compiler output. Expect fields covering
+classification relative to the comparison target, canonical case identity,
+status, message, likely owning subsystem, failing phase, per-case artifact
+paths, and an exact rerun command for that single failure.
 
-```json
-{
-  "classification": "new_in_last_run",
-  "case_id": "interpreter::unit::standard::tests/unit/math_tests.nova::integer_overflow",
-  "engine": "interpreter",
-  "form": "unit",
-  "tier": "standard",
-  "file": "tests/unit/math_tests.nova",
-  "case_name": "integer_overflow",
-  "source_case_key": "math_tests::integer_overflow",
-  "status": "fail",
-  "message": "expected 0, got 4294967295",
-  "owner": "frontend",
-  "phase": "execution",
-  "artifacts": [
-    "runs/20260329-143012/cases/interpreter-unit-standard-math_tests-integer_overflow/stderr.txt",
-    "runs/20260329-143012/cases/interpreter-unit-standard-math_tests-integer_overflow/diff.txt"
-  ],
-  "rerun_hint": "cargo run -- test tests/unit/math_tests.nova --filter integer_overflow"
-}
-```
+## Pinned Container Path
 
-Field reference:
+Container build, start, prepare, and regression commands are in profile
+§Environments.
 
-| Field | Meaning |
-|---|---|
-| `classification` | Relationship to comparison target — `new_in_last_run`, `persistent`, `fixed_in_last_run`, `improvement` |
-| `case_id` | Canonical identity: `engine::form::tier::file::case_name` |
-| `engine` | `interpreter` or `compiled` |
-| `form` | `unit`, `program`, or `diagnostic` |
-| `tier` | `standard` or `e2e` |
-| `file` | Test source file path |
-| `case_name` | Individual test case within the file |
-| `source_case_key` | Source-level key (module::case) for cross-engine matching |
-| `status` | `fail`, `not_compilable`, `discovery_error`, or `infra_error` |
-| `message` | Human-readable failure summary |
-| `owner` | Subsystem that likely owns the defect: `frontend`, `interpreter`, `c-backend`, `runtime`, `tests`, `cli` |
-| `phase` | Where execution failed: `compilation`, `execution`, `discovery`, `infra` |
-| `artifacts` | Per-case failure files (stderr, diff, IR dumps) under the run directory |
-| `rerun_hint` | Exact command to reproduce this single failure |
-
-The output of `failed --json` is a JSON array of these records.
-
-## x86 Container Path
-
-```bash
-scripts/nova-x86-container.sh build-image
-scripts/nova-x86-container.sh start
-scripts/nova-x86-container.sh prepare
-scripts/nova-x86-container.sh regression check
-```
-
-Use this when Linux/x86_64 reproducibility matters.
+Use this when reproducibility on the pinned platform matters.

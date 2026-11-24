@@ -1,19 +1,21 @@
 ---
 name: design
-description: Write or update Nova architecture documents in docs/architecture; use when planning or refactoring a component before implementation.
+description: Write or update project architecture documents; use when planning or refactoring a component before implementation.
 ---
 
 # Design
 
 ## When to Use
 
-Creating or revising architecture documents in `docs/architecture/`.
+Creating or revising architecture documents in the project's architecture
+docs directory (profile §Paths; find the profile per
+`../references/project-profile.md`).
 
 ## Inputs
 
-1. Relevant spec files in `docs/specs/`
-2. Related architecture documents in `docs/architecture/`
-3. `docs/agent-rules.md`
+1. Relevant spec files (profile §Paths)
+2. Related architecture documents (profile §Paths)
+3. The project's rules file (profile §Rules)
 4. `../references/source-of-truth.md`
 5. `../references/semantic-family.md`
 
@@ -48,7 +50,10 @@ If these are unclear, the boundary is not well-defined. Redesign first.
 ## Document Structure
 
 ### 1. Header and Cross-References
-Status, date, links to related docs and specs.
+Status, date, links to related docs and specs. Add or update this doc's rows
+in the project's architecture map (the source paths it governs) — skills use
+the map to find the doc for a changed file. See
+`../references/architecture-docs.md`.
 
 ### 2. Executive Summary
 2-4 paragraphs: what the component does, its output contract, key
@@ -122,7 +127,7 @@ State what, why, and what it prevents. See `references/document-quality.md`.
   conversion, a resolved target, an ownership choice) is recorded once where
   it is decided and applied at one point per consumer; no later phase or
   engine derives it again.
-- Run `review-nova` before requesting human feedback.
+- Run `critique` before requesting human feedback.
 - If a spec is ambiguous, ask — don't freeze ambiguity into architecture.
 
 ## Cross-Document Audit
@@ -138,7 +143,8 @@ change patterns apply.
 
 ## Exemplar
 
-`docs/architecture/frontend-architecture.md` demonstrates the quality bar.
+The exemplar architecture doc named in profile §Paths demonstrates the
+quality bar.
 
 ## References
 

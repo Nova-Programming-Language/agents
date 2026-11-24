@@ -1,4 +1,4 @@
 interface:
   display_name: "Issues"
-  short_description: "Report and fix bugs via GitHub issues"
-  default_prompt: "Use issues to file or fix GitHub issues"
+  short_description: "Report and fix bugs via the project issue tracker"
+  default_prompt: "Use issues to file or fix tracker issues"

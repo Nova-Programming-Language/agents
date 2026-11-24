@@ -1,96 +1,58 @@
 # Build Recipes
 
-Use this file after the SKILL tells you which build surface you need.
+Use this file after the SKILL tells you which build surface you need. The
+commands for each surface are in the project profile
+(`../../references/project-profile.md`); this file says which surface to use
+and what each one does and does not refresh.
 
-## Fast Rust Validation
+## Fast Validation
 
-```bash
-cargo check -p nova-cli
-cargo check -p nova-interpreter -p nova-cli -p nova-test-runner
-```
+A compile-only check of the affected crates or modules (profile §Build). It
+proves the code compiles; it executes nothing, so artifact freshness is not a
+concern.
 
 ## Debug Builds
 
-```bash
-cargo build -p nova-cli
-cargo test -p nova-cli
-```
-
-These keep debug Rust artifacts fresh. They do not refresh the release CLI or
-the runtime libraries used by compiled/runtime-linked paths.
+Debug build and unit-test commands (profile §Build). These keep debug
+artifacts fresh. They do not refresh the release CLI or the runtime libraries
+used by compiled/runtime-linked paths.
 
 ## Release Surfaces
 
-Release CLI:
+- **Release CLI**: the release build command, and the preferred CLI
+  invocation after it (profile §Build).
+- **Runtime artifacts** used by compiled/runtime-linked paths: their rebuild
+  commands (profile §Build).
 
-```bash
-cargo build --release -p nova-cli
-```
+An invocation that builds the CLI as part of the command cannot leave the CLI
+stale. If the command exercises compiled/runtime-linked behavior, refresh the
+runtime surfaces first -- the CLI invocation does not do that for you.
 
-Preferred Nova CLI invocation after that build:
-
-```bash
-cargo run --release -q -p nova-cli -- check ...
-cargo run --release -q -p nova-cli -- test ...
-cargo run --release -q -p nova-cli -- build ...
-```
-
-Runtime artifacts used by compiled/runtime-linked paths:
-
-```bash
-cargo build --release -p nova-async-rt
-make -C runtime
-```
-
-Invoking the CLI through Cargo builds it as part of the command, so the
-release CLI cannot be stale for that invocation. If the command exercises
-compiled/runtime-linked behavior, refresh both runtime surfaces first --
-Cargo does not do that for you.
-
-Use the debug CLI, `cargo run -q -p nova-cli -- ...`, only when you
-intentionally want it, for example while debugging Rust-side CLI behavior. It
-builds a separate set of large debug artifacts.
+Use the debug CLI only when you intentionally want it, for example while
+debugging the CLI's own behavior. It builds a separate set of large debug
+artifacts.
 
 ## Canonical Full Regression
 
-```bash
-scripts/run-nova-full-regression.sh check
-scripts/run-nova-full-regression.sh baseline
-```
+The full-regression command and its baseline command (profile §Regression).
+Profile §Regression also says which artifacts that script rebuilds itself;
+when it rebuilds the CLI and runtime libraries, no manual rebuild is needed
+first.
 
-That script already rebuilds:
+## Pinned Container
 
-- the release `nova` CLI
-- the release `libnova_async_rt.*`
-- `runtime/libnova_runtime.a`
+The container lifecycle (build image, start, prepare, run regression) and
+one-off exec/status commands are in profile §Environments.
 
-## x86 Container
-
-Canonical container workflow:
-
-```bash
-scripts/nova-x86-container.sh build-image
-scripts/nova-x86-container.sh start
-scripts/nova-x86-container.sh prepare
-scripts/nova-x86-container.sh regression check
-```
-
-Useful one-offs:
-
-```bash
-scripts/nova-x86-container.sh exec 'cargo build -p nova-cli'
-scripts/nova-x86-container.sh exec '/tmp/nova-target/release/nova test tests/unit/ --verbose'
-scripts/nova-x86-container.sh status
-```
-
-Use `prepare` before trusting existing container binaries or runtime artifacts.
+Use the prepare step before trusting existing container binaries or runtime
+artifacts.
 
 ## Quick Heuristics
 
-- CLI-only or interpreter-only change: start with `cargo check`.
-- Routine Nova package or repo validation: prefer
-  `cargo run --release -q -p nova-cli -- ...`, which builds the release CLI as
-  part of the command.
+- Change that touches no runtime or compiled-backend code (for example CLI- or
+  interpreter-only): start with the compile-only check.
+- Routine package or repo validation: prefer the release CLI invocation that
+  builds the CLI as part of the command (profile §Build).
 - Runtime or compiled-backend change: rebuild release CLI plus runtime
   libraries, or use the canonical full regression script.
 - Release-path bug: do not trust debug-only validation.

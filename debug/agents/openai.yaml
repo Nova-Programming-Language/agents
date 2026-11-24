@@ -1,0 +1,4 @@
+interface:
+  display_name: "Debug"
+  short_description: "Debug failures and compiled binaries with a debugger"
+  default_prompt: "Use $debug to debug this failure or compiled native binary with the project's debugger workflows."

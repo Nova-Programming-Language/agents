@@ -7,11 +7,11 @@
 
 - what this plan delivers:
 
-## Nova Scope
+## Project Scope
 
-- affected Nova surfaces:
+- affected command surfaces (profile §Command surfaces):
 - authoritative docs:
-- metadata / `prelude.novi` / runtime ABI impact:
+- project-specific impact areas (profile §Delivery checks):
 - behavior that must fail loudly if invalid or missing:
 
 ## Milestones
@@ -47,13 +47,7 @@ proof or an explicit blocker; compilation and declarations do not count.
 
 ## Cross-Command Impact
 
-- `nova run`
-- `nova check`
-- `nova repl`
-- `nova test`
-- `nova doc`
-- `nova-test-runner`
-- compiled backend paths
+- [one line per command surface listed in profile §Command surfaces]
 
 Mark only the paths that actually apply.
 

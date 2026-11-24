@@ -9,10 +9,10 @@
 - intended outcome:
 - target users or workflows:
 
-## Affected Nova Workflows
+## Affected Workflows
 
-- affected Nova commands or workflows:
-- user-visible Nova behavior changing:
+- affected commands or workflows (profile §Command surfaces):
+- user-visible behavior changing:
 - behavior that must remain unchanged:
 
 ## Why This Matters
@@ -49,7 +49,7 @@
 Acceptance criteria should be concrete enough that `PROJECT.md`, `PLAN.md`, and
 validation work can map them to exact proof later.
 
-## Nova Constraints
+## Project Constraints
 
 - relevant specs or architecture docs:
 - missing-data or invalid-state behavior that must be loud:

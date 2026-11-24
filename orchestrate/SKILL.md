@@ -46,7 +46,7 @@ measured to exist inside it.
 that changes run-time values, or that must be enforced in more than one
 engine or entry point. A design states the representation, the single home
 of the rule, and the internal error raised when it is bypassed; it gets a
-`review-nova` critique before the brief. No brief is written from approved
+`critique` critique before the brief. No brief is written from approved
 rule text alone.
 
 ### 1. Brief (agent)
@@ -98,8 +98,8 @@ for the next milestone's audit diff.
 ### 6. Between milestones (orchestrator)
 After commit: run the validation gate assigned by PLAN.md, check plan
 coherence, and check cumulative progress. Run exhaustive tests (full
-regression, corpus walks, whole-crate or whole-CLI suites) only at the end of
-a milestone; between commits and checkpoints, run only the build and the tests
+regression and the other whole-component tiers in profile §Regression) only at
+the end of a milestone; between commits and checkpoints, run only the build and the tests
 that own the changed code.
 See `references/decision-protocol.md`.
 
@@ -127,8 +127,8 @@ The orchestrator picks each spawned agent's model; don't ask the user. Pass
 
 | Work | Model | Why |
 |---|---|---|
-| Audits (step 3), class-coverage audits, review-nova critiques of spec drafts and plans | `fable` | Highest-stakes judgement. A different model from the implementer also gives a reading that isn't anchored on the implementer's reasoning. |
-| Milestone briefs (step 1) | `fable` | The brief fixes the representation, the single home of each rule and the acceptance; errors there cause the repeated audit failures. (User request, 2026-11-16.) The brief's review-nova critique still runs, so brief and critique are both fable. |
+| Audits (step 3), class-coverage audits, critique critiques of spec drafts and plans | `fable` | Highest-stakes judgement. A different model from the implementer also gives a reading that isn't anchored on the implementer's reasoning. |
+| Milestone briefs (step 1) | `fable` | The brief fixes the representation, the single home of each rule and the acceptance; errors there cause the repeated audit failures. (User request, 2026-11-16.) The brief's critique critique still runs, so brief and critique are both fable. |
 | Implementation (step 2), scouts, debugging, spec drafting | `opus` (or inherit) | Long, multi-step code and spec work. |
 | Mechanical work: filing issues from written notes, repro sweeps, disk/build/state checks, copying results | `sonnet` | The inputs are already written down; the task needs no deep judgement. |
 
@@ -278,6 +278,8 @@ the authoritative signal.
 
 ## References
 
+- `../references/project-profile.md` — where project commands, paths, and
+  conventions live (cited as "profile §Section")
 - `../references/package-onboarding.md` — mandatory delegated onboarding for
   package-repository work
 - `../references/failure-attribution.md` — which component owns a defect,

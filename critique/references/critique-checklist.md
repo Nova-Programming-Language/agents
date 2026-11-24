@@ -1,7 +1,7 @@
-# Nova Draft Critique Checklist
+# Draft Critique Checklist
 
 Use for architecture drafts and implementation plans before human review.
-Read `../../references/nova-delivery-checks.md` first for multi-session
+Read `../../references/delivery-checks.md` first for multi-session
 projects. Read `../../design/references/document-quality.md` for standards.
 
 ## Architecture Drafts
@@ -9,6 +9,7 @@ projects. Read `../../design/references/document-quality.md` for standards.
 ### Structure
 - Executive summary (2-4 paragraphs, not a one-line purpose statement)?
 - Process view or pipeline diagram?
+- The project's architecture map has rows for the source paths this doc governs?
 - Every component has **Invariant** and **Not responsible for** callouts?
 - Common Change Patterns section (not optional)?
 - Missing-Data / Forbidden Fallbacks section?
@@ -27,7 +28,7 @@ projects. Read `../../design/references/document-quality.md` for standards.
 ### Technical completeness
 - Contract definition, affected command surfaces, authoritative doc links
 - Source-of-truth ownership, required-data behavior, loud-failure behavior
-- Metadata contract / runtime / compiled-backend implications
+- Project contract / runtime / backend implications (profile §Delivery checks)
 - No fallback-friendly wording, no syntax-shaped special casing
 - Divergence points, validation/invariants, cross-surface parity
 - Realistic phase sequencing
@@ -48,7 +49,8 @@ projects. Read `../../design/references/document-quality.md` for standards.
   canonical/full regression only at defined production-changing gates/final
   release
 - Negative validation, loud-failure validation
-- Interpreter/compiled parity, build prerequisites
+- Parity across engines/backends (profile §Delivery checks), build
+  prerequisites
 - Blocker handling, next-step granularity
 - Steps don't imply multi-concern functions
 

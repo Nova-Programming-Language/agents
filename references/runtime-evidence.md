@@ -25,10 +25,11 @@ can name it, prefer evidence collection.
 
 ## Tool Choice
 
-- Prefer LLDB when one breakpoint or a short stepping session can answer the
-  question.
+- Prefer the debugger (entrypoints in profile §Debugging; see
+  `project-profile.md`) when one breakpoint or a short stepping session can
+  answer the question.
 - Prefer narrow tracing when the behavior spans many iterations, async
-  boundaries, or timing-sensitive control flow that LLDB would distort.
+  boundaries, or timing-sensitive control flow that a debugger would distort.
 - Prefer broader code reading only when the problem is architectural,
   non-reproducible, or the likely runtime surface is still unclear.
 

@@ -1,27 +1,28 @@
 ---
-name: review-nova
-description: Critique Nova architecture drafts, implementation plans, and major project artifacts before human review; use after drafting and before requesting or acting on human feedback.
+name: critique
+description: Critique architecture drafts, implementation plans, and major project artifacts before human review; use after drafting and before requesting or acting on human feedback.
 ---
 
-# Review Nova
+# Critique
 
 ## When to Use
 
-Use this skill after drafting a Nova architecture document or implementation
+Use this skill after drafting an architecture document or implementation
 plan and before requesting or acting on human feedback.
 
 Typical targets:
 
-- architecture docs in `docs/architecture/`
-- `project-notes/<slug>/PLAN.md`
+- architecture docs (profile §Paths)
+- project plans (`PLAN.md` in the project notes directory, profile §Paths)
 - other major project artifacts that define contracts, sequencing, or proof
 
 ## Read First
 
-- `docs/agent-rules.md`
+- `../references/project-profile.md`, then the project's rules file
+  (profile §Rules)
 - `../references/source-of-truth.md`
 - `../references/semantic-family.md`
-- `../references/nova-delivery-checks.md`
+- `../references/delivery-checks.md`
 - `references/critique-checklist.md`
 
 ## Non-Negotiable Rules
@@ -32,7 +33,7 @@ Typical targets:
   not rewrite the draft into implementation detail.
 - Findings should be specific enough that the draft can be revised before human
   review.
-- For Nova work, the critique must check command surfaces, contract ownership,
+- The critique must check command surfaces, contract ownership,
   loud-failure behavior, and proof commands explicitly.
 - If the draft is already strong, record that explicitly instead of inventing
   weak findings.
@@ -59,5 +60,5 @@ The critique should cover:
 
 ## Open These References As Needed
 
-- `../references/nova-delivery-checks.md`
+- `../references/delivery-checks.md`
 - `references/critique-checklist.md`

@@ -6,11 +6,14 @@ delegating work for a package repository.
 Read, in order:
 
 1. Every applicable `AGENTS.md`, from repository root to the target package.
-2. The repository's agent-rules document referenced by `AGENTS.md`.
+2. The repository's agent-rules document referenced by `AGENTS.md`
+   (profile §Rules).
 3. The repository-root `README.md`.
 4. The target package's `README.md`, when present.
 5. The target package's `docs/README.md`, when present.
 6. Any README belonging to a nested example or test target in scope.
+7. Any project-specific onboarding items in the project profile
+   (`project-profile.md`, §Packages).
 
 Package READMEs commonly define live-service prerequisites, native library
 versions, environment variables, preparation commands, and which tests are
