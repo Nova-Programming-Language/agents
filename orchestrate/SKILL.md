@@ -97,9 +97,10 @@ for the next milestone's audit diff.
 
 ### 6. Between milestones (orchestrator)
 After commit: run the validation gate assigned by PLAN.md, check plan
-coherence, and check cumulative progress. Do not run canonical/full regression
-after every file or checkpoint; reserve it for defined production-changing
-milestone gates and final release.
+coherence, and check cumulative progress. Run exhaustive tests (full
+regression, corpus walks, whole-crate or whole-CLI suites) only at the end of
+a milestone; between commits and checkpoints, run only the build and the tests
+that own the changed code.
 See `references/decision-protocol.md`.
 
 ## Orchestrator Discipline
