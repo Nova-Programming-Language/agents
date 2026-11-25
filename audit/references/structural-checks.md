@@ -131,7 +131,9 @@ fine. The concern is mixed responsibilities, not line count alone.
   using the truthful states in `../SKILL.md`.
 - **No deferral**: agents cannot descope brief items. The only valid reasons
   for unfinished work are a verifiable technical blocker (with evidence) or
-  explicit user descoping. "Deferred to next milestone" is not valid.
+  explicit user descoping. "Deferred to next milestone" is not valid, and
+  neither is a hold that rests on an unmeasured premise. Sizing trade-off:
+  `../../orchestrate/references/brief-template.md`, "Size by risk and reward".
 - **Placeholders**: search for `pass`, TODO/unimplemented markers,
   placeholder panics, unconditional unsupported results, empty-success
   responses, ignored errors, and test-only dispatch in production paths.
