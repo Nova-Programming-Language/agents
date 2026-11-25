@@ -32,6 +32,9 @@
 - expected proof:
 - expected commit shape:
 
+Split a milestone only per the orchestrate brief template's "Scope
+validation" and "Size by risk and reward" rules.
+
 ## Completion Matrix
 
 Required for broad public contracts. Each applicable cell must name automated

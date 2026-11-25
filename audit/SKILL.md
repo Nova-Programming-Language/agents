@@ -1,6 +1,6 @@
 ---
 name: audit
-description: Audit a finished implementation, milestone, or test fix against its brief, plan, and architecture docs — acceptance criteria, fix placement, structure, and forward impact — and append the verdict to project-notes AUDIT.md; use after implementation and before commit. Not for critiquing drafts or plans (use critique) or a quick bug hunt over a diff (use code-review).
+description: Audit a finished implementation, milestone, or test fix against its brief, plan, and architecture docs, and append the verdict to project-notes AUDIT.md; use after implementation, before commit. Not for drafts or plans (use critique) or a quick diff bug hunt (use code-review).
 ---
 
 # Audit

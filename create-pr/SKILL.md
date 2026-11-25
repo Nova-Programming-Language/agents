@@ -1,6 +1,6 @@
 ---
 name: create-pr
-description: Use this skill when the user asks to create, open, submit, verify, or check a GitHub pull request in the project repo. This skill uses the gh CLI to avoid duplicate PRs, ensures the branch is pushed, creates the PR only when no PR already exists for the head branch, and verifies the actual PR number, URL, and state before reporting success.
+description: Create or verify a GitHub pull request with gh — reuse an existing PR for the branch, push it, and confirm the real PR number, URL and state; use when asked to create, open, submit or check a PR. Not for commits or pushes alone (use checkin) or merging (use merge-pr).
 ---
 
 # Create PR

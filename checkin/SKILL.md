@@ -1,6 +1,6 @@
 ---
 name: checkin
-description: Create commits, rebase onto upstream, and push project repo changes; use when the user asks to commit, sync, or publish work.
+description: Commit, rebase onto upstream, and push project repo changes; use when the user asks to commit, sync, or publish work, or a skill says to commit with checkin. Not for opening or merging pull requests (use create-pr or merge-pr).
 ---
 
 # Checkin

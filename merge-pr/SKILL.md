@@ -1,6 +1,6 @@
 ---
 name: merge-pr
-description: Use this skill when the user asks to merge, land, close out, or verify the merge of a GitHub pull request in the project repo. This skill uses the gh CLI to confirm the real PR object, verify mergeability and state, merge with the intended strategy, and then verify that the PR is actually merged and that the remote default branch moved.
+description: Merge a GitHub pull request with gh and verify it — confirm the PR and its mergeability, merge with the intended strategy, then check it is MERGED and the remote default branch moved; use when asked to merge, land, close out, or verify a merge. Not for creating PRs (use create-pr).
 ---
 
 # Merge PR

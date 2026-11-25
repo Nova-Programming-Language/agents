@@ -1,6 +1,6 @@
 ---
 name: fix-test
-description: Fix failing tests one at a time with root-cause analysis, audit, and verified commits; use when presented with test failures to fix, regression results to work through, or a list of bugs that need depth-first resolution.
+description: Fix failing tests one at a time, depth-first, each with root-cause diagnosis, audit, and its own commit; use for test failures, regression results to work through, or a list of bugs to resolve one by one. Not for new features (use coding) or only filing failures (use issues).
 ---
 
 # Fix Test
@@ -16,8 +16,8 @@ committed.
 
 ## The Loop
 
-Repeat for each failure. Keep each one's entry in STATUS.md per
-`references/failure-log-template.md`.
+Repeat for each failure. Track each one per
+`references/failure-log-template.md` (in STATUS.md or a dedicated log).
 
 ### 1. Select one failure
 
@@ -87,9 +87,13 @@ The diagnosis must name:
 ### 5. Verify
 
 - Run the target test; it must pass.
-- Run the tests across the class's sites and the tests that own the changed
-  code, per `../regressions/SKILL.md`, "When to Run What". Exhaustive tests
-  wait for the end of the milestone.
+- Add tests across the class's sites, not only the original reproduction.
+- Verify the component broadly: run the tests that own the changed code — the
+  owning component's suite or a representative subset that exercises its
+  major code paths — and, when the fix touched shared code, the tests of the
+  components that consume it (`../regressions/SKILL.md`, "When to Run What").
+  Exhaustive tests wait for the end of the milestone; used standalone, run
+  them once after the last fix.
 - Land the regression test and re-run the exposing path per
   `../references/failure-attribution.md`, "Validation Expectations". If the
   symptom survives a fix at the owning component, the attribution was wrong
@@ -100,7 +104,9 @@ The diagnosis must name:
 ### 6. Audit
 
 - Run the `audit` skill on this fix (`../audit/SKILL.md`), even for a small
-  change.
+  change. Besides its own dimensions, it checks that the fix matches the
+  diagnosed root cause rather than drifting into a different approach, and
+  for collateral: new failures or out-of-scope changes.
 - If the audit fails, go back to step 4 with its findings. Do not commit until
   it passes.
 

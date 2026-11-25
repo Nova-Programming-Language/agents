@@ -1,6 +1,6 @@
 ---
 name: regressions
-description: Run targeted or full regression workflows; use when verifying behavior, tracking full-suite regressions across sessions, or using the project's pinned container.
+description: Choose and run targeted or full regression validation, read its results, and track full-suite state across sessions, including in the pinned container; use when verifying behavior or deciding which tests to run. Not for writing tests (use test-authoring) or fixing failures (use fix-test).
 ---
 
 # Regression Test
@@ -9,11 +9,10 @@ description: Run targeted or full regression workflows; use when verifying behav
 
 Use this skill when validating behavior after code changes, whether through
 targeted tests, crate-local tests, or the canonical full regression workflow.
-
-Test and regression commands, result locations, and failure-record formats
-come from the project profile (`../references/project-profile.md`). Never
-guess a test or regression command; if the profile lacks the section a step
-needs, ask the user.
+Commands, result locations, and failure-record formats come from the project
+profile (`../references/project-profile.md`). Never guess a test or regression
+command; if the profile lacks the section a step needs, ask the user. Reasons
+behind the rules are in `references/rationale.md`.
 
 ## Read First
 
@@ -54,122 +53,86 @@ here.
   first or use the canonical script that does it for you.
 - Treat new warnings on the validation surface as failures, per
   `../coding/SKILL.md`, "Implementation Rules".
-- For targeted or directory test runs, rely on the test runner's default
-  result recording unless you need an explicit export or override (profile
-  §Tests).
+- For targeted or directory runs, rely on the test runner's default result
+  recording unless you need an explicit export or override (profile §Tests).
 - The full-regression script (profile §Regression) is the canonical
   full-suite state and failure tracker.
-- A flaky test is a bug. There is no such thing as a transient flake: a
-  nondeterministic failure has a deterministic cause (race, timing assumption,
-  ordering dependency, resource contention) and must be diagnosed and fixed
-  like any other failure. Never rerun-until-green, never label-and-skip, and
-  never treat a retry-pass as satisfying a "proceed only if no failures"
-  gate. If the cause cannot be found this session, file an issue with the
-  reproduction evidence (frequency, seeds, thread counts) — an unfixed flake
-  is an open bug, not noise. Reproduce it with a stress loop (vary test
-  parallelism, iterate the single test directly; how is in profile §Tests),
-  then diagnose.
+- **A flaky test is a bug** with a deterministic cause (race, timing
+  assumption, ordering dependency, resource contention). Reproduce it with a
+  stress loop (vary test parallelism, iterate the single test directly; how is
+  in profile §Tests), then diagnose and fix it like any other failure. Never
+  rerun-until-green, never label-and-skip, and never let a retry-pass satisfy
+  a "proceed only if no failures" gate. If the cause is not found this
+  session, or is out of scope for the current fix, file an issue with the reproduction evidence (frequency, seeds,
+  thread counts); an unfixed flake is an open bug.
 - A scope that selects nothing can exit zero and report zero tests run.
   Before treating a scoped run as a pass, or a failure as not reproducing,
   confirm the executed count is non-zero and roughly what you expected
   (profile §Tests says how the runner reports it).
-- Start a full run (or any multi-hour command) detached so background-task
-  kills cannot take it down, and watch it with the Monitor tool — see
-  "Starting a Long Run Detached" in `references/full-regression.md` for the
-  exact pattern and the two observed failure modes it avoids.
-- Know what the full-regression exit status means. Profile §Regression states
-  whether it is absolute (any failing case fails the run) or a comparison
-  against the baseline, and how a missing baseline is treated.
-- Never report a comparison verdict as an absolute one. "Clean versus
-  baseline", zero new failures, and a stable-failing verdict all mean *nothing
-  got worse*. None of them mean *nothing is failing*. Only the absolute failure
-  total, and an exit status that follows it, answer that.
-- Report both numbers, always: how many cases failed in total, and how many of
-  those are new. Name the known-failing set rather than letting it disappear
-  into "clean". A promoted baseline records existing failures as expected, so
-  after a promotion they stop being visible in the *verdict* — but they are
-  still failing.
-- To ask whether anything got worse rather than whether anything failed, read
-  the new-failure count from the comparison artifact (profile §Regression).
-  Never infer it from the exit status.
+- Start a full run, or any multi-hour command, detached and watch it with the
+  Monitor tool, per `references/full-regression.md`, "Starting a Long Run
+  Detached".
+- Know what the full-regression exit status means: profile §Regression says
+  whether it is absolute or a comparison against the baseline, and how a
+  missing baseline is treated.
+- Never report a comparison verdict ("clean versus baseline", zero new
+  failures, stable-failing) as an absolute one. Always report both the total
+  number of failing cases and how many are new, and name the known-failing
+  set (`references/full-regression.md`, "Comparison Verdict Versus Absolute
+  Result").
+- To ask whether anything got worse, read the new-failure count from the
+  comparison artifact (profile §Regression), never from the exit status.
 - When fixing a heuristic, fallback, or missing-data bug, add the regressions
   `../references/source-of-truth.md`, "Validation Expectations", requires.
 - After reproducing a runtime failure, pivot to the debugger (profile
-  §Debugging) or narrow tracing instead of broad code reading unless the issue
-  is clearly architectural.
-- When the issue involves related constructs, add paired tests that prove the
+  §Debugging) or narrow tracing instead of broad code reading, unless the
+  issue is clearly architectural.
+- When related constructs are involved, add paired tests that prove the
   shared behavior and any intended divergence.
 
 ## Workflow
 
-1. Decide whether the task needs targeted validation or canonical full
-   regression.
-2. Use `../references/artifact-freshness.md` to check whether the command
-   requires a rebuild first.
-3. Use `references/full-regression.md` for the matching command family.
-4. When validating code changes where warnings could appear only in test
-   targets, add a warning-as-error compile check of those targets (profile
-   §Build).
-5. After reproducing a runtime failure, use `../references/runtime-evidence.md`
-   to decide whether the next step should be the debugger or narrow tracing.
-6. If you ran a full regression, use the regression tool's failure, run-list,
-   and run-detail views (profile §Regression) before opening raw logs.
-7. If related constructs are involved, use `../references/semantic-family.md`
-   to decide which tests should be paired and where divergence should appear.
-8. Add or update regressions for both the authoritative path and the
-   missing-data path when relevant.
+1. Decide between targeted validation and canonical full regression (When to
+   Run What).
+2. Check whether the command needs a rebuild first
+   (`../references/artifact-freshness.md`).
+3. Take the matching command family from `references/full-regression.md`.
+4. When warnings could appear only in test targets, add a warning-as-error
+   compile check of those targets (profile §Build).
+5. After reproducing a runtime failure, choose the debugger or narrow tracing
+   per `../references/runtime-evidence.md`.
+6. After a full regression, use the regression tool's failure, run-list, and
+   run-detail views (profile §Regression) before raw logs.
+7. For related constructs, decide which tests to pair and where divergence
+   should appear per `../references/semantic-family.md`.
+8. Add or update regressions for the authoritative path and the missing-data
+   path when relevant.
 
 ## Failure Interpretation
 
-Keep the project's test-system model in mind (profile §Regression): what
-identifies a test case canonically, which statuses count as failing, and
-whether one test file may legitimately produce several cases (for example
-across engines or forms).
-
-The standard failure view is machine-first:
-
-- use the regression tool's structured (JSON) failure view (profile
-  §Regression) as the primary failure command; always prefer it over a
-  plain-text view
-- each failure record carries the fields profile §Regression lists, typically
-  a classification, case identity, status, message, likely owner, failing
-  phase, per-case artifacts, and a rerun hint
-- classifications are relative to the chosen comparison target, typically
-  the baseline
-- prefer per-case artifacts over grepping the full run log; the run log is
-  archival
-
-Use the structured records for all downstream work:
-
-- **Fixing**: pass records to `fix-test` — classification, owner, and phase
-  fields let it prioritize which failure to tackle first
-- **Triaging**: group records by owner or phase to partition failures
-  across components or subsystems before assigning work
-- **Filing issues**: attach the relevant record to each issue in the
-  project's tracker (profile §Repository) so the fixer has machine-readable
-  context from the start
-- **Diffing runs**: compare structured output across runs to distinguish new
-  regressions from pre-existing failures
-
-For scoped test runs, use what the test runner prints (profile §Tests) to
-confirm the exact scope, where results were stored, and that the run was not
-empty (see Non-Negotiable Rules). Replaying the last failures re-reads a
-snapshot of that scope only, and a scoped run over the whole test tree is
-still not canonical full regression.
+- Use the structured (JSON) failure view (profile §Regression) as the primary
+  failure command, never a plain-text view, and prefer per-case artifacts
+  over the run log. What the records hold is in `references/full-regression.md`,
+  "Reading Failure Records".
+- Use the records for all downstream work: pass them to `fix-test` to choose
+  which failure to tackle first; group them by owner or phase to split
+  failures across components; attach them to tracker issues; and compare them
+  across runs to separate new regressions from pre-existing failures.
+- For scoped runs, confirm from the runner's output (profile §Tests) the exact
+  scope, where results were stored, and that the run was not empty. Replaying
+  the last failures re-reads that scope's snapshot only, and a scoped run over
+  the whole test tree is still not canonical full regression.
 
 ## After Running Regressions
 
-When failures are found:
+Leave no unexpected failure untracked: fix it this session or file it.
 
-- To fix them: use `fix-test` — one failure at a time, root-cause
-  diagnosis, audit, commit per fix
-- To track them externally: use `issues` — file one issue per distinct
-  root cause with the structured failure data
-- To investigate non-obvious failures: write a local bug report per
-  `issues`, "Local Bug Report", before filing
-
-Do not leave failures untracked. Every unexpected failure should either
-be fixed in this session or filed as an issue for a future session.
+- To fix: `fix-test` — one failure at a time, root-cause diagnosis, audit,
+  commit per fix.
+- To track: `issues` — one issue per distinct root cause, with the
+  structured failure data.
+- To investigate a non-obvious failure before filing: a local bug report per
+  `issues`, "Local Bug Report".
 
 ## Open These References As Needed
 
@@ -178,4 +141,5 @@ be fixed in this session or filed as an issue for a future session.
 - `../references/runtime-evidence.md`
 - `../references/semantic-family.md`
 - `references/full-regression.md`
+- `references/rationale.md`
 - `../references/project-profile.md`

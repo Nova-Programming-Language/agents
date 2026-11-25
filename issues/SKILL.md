@@ -1,6 +1,6 @@
 ---
 name: issues
-description: Report and fix bugs via the project's issue tracker (e.g. GitHub issues) or as verified repo-local bug reports; use when filing issues from findings, writing a bug report with exact reproduction and ownership clues, picking up issues to fix, or triaging backlogs. Covers discovery through verified close.
+description: File, claim, triage, fix and close tracker issues, and write verified repo-local bug reports with exact reproduction and ownership clues; use for findings to file, a reproducible defect or blocker to document, issues to pick up, or backlog triage. Not for transient debug notes (use debug) or fixing failing tests one at a time (use fix-test).
 ---
 
 # Issues
@@ -14,47 +14,33 @@ description: Report and fix bugs via the project's issue tracker (e.g. GitHub is
 - Closing issues with verified evidence
 
 The tracker, its CLI, and its label set are in profile §Repository (see
-`../references/project-profile.md`). The command examples below use GitHub's
-`gh` CLI; translate them for another tracker.
+`../references/project-profile.md`). The commands below use GitHub's `gh`;
+translate them for another tracker. Reasons behind the rules are in
+`references/rationale.md`.
 
 ## Report: Filing Issues
 
 ### From a finding
 
-When you discover a bug, audit finding, or regression failure that
-should be tracked:
-
-1. **Verify first.** Reproduce the issue with an exact command. Do not
-   file from memory or assumption. If the reproduction is non-trivial,
-   investigate it per Local Bug Report first.
-
-2. **Create the issue** using `references/issue-template.md` for
-   structure. File with the tracker's create command (`gh issue create` on
-   GitHub).
-
-3. **Assign to a component.** Every issue must have exactly one
-   subsystem label. This is how agents find work and how triage
-   routes issues. Apply the label based on where the defect is,
+1. **Verify first.** Reproduce with an exact command; never file from memory
+   or assumption. If the reproduction is non-trivial, investigate it per
+   Local Bug Report first.
+2. **Create the issue** with the body in `references/issue-template.md`, using
+   the tracker's create command (`gh issue create`).
+3. **Label it.** Exactly one subsystem label, chosen by where the defect is,
    not where the symptom appears:
-
-   The subsystem labels, and which kinds of failure map to which label,
-   are in profile §Repository. To decide the correct component:
-   - If the stack trace or error points to a specific module or package,
-     use the component that owns it (the architecture map, profile §Paths)
-   - Otherwise apply the profile's failure-kind → label rules
-   - If uncertain, make your best hypothesis and note it in the issue
-     body — triage will correct it if wrong
+   - a stack trace or error in a specific module or package → the component
+     that owns it (the architecture map, profile §Paths);
+   - otherwise the profile's failure-kind → label rules (profile §Repository);
+   - if uncertain, your best hypothesis, noted in the body; triage corrects it
+     if wrong.
 
    Also apply a severity label (bug, enhancement, blocker) and a source
-   label (audit, regression, manual), using the project's names for them
-   from profile §Repository.
-
+   label (audit, regression, manual), using the project's names:
    ```
    gh issue create --label "<subsystem>" --label "<severity>" --label "<source>" ...
    ```
-
-4. **Link context.** If the issue came from an audit, regression run,
-   or project milestone, reference it in the issue body.
+4. **Link context**: the audit, regression run, or milestone it came from.
 
 ### Local Bug Report
 
@@ -63,7 +49,8 @@ reproduction is non-trivial and needs structured investigation before filing,
 or when a repo-local record of a defect or blocker is wanted. It is not for
 transient debug notes.
 
-1. Reproduce with the narrowest command. Rerun after a clean rebuild when
+1. Do not write the report from memory alone. Reproduce with the narrowest
+   command. Rerun after a clean rebuild when
    relevant, and capture the exact failing output or behavior.
 2. Record the exact command or input file, and the branch or commit under
    test: the current default branch (profile §Repository), a feature branch,
@@ -85,57 +72,41 @@ transient debug notes.
 
 ### From audit results
 
-When an `audit` produces findings that need tracking beyond the current
-session:
-
-- Each actionable finding becomes one issue
-- Copy the finding's evidence (file:line, commands) into the issue
-- Reference the AUDIT.md section date
+For findings that need tracking beyond the session: one issue per actionable
+finding, with its evidence (file:line, commands) copied in and the AUDIT.md
+section date referenced.
 
 ### From regression results
 
-When a regression check produces unexpected failures:
+For unexpected failures:
 
-- Get the structured failure records from the regression tooling
-  (profile §Regression)
-- Group records by their owner/phase fields to identify distinct root causes
-  — multiple tests may fail from the same cause
-- One issue per distinct root cause, not per failing test
-- Include the regression command, baseline, and current results
-- Paste the relevant structured failure record(s) into the issue body so the
-  fixer has machine-readable context from the start
+- Get the structured failure records (profile §Regression) and group them by
+  owner and phase to find distinct root causes.
+- File one issue per distinct root cause, not per failing test.
+- Include the regression command, the baseline, and the current results, and
+  paste the relevant structured records into the body.
 
 ### What makes a good issue
 
-- **Title**: the symptom in one line, specific enough to find later
-- **Reproduction**: exact command that demonstrates the problem
-- **Expected vs actual**: what should happen vs what does happen
-- **Evidence**: file:line references, error output, test names
-- **Ownership hypothesis**: which subsystem likely owns this
-
-What does NOT make a good issue:
-- Vague titles ("something is broken")
-- No reproduction steps
-- Speculation without evidence
-- Batched issues ("fix these 5 things" — one issue per defect)
+Follow the Notes in `references/issue-template.md`: a specific one-line
+symptom title, an exact reproduction, expected versus actual, evidence, and an
+ownership hypothesis. One defect per issue; no vague titles, missing
+reproductions, or speculation without evidence.
 
 ## Fix: Resolving Issues
 
 ### Picking up an issue
 
-1. Read the issue fully: title, body, comments, labels.
-2. Reproduce the problem using the issue's reproduction steps.
-   If it cannot be reproduced, comment on the issue with what you
-   tried and stop.
-3. Use `fix-test` discipline for the fix:
-   - Diagnose root cause
-   - Fix the root cause (not the symptom)
-   - Verify the fix
-   - Check for collateral damage
+1. Read it fully: title, body, comments, labels. Claim it (see Claiming)
+   before any other work.
+2. Reproduce it from its reproduction steps. If it does not reproduce,
+   comment with what you tried and stop.
+3. Fix it with `fix-test` discipline: diagnose the root cause, fix the root
+   cause rather than the symptom, verify, and check for collateral damage.
 
 ### Closing an issue
 
-Close with evidence, not just "I think I fixed it":
+Close only with evidence:
 
 ```
 gh issue close <number> --comment "Fixed in <commit>.
@@ -145,168 +116,118 @@ Fix: <one sentence>
 Verified: <exact command and result>"
 ```
 
-Every close comment must include:
-- The commit hash
-- The root cause (one sentence)
-- The fix (one sentence), and which sites of the violated rule it covers
-- The verification command and its output
-
-Use "Fixes #N" only when every site of the class is covered; otherwise
-"refs #N", and leave the issue open listing the uncovered sites.
-
-Do not close without verification. If the fix is committed but not yet
-verified in a broader regression, say so in the comment and leave the
-issue open until verified.
+- Every close comment includes the commit hash, the root cause (one
+  sentence), the fix (one sentence) and which sites of the violated rule it
+  covers, and the verification command with its output.
+- Use "Fixes #N" only when every site of the class is covered; otherwise use
+  "refs #N" and leave the issue open listing the uncovered sites.
+- Do not close without verification. If the fix is committed but a broader
+  regression is still pending, say so in a comment and leave the issue open.
 
 ### Issues that are blockers
 
-If an issue blocks another component or milestone:
-
-- Label it `blocker`
-- Reference what it blocks (milestone, other issue, component)
-- If it's blocking an orchestrate pipeline, record it in STATUS.md
-  under Blocked with the issue URL
+Label it `blocker`, reference what it blocks (milestone, issue, component),
+and, in an orchestrate pipeline, record it in STATUS.md under Blocked with
+the issue URL.
 
 ## Claiming: Preventing Duplicate Work
 
-Multiple agents may share a single tracker account, so assignment
-cannot distinguish between them. Claims use comments with a unique
-session identifier instead.
+Claims are comments carrying a unique session identifier, because agents may
+share one tracker account.
 
-### Before picking up an issue
+- **Before picking up**: check recent comments for an active claim. If one
+  starts with `🔒 Claimed by session`, skip the issue.
+  ```
+  gh issue view <number> --json comments --jq '.comments[-5:][].body'
+  ```
+- **Claim** with a session ID unique to this agent run (timestamp, UUID, or
+  process ID) before any work; do not read code, reproduce, or diagnose first.
+  ```
+  gh issue comment <number> --body "🔒 Claimed by session <session-id> — starting diagnosis."
+  ```
+- **Release** when you cannot fix it (blocker, wrong subsystem, missing
+  context); the issue is then free for others.
+  ```
+  gh issue comment <number> --body "🔓 Released by session <session-id> — [reason]."
+  ```
+- **Reassign** when diagnosis puts the root cause in another subsystem:
+  1. Relabel it; never leave the old label in place "just in case":
+     ```
+     gh issue edit <number> --remove-label "<old-subsystem>" --add-label "<new-subsystem>"
+     ```
+  2. Comment the diagnosis so the next agent doesn't repeat it:
+     ```
+     gh issue comment <number> --body "🔀 Reassigned from <old-subsystem> to <new-subsystem> by session <session-id>.
 
-Check the issue's recent comments for an active claim:
-
-```
-gh issue view <number> --json comments --jq '.comments[-5:][].body'
-```
-
-If any recent comment starts with `🔒 Claimed by session`, the issue
-is taken. Skip it and pick another.
-
-### Claiming
-
-Comment with your session ID before doing any work:
-
-```
-gh issue comment <number> --body "🔒 Claimed by session <session-id> — starting diagnosis."
-```
-
-The session ID should be unique per agent invocation (e.g., a
-timestamp, UUID, or the conversation/process identifier). The claim
-comment is the lock — do not read code, reproduce, or diagnose
-before posting it.
-
-### Releasing
-
-If you cannot fix the issue (blocker, wrong subsystem, need more
-context), release it:
-
-```
-gh issue comment <number> --body "🔓 Released by session <session-id> — [reason]."
-```
-
-A released issue is available for other agents to claim.
-
-### Reassigning to a different component
-
-If diagnosis reveals the root cause is in a different subsystem than
-the issue's current label:
-
-1. Relabel the issue to the correct subsystem:
-   ```
-   gh issue edit <number> --remove-label "<old-subsystem>" --add-label "<new-subsystem>"
-   ```
-2. Comment with the diagnosis so the next agent doesn't repeat it:
-   ```
-   gh issue comment <number> --body "🔀 Reassigned from <old-subsystem> to <new-subsystem> by session <session-id>.
-
-   Diagnosis: [root cause summary]
-   Evidence: [file:line, command output]
-   The defect is in [component] because [reason]."
-   ```
-3. If you can fix the other component, keep your claim and fix it.
-4. If you cannot (wrong expertise, different worktree, blocked),
-   release the claim. The diagnosis comment stays so the next agent
-   picks up where you left off.
-
-Do not leave the old label in place "just in case." The label should
-reflect the current understanding of ownership.
-
-### Stale claims
-
-If an issue has a claim comment but no follow-up activity (no
-further comments, no referencing commits), the claim may be stale —
-the agent may have crashed or the session may have ended. Agents
-do not override other agents' claims. Only the user decides whether
-to release a stale claim.
+     Diagnosis: [root cause summary]
+     Evidence: [file:line, command output]
+     The defect is in [component] because [reason]."
+     ```
+  3. If you can fix the other component, keep the claim and fix it.
+     Otherwise release the claim; the diagnosis comment stays.
+- **Stale claims** (a claim with no follow-up comments or referencing
+  commits): never override another agent's claim. Only the user decides
+  whether to release it.
 
 ## Triage: Component Assignment and Prioritization
 
-Triage has two jobs: make sure every issue is assigned to the right
-component, and prioritize the backlog for fixing.
-
 ### Component verification pass
 
-Before fixing anything, verify component labels are correct:
+Before fixing anything, check every open issue's labels:
 
 ```
 gh issue list --state open --json number,title,labels
 ```
 
-For each issue:
-- Does it have exactly one subsystem label? If zero, read the issue
-  and assign one. If multiple, pick the one where the defect lives
-  (not where the symptom appears) and remove the others.
-- Does the label look correct based on the title and body? A quick
-  read is enough — full diagnosis happens during fixing, not triage.
-- If you can tell the label is wrong from the title alone (e.g., a
-  code-generator panic labeled with the parser's subsystem), relabel it now.
-
-This pass is fast — you are reading titles and labels, not code.
-Comment on any relabeled issue with your reasoning.
+- Zero subsystem labels: read the issue and assign one. Several: keep the one
+  where the defect lives, not where the symptom appears, and remove the rest.
+- Check the label against the title and body; a quick read is enough. A
+  label you can tell is wrong from the title alone (e.g. a code-generator
+  panic labeled with the parser's subsystem): relabel it now.
+- Read titles, bodies, and labels, not code; full diagnosis happens when
+  fixing.
+- Comment your reasoning on every relabeled issue.
 
 ### Picking issues by component
 
-When an agent is working a specific component, filter:
+Claim only issues labeled for the component you are working on:
 
 ```
 gh issue list --state open --label "<subsystem>" --json number,title,labels
 ```
 
-Only claim issues labeled for your component. If during diagnosis you
-discover the root cause is in a different component, follow the
-reassignment workflow (see Reassigning to a different component).
+If diagnosis puts the root cause elsewhere, reassign (see Claiming).
 
 ### Prioritizing within a component
 
-1. blocker first — these block other work
-2. bug + regression — regressions from recent changes
-3. bug — other defects
-4. enhancement — last
+1. blocker
+2. bug + regression
+3. bug
+4. enhancement
 
-Within the same priority, prefer issues with more evidence (exact
-reproduction, file:line references) — they are faster to fix.
+Within one priority, prefer issues with more evidence (exact reproduction,
+file:line).
 
 ### Fixing
 
-Claim and fix one at a time using `fix-test` discipline. Do not batch.
-After each fix, check if other issues in the same component are now
-resolved. Close them with evidence if so.
+Claim and fix one issue at a time with `fix-test` discipline; do not combine
+issues. After each fix, check whether other issues in the component are now
+resolved, and close those with evidence.
 
 ## Integration
 
-- **With orchestrate**: Issues can be milestones. The orchestrator
-  creates a brief per issue, the implementation agent fixes it, the
-  audit verifies it, and the issue is closed on commit.
-- **With project-creation**: Link issues to PROJECT.md acceptance
-  criteria or PLAN.md milestones.
-- **With regressions**: Unexpected regressions become issues. Declared
-  regressions reference the resolving milestone, not an issue.
+- **orchestrate**: an issue can be a milestone: the orchestrator briefs it,
+  the implementation agent fixes it, the audit verifies it, and it is closed
+  on commit.
+- **project-creation**: link issues to PROJECT.md acceptance criteria or
+  PLAN.md milestones.
+- **regressions**: unexpected regressions become issues; declared regressions
+  reference their resolving milestone, not an issue.
 
 ## References
 
 - `references/issue-template.md` — issue body structure
 - `references/bug-report-template.md` — repo-local bug report structure
+- `references/rationale.md` — why claims and labels work this way
 - `../references/project-profile.md` — profile §Repository holds the tracker
   and labels

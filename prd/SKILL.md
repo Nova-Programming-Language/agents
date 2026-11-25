@@ -1,6 +1,6 @@
 ---
 name: prd
-description: "Write or update project PRDs for multi-session work; use when a project needs an explicit product-level problem statement, scope, user outcomes, and acceptance criteria instead of `PRD: N/A`."
+description: "Write or update a project PRD (problem, scope, user outcomes, acceptance criteria) for multi-session work; use when a project needs a real PRD instead of `PRD: N/A`. Not for narrow bug fixes already scoped by specs, nor for architecture docs (use design) or plans (use project-creation)."
 ---
 
 # PRD

@@ -89,6 +89,8 @@ is wrong" without reasoning.
   blocker naming that issue. Do not work around it to reach green.
 - If it does not block, record it and continue; it is not carried silently and
   it is not fixed opportunistically inside an unrelated milestone.
+- A defect that a new caller or test exposes belongs to the component whose
+  contract it violates, not to the caller or test that reached it first.
 - A defect in a prior milestone that a later one exposes is still that
   milestone's defect. Exposure is not authorship, and the exposing milestone
   does not inherit the fix site.

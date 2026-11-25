@@ -1,6 +1,6 @@
 ---
 name: debug
-description: Debug toolchain, runtime, REPL, compiled native binaries, or test failures with the project's debugger entrypoints and breakpoint maps; use for deterministic crashes, wrong values, source-line stepping, or control-flow bugs.
+description: Debug reproducible toolchain, runtime, REPL, native-binary, or test failures with the project's debugger entrypoints and breakpoint maps; use for deterministic crashes, wrong values, source-line stepping, or control-flow bugs. Not for non-reproducible or architectural problems, or writing up a bug (use issues).
 ---
 
 # Debug
@@ -8,54 +8,45 @@ description: Debug toolchain, runtime, REPL, compiled native binaries, or test f
 ## When to Use
 
 Use this skill when a bug is reproducible and a debugger can answer the
-question faster than adding temporary prints.
+question faster than temporary prints. It is the default for deterministic
+runtime failures, wrong values at a known program point, regressions on any
+debug surface in profile §Debugging (an interactive shell, a compiled native
+binary that needs source-line stepping, metadata/dispatch paths), and
+targeted crash or panic triage.
 
-Project-specific facts (build commands, debugger entrypoints, debug surfaces,
-breakpoint maps, memory-error tools) come from the project profile; see
-`../references/project-profile.md` for how to find it. This skill names the
-section, as "profile §Debugging".
+Project facts (build commands, debugger entrypoints, debug surfaces,
+breakpoint maps, memory-error tools) are in profile §Debugging; find the
+profile per `../references/project-profile.md`. Reasons behind the rules are
+in `references/rationale.md`.
 
-This is the default skill for:
+Read, when it applies:
 
-- deterministic runtime failures
-- wrong values at a known program point
-- regressions on any debug surface listed in profile §Debugging (for example
-  an interactive shell, a compiled native binary that needs source-line
-  stepping, or metadata/dispatch paths)
-- targeted crash or panic triage
-
-Read `../references/source-of-truth.md` when the bug looks like fallback
-inference, silent missing-data handling, or disagreement between structured and
-derived answers.
-Read `../references/artifact-freshness.md` when the reproducer exercises
-release or runtime-linked artifacts.
-Read `../references/runtime-evidence.md` when you need to decide whether to
-keep reading code or pivot to a debugger or tracing.
-Read `../references/failure-attribution.md` before applying any fix, whenever
-the defect surfaced in a different component from the one that produced the
-bad value, or when the session runs inside a milestone whose ownership of the
-failure is not yet established.
-Read `references/memory-error-detection.md` when a compiled native binary
-crashes with SIGBUS/SIGSEGV in release paths, the fault is near free/release/
-atomic decrement code, or the crash disappears under the debugger. Covers libgmalloc
-usage and the `MALLOC_STRICT_SIZE`/CoreFoundation ARM64 pitfall.
+- `../references/source-of-truth.md` — the bug looks like fallback inference,
+  silent missing-data handling, or disagreement between structured and derived
+  answers
+- `../references/artifact-freshness.md` — the reproducer exercises release or
+  runtime-linked artifacts
+- `../references/runtime-evidence.md` — deciding whether to keep reading code
+  or pivot to a debugger or tracing
+- `../references/failure-attribution.md` — before any fix, whenever the defect
+  surfaced in a different component from the one that produced the bad value,
+  or the session runs inside a milestone whose ownership of the failure is not
+  yet established
+- `references/memory-error-detection.md` — a compiled native binary crashes
+  with SIGBUS/SIGSEGV in release paths, the fault is near free/release/atomic
+  decrement code, or the crash disappears under the debugger (libgmalloc, and
+  the `MALLOC_STRICT_SIZE`/CoreFoundation ARM64 pitfall)
 
 ## Source-of-Truth Triage
 
-Before changing code, answer the Required Questions in
-`../references/source-of-truth.md` in the debug session. Also check whether
-the data is present and correct at the point of use, and if absent, whether
-the bug is in the producer, installer, or consumer.
-
-Do not conclude a debug session with “use a heuristic” when the real finding is
-that required source-of-truth data was missing.
+- Before changing code, answer the Required Questions in
+  `../references/source-of-truth.md` in the debug session. Also check whether
+  the data is present and correct at the point of use, and if absent, whether
+  the bug is in the producer, installer, or consumer.
+- Never conclude a debug session with "use a heuristic" when the real finding
+  is that required source-of-truth data was missing.
 
 ## Attribution Before Fix
-
-A debugger answers *where the wrong value became observable*. That is not the
-same as *which component owns the defect*, and the gap between them is where
-abstraction violations get introduced — the breakpoint that finally showed the
-bad value is the most tempting place to correct it, and usually the wrong one.
 
 Before editing, answer:
 
@@ -66,16 +57,14 @@ Before editing, answer:
 3. If the owning component is out of scope for this session or milestone, what
    is the blocker, and what is the issue to file?
 
-The rest of the procedure is in `../references/failure-attribution.md`.
+The rest of the procedure is in `../references/failure-attribution.md`. Avoid
+the two failure modes specific to debugging:
 
-Two failure modes are specific to debugging:
-
-- **Fixing at the breakpoint.** Adding a guard, a clamp, or a re-derivation in
-  the consumer because that is where the debugger stopped. The producer keeps
-  emitting the bad value and every other consumer keeps receiving it.
-- **Fixing at the wrong repository.** A defect in the toolchain repaired by
-  shaping package code around it, or the reverse. Fix it at the source; if the
-  source is not in scope, report the blocker.
+- **Fixing at the breakpoint**: a guard, clamp, or re-derivation in the
+  consumer because that is where the debugger stopped.
+- **Fixing at the wrong repository**: a toolchain defect repaired by shaping
+  package code around it, or the reverse. Fix it at the source; if the source
+  is not in scope, report the blocker.
 
 ## Workflow
 
@@ -106,13 +95,10 @@ Two failure modes are specific to debugging:
   debug info as the profile states them.
 - When the failure matches a failure type in profile §Debugging, inspect the
   values it lists for that type together.
-- If structured data is supposed to answer the question, inspect that data
-  before inspecting derived names or side tables.
 - Treat missing required data as a producer/install bug first, not as a signal
   to patch in fallback inference.
-- When the owning component differs from the frame where the value was
-  observed, say so explicitly in the report — it tells the next reader whether
-  the defect is closed or merely masked.
+- Fix at the owning component, not at the frame where the value was
+  observed. When the two differ, say so explicitly in the report.
 - Land the regression test per `../references/failure-attribution.md`,
   "Validation Expectations".
 

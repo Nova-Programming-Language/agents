@@ -1,6 +1,6 @@
 ---
 name: design
-description: Write or update project architecture documents; use when planning or refactoring a component before implementation.
+description: Write or update the project's architecture documents (ownership, invariants, change patterns, missing-data behavior); use when planning or refactoring a component before implementation. Not for implementing code (use coding), PRDs (use prd), or critiquing a finished draft (use critique).
 ---
 
 # Design
@@ -23,9 +23,8 @@ Audit adjacent architecture docs for compatibility before finalizing.
 
 ## Purpose of an Architecture Document
 
-An architecture document prevents implementation drift, consumer-side
-recovery, and incomplete changes. A coding agent reading it should answer
-without looking at code:
+A coding agent reading the document should be able to answer, without looking
+at code (why: `references/document-quality.md`, "Purpose"):
 
 1. **Where does this work belong?** (component ownership)
 2. **What must not happen?** (forbidden shortcuts)
@@ -49,60 +48,24 @@ If these are unclear, the boundary is not well-defined. Redesign first.
 
 ## Document Structure
 
-### 1. Header and Cross-References
-Status, date, links to related docs and specs. Add or update this doc's rows
-in the project's architecture map (the source paths it governs) — skills use
-the map to find the doc for a changed file. See
-`../references/architecture-docs.md`.
+Write the nine sections in `references/document-quality.md`, "Document
+Structure", in order:
 
-### 2. Executive Summary
-2-4 paragraphs: what the component does, its output contract, key
-invariant, most common implementation mistake. Write last. Not a
-purpose statement — explain what the architecture prevents.
+1. Header and cross-references; add or update this doc's rows in the
+   project's architecture map (`../references/architecture-docs.md`).
+2. Executive summary (2-4 paragraphs, written last).
+3. Process view.
+4. Component architecture, with an **Invariant:** and a **Not responsible
+   for:** callout per component.
+5. Key internal abstractions, with the same callouts.
+6. Detailed phase sections.
+7. Common Change Patterns — never optional.
+8. Error model and missing-data behavior, naming forbidden fallbacks with
+   concrete examples.
+9. Cross-document concerns.
 
-### 3. Process View
-Pipeline diagram with prose explaining state transitions and guarantees.
-Readable in under a minute.
-
-### 4. Component Architecture
-Core of the document. Per component:
-- What it owns, reads, writes (name the types)
-- **Invariant:** bold callout, concrete enough to validate
-- **Not responsible for:** bold callout — prevents misplaced logic
-
-Write in prose with reasoning, not just bullets. Explain *why* boundaries
-are where they are.
-
-### 5. Key Internal Abstractions
-Supporting data structures that don't cross the output boundary. Same
-ownership/invariant/not-responsible-for treatment.
-
-### 6. Detailed Phase Sections
-Per-phase input, output, rules. Architecture level — point to spec docs
-for exhaustive schema details.
-
-### 7. Common Change Patterns
-**Not optional.** Highest-leverage section. For each common modification
-type, list which components must be updated and in what order.
-
-### 8. Error Model and Missing-Data Behavior
-Error propagation, missing-data handling, forbidden fallback patterns
-with concrete examples.
-
-### 9. Cross-Document Concerns
-Cross-module behavior referencing authoritative docs.
-
-## Prose Quality
-
-Use prose for reasoning, bullet lists for enumerations only.
-
-**Weak:** `- owns TypeMap` / `- invariant: resolved metadata available`
-
-**Strong:** "The constraint system owns `TypeMap`. Later phases obtain
-resolved facts from it and do not recover them from syntax or symbol
-names — this prevents consumer-side recovery throughout the pipeline."
-
-State what, why, and what it prevents. See `references/document-quality.md`.
+Use prose for reasoning and bullet lists only for enumerations: state what,
+why, and what it prevents (`references/document-quality.md`).
 
 ## Design Rules
 

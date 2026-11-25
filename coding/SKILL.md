@@ -1,6 +1,6 @@
 ---
 name: coding
-description: Implement or modify the project's toolchain or code safely; use when changing interpreter, frontend, codegen, CLI, tests, or architecture-driven behavior in the repo.
+description: Implement or modify the project's code within its specs and architecture docs; use when changing interpreter, frontend, codegen, CLI, tests, or architecture-driven behavior. Not for architecture docs (use design), one-at-a-time test fixing (use fix-test), or test-only work (use test-authoring).
 ---
 
 # Coding
@@ -9,9 +9,9 @@ description: Implement or modify the project's toolchain or code safely; use whe
 
 Use this skill for repo implementation work — respecting semantic
 constraints, architecture documents, and cross-command behavior.
-
-Project-specific commands, paths, and rules come from the project profile;
-find it per `../references/project-profile.md`.
+Project-specific commands, paths, and rules come from the project profile
+(`../references/project-profile.md`). Reasons behind the rules are in
+`references/rationale.md`.
 
 ## Source of Truth
 
@@ -48,7 +48,7 @@ Find the governing doc for each file you will change per
 If no doc governs the change, or the doc can't answer these, it is a doc
 gap — handle it per that reference. If your change moves ownership, changes a
 boundary or invariant, or has no matching Common Change Pattern, update the
-doc in the same change (same reference, "When a change must update the doc").
+doc in the same change (same reference, "When a change must update the docs").
 
 ## Implementation Rules
 
@@ -68,9 +68,7 @@ doc in the same change (same reference, "When a change must update the doc").
 - No fallbacks, heuristics, or silent degradation to hide missing data.
 - Do not work around bugs in another component — fix the producer.
 - Stay within the component boundaries from the architecture document.
-- Rebuild artifacts before validation.
 - Gather runtime evidence before changing code for reproducible bugs.
-- Check for a shared semantic family before adding construct-specific paths.
 - If the project's semantic-families doc names the affected family, update
   the whole family up to the first explicit divergence point; do not
   special-case one member above that layer.
@@ -79,16 +77,13 @@ doc in the same change (same reference, "When a change must update the doc").
   explicit and documented at that layer.
 - Keep functions to a single responsibility. Decompose beyond ~50 lines
   or 3+ nesting levels into named steps at genuine responsibility boundaries.
-- Refactoring should result in a net reduction in lines of code. If a
-  refactor adds more code than it removes, it is adding complexity, not
-  reducing it.
-- Do not commit formatting-only changes. Reformatting lines you didn't
-  otherwise modify creates diff churn that obscures real changes and
-  pollutes git blame.
-- Run formatters only on files intentionally written or modified for the task.
-  Do not run package-wide or workspace-wide formatting unless explicitly
-  required (profile §Formatting). Review the resulting diff and revert
-  formatting changes outside the intended edits.
+- A refactor should result in a net reduction in lines of code.
+- Do not commit formatting-only changes, and do not reformat lines you did not
+  otherwise modify.
+- Run formatters only on files intentionally written or modified for the task;
+  never package- or workspace-wide unless explicitly required (profile
+  §Formatting). Review the diff and revert formatting outside the intended
+  edits. This is the one home for the formatting rule.
 - Code and test changes must not introduce warnings on the affected build or
   component-test surfaces, including compiler, runtime-build, test-compilation,
   and test-runner warnings. Treat new warnings as failures and either fix them
@@ -96,8 +91,6 @@ doc in the same change (same reference, "When a change must update the doc").
   report an explicit blocker. This is the one home for the warnings rule.
 
 ## Naming
-
-Names are the primary documentation.
 
 - **Functions**: verb phrase. `resolve_type` not `do_type`. Two things
   needing "and" means two functions.
@@ -135,7 +128,8 @@ specialization over separate paths.
 
 1. State the semantic rule being changed (or, for a bug, the rule the defect
    violates), and list every site in the codebase that enforces or depends
-   on it. Fix the class, not the instance. If it has several
+   on it. Fix the class, not the instance, and keep the fix minimal over the
+   class. If it has several
    implementations, the duplication is the root cause: consolidate them into
    one shared check before changing it. If consolidation is out of scope, the
    commit says "partial fix", lists the uncovered sites, and does not use the
@@ -147,8 +141,8 @@ specialization over separate paths.
 4. For runtime bugs, collect runtime evidence before broad code reading.
 5. For related constructs, find the highest shared semantic layer first.
 6. Implement the general fix.
-7. Validate all impacted paths, not just one, with tests across every site of
-   the class, not only the original reproduction.
+7. Validate all impacted paths, not just one, and add tests across every site
+   of the class, not only the original reproduction.
 
 ## Cross-Command Audit
 

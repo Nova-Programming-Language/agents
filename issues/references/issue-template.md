@@ -49,4 +49,11 @@ Use this structure when creating issues in the project's tracker
 - The reproduction must be exact and runnable. "Do X then Y then Z" is
   not a reproduction — a single command that runs one named test or input
   file (profile §Tests) is.
-- One defect per issue. If you found two bugs, file two issues.
+- One defect per issue. If you found two bugs, file two issues; never "fix
+  these 5 things".
+- A good issue has: a title that states the symptom in one line, specific
+  enough to find later; an exact reproduction command; expected versus actual
+  behavior; evidence (file:line, error output, test names); and an ownership
+  hypothesis naming the subsystem that likely owns it.
+- Not a good issue: a vague title ("something is broken"), no reproduction
+  steps, or speculation without evidence.

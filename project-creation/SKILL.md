@@ -1,6 +1,6 @@
 ---
 name: project-creation
-description: Create project artifacts for multi-session work; use when starting a new project that spans multiple commits or sessions and needs persistent context, stage gates, and required links.
+description: Create the persistent project-notes artifacts (PROJECT, PLAN, STATUS, LOG) and stage gates for multi-session work; use when starting a project that spans several commits or sessions. Not for one-session fixes, or for driving an existing project's milestones (use orchestrate).
 ---
 
 # Project Creation
@@ -92,7 +92,7 @@ name a concrete software task.
   `references/status-template.md`, "Keeping STATUS.md current".
 - Default to cohesive, independently auditable milestones; split one only per
   `../orchestrate/references/brief-template.md`, "Scope validation" and "Size
-  by risk and reward".
+  by risk and reward", and never without explicit plan approval.
 - Broad public contracts require a completion matrix covering success and
   failure behavior, engines/surfaces, lifecycle, and packaging.
 - Architecture drafts and plans must pass AI critique before human review.

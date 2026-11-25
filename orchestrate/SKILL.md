@@ -1,134 +1,113 @@
 ---
 name: orchestrate
-description: Drive long sessions via agent pipeline; use when a project has artifacts from project-creation and work should be delegated to focused agents, keeping the main context as a thin orchestrator.
+description: Drive a multi-milestone project through scout, brief, implement, audit and commit agents, keeping the main context a thin orchestrator; use when project-creation artifacts exist and work should be delegated. Not for a single fix done directly (use coding or fix-test) or creating the artifacts (use project-creation).
 ---
 
 # Orchestrate
 
 ## When to Use
 
-Use when a session will span multiple milestones and you want to delegate
-work to agents while keeping the main context goal-focused.
-
-Requires artifacts from `project-creation` under `project-notes/<slug>/`.
+Use when a session spans several milestones and work is delegated to agents
+while the main context stays goal-focused. Requires the `project-creation`
+artifacts under `project-notes/<slug>/`. Reasons behind the rules below are in
+`references/rationale.md`.
 
 ## The Pipeline
 
-For each incomplete milestone in PLAN.md:
-
-Preserve the approved milestone as the unit of delivery. Split one only per
-`references/brief-template.md`, "Scope validation" and "Size by risk and
-reward".
+For each incomplete milestone in PLAN.md. Preserve the approved milestone as
+the unit of delivery; split one only per `references/brief-template.md`,
+"Scope validation" and "Size by risk and reward".
 
 ### 0. Scout (agent, optional — measure before ratifying)
-Spawn a measurement-only agent (`references/agent-briefs.md`) BEFORE
-briefing when the milestone's premises rest on implicit complex
-assumptions — anything the plan asserts about what the system can
-distinguish, express, or support that has not been directly measured
-(e.g. "the analysis can discriminate X from Y", "this fact is available
-at that point", "this fence contains the fix"). The scout writes no
-production code and commits no fixtures; it answers the load-bearing
-questions with measurements recorded durably (STATUS.md), and the brief
-is then written FROM those facts.
-
-Warranted when: the change is verdict/behavior-shifting; the mechanism
-lives in a substrate no one has probed; a previous sub-step was
-falsified at implementation time; or the brief-writer would otherwise
-have to hypothesize a discriminating fact. Skip for mechanical work
-whose premises are already established.
-
-Never ratify a scope fence whose discriminating facts have not been
-measured to exist inside it.
-
-**Design is required (not optional)** when a milestone implements a rule
-that changes run-time values, or that must be enforced in more than one
-engine or entry point. A design states the representation, the single home
-of the rule, and the internal error raised when it is bypassed; it gets a
-`critique` critique before the brief. No brief is written from approved
-rule text alone.
+- Spawn a measurement-only scout (`references/agent-briefs.md`) before
+  briefing when the milestone's premises rest on implicit complex assumptions
+  that have not been measured: what the system can distinguish, express, or
+  support (e.g. "the analysis can discriminate X from Y", "this fact is
+  available at that point", "this fence contains the fix").
+- It is warranted when the change shifts a verdict or behavior, the mechanism
+  lives in a substrate no one has probed, a previous sub-step was falsified at
+  implementation time, or the brief-writer would otherwise hypothesize a
+  discriminating fact. Skip it for mechanical work whose premises are
+  established.
+- The scout writes no production code and commits no fixtures; it records its
+  measurements in STATUS.md, and the brief is written from them.
+- Never ratify a scope fence whose discriminating facts have not been measured
+  to exist inside it.
+- **Design is required** when a milestone implements a rule that changes
+  run-time values, or that must be enforced in more than one engine or entry
+  point. The design states the representation, the single home of the rule,
+  and the internal error raised when it is bypassed, and it gets a `critique`
+  critique before the brief. Never write a brief from approved rule text
+  alone.
 
 ### 1. Brief (agent)
-Spawn a briefing agent (`references/agent-briefs.md`). It reads project
-artifacts and source files, then writes `project-notes/<slug>/BRIEF.md`.
-If a scout ran, the brief must encode the scout's measured facts — a
-brief premise that contradicts or exceeds the measurements is a defect.
+Spawn a briefing agent (`references/agent-briefs.md`); it writes
+`project-notes/<slug>/BRIEF.md`. If a scout ran, the brief encodes its
+measured facts; a premise that contradicts or exceeds them is a defect.
 
 ### 2. Implement (agent)
-Spawn an implementation agent **in foreground** and wait for it to
-complete. Do not proceed until the agent has returned its final message.
-
-**`[checkpoint]` entries in STATUS.md do NOT mean the agent is done.**
-They are mid-run progress written while the agent is still working.
-Seeing a checkpoint is not a reason to stop waiting — it is confirmation
-the agent is still making progress. Only proceed to step 2a after the
-agent has returned its final message to you.
+Spawn an implementation agent **in the foreground** and wait for its final
+message. `[checkpoint]` entries in STATUS.md do not mean it is done; they are
+progress while it works.
 
 ### 2a. Check for completion (orchestrator)
-The agent has returned. Now read STATUS.md for the final marker:
+After the agent returns, read STATUS.md for the final marker:
 - `[done]` — patch committed and verified. Proceed to audit.
-- `[blocked]` — one specific blocker. Route per decision protocol.
-- No `[done]` or `[blocked]`, only `[checkpoint]` entries — the agent
-  exited without completing. Route per the **Incomplete** section of
-  `references/decision-protocol.md`.
+- `[blocked]` — one specific blocker. Route per the decision protocol.
+- Only `[checkpoint]` entries — the agent exited without completing. Route
+  per **Incomplete** in `references/decision-protocol.md`.
 
 ### 3. Audit (agent)
-Spawn an audit agent per the `audit` skill. It evaluates functional
-correctness, structural quality, and forward impact, then appends a
-dated section to `project-notes/<slug>/AUDIT.md`.
+Spawn an audit agent per the `audit` skill; it appends a dated section to
+`project-notes/<slug>/AUDIT.md`.
 
 ### 4. Evaluate (orchestrator)
-Read the latest AUDIT.md section. Before routing a failure, attribute it —
-which component's contract was violated, and which milestone owns the work.
-See `../references/failure-attribution.md`; the two are separate questions and
-the answer to the first decides where any fix may land. Route per
+Read the latest AUDIT.md section. Attribute any failure per
+`../references/failure-attribution.md`, then route per
 `references/decision-protocol.md`:
-- **Pass** — proceed to commit.
-- **Fail** — escalate to user with the audit findings.
-- **Incomplete** — the worker returned findings instead of a patch.
-  Split and re-brief per the decision protocol.
-
-No automatic retries. If the audit fails, the user decides next steps.
+- **Pass** — commit.
+- **Fail** — escalate to the user with the audit findings. No automatic
+  retries; the user decides next steps.
+- **Incomplete** — the worker returned findings instead of a patch. Split and
+  re-brief per the decision protocol.
 
 ### 5. Commit (orchestrator)
-After passing audit, commit using `checkin`. This creates a clean base
-for the next milestone's audit diff.
+After a passing audit, commit with `checkin`.
 
 ### 6. Between milestones (orchestrator)
-After commit: run the validation gate assigned by PLAN.md, check plan
-coherence, and check cumulative progress, per `references/decision-protocol.md`.
-Choose which tests to run per `../regressions/SKILL.md`, "When to Run What".
+Run the validation gate PLAN.md assigns, check plan coherence, and check
+cumulative progress, per `references/decision-protocol.md`. Choose which tests
+to run per `../regressions/SKILL.md`, "When to Run What".
 
 ## Orchestrator Discipline
 
-The main context does ONLY: read artifacts, construct agent prompts,
-spawn agents, read results from disk, make pass/escalate decisions,
-update STATUS.md and LOG.md, and own long-running verification (below).
-
-The main context does NOT: read source code, write code, run tests, or
-debug. Plan coherence uses AUDIT.md summaries, not source code.
-Exception: long-running verification commands are the orchestrator's to
-run (as session background tasks), because sub-agents cannot host them
-reliably — see Long-Running Verification.
-
-Rule texts are frozen while a step is open. A new ruling queues to the next
-step boundary unless it contradicts the step in flight, in which case the
-step returns to design. One rule is never implemented on two parallel
-branches; merge first.
+- The main context only reads artifacts, writes agent prompts, spawns agents,
+  reads results from disk, makes pass/escalate decisions, updates STATUS.md
+  and LOG.md, and runs long-running verification (below).
+- It does not read source code, write code, run tests, or debug. Plan
+  coherence uses AUDIT.md summaries, not source code.
+- Rule texts are frozen while a step is open. A new ruling waits for the next
+  step boundary unless it contradicts the step in flight; then the step
+  returns to design.
+- Never implement one rule on two parallel branches; merge first.
+- Read outcomes from the artifact files (STATUS.md, AUDIT.md, BRIEF.md), not
+  from agent return messages. The markers `[done]`, `[blocked]`, and
+  `[checkpoint]` are the authoritative signal.
 
 ### Choosing the Agent's Model
 
-The orchestrator picks each spawned agent's model; don't ask the user. Pass
-`model` on the Agent call:
+Pick each spawned agent's model yourself; don't ask the user. Pass `model` on
+the Agent call:
 
-| Work | Model | Why |
-|---|---|---|
-| Audits (step 3), class-coverage audits, critique critiques of spec drafts and plans | `fable` | Highest-stakes judgement. A different model from the implementer also gives a reading that isn't anchored on the implementer's reasoning. |
-| Milestone briefs (step 1) | `fable` | The brief fixes the representation, the single home of each rule and the acceptance; errors there cause the repeated audit failures. (User request, 2026-11-16.) The brief's critique critique still runs, so brief and critique are both fable. |
-| Implementation (step 2), scouts, debugging, spec drafting | `opus` (or inherit) | Long, multi-step code and spec work. |
-| Mechanical work: filing issues from written notes, repro sweeps, disk/build/state checks, copying results | `sonnet` | The inputs are already written down; the task needs no deep judgement. |
+| Work | Model |
+|---|---|
+| Audits (step 3), class-coverage audits, critique critiques of spec drafts and plans | `fable` |
+| Milestone briefs (step 1), and so also their critique critiques | `fable` |
+| Implementation (step 2), scouts, debugging, spec drafting | `opus` (or inherit) |
+| Mechanical work: filing issues from written notes, repro sweeps, disk/build/state checks, copying results | `sonnet` |
 
-Forks (`subagent_type: "fork"`) always run on the orchestrator's model.
-A running agent keeps its model, so a change applies only to agents spawned
+Forks (`subagent_type: "fork"`) always run on the orchestrator's model. A
+running agent keeps its model, so a change applies only to agents spawned
 after it. If an agent on the cheaper tier misses something, or an audit
 underperforms, change the mix and record it in LOG.md.
 
@@ -142,13 +121,10 @@ accept its result per `../references/package-onboarding.md`, "Delegated work".
 Attribute every failure before routing it, per
 `../references/failure-attribution.md`. Two obligations are the orchestrator's:
 
-- **Milestones carry entry and exit gates.** A milestone starts by running the
-  prior milestones' suites and recording the counts in STATUS.md, and closes
-  by passing its own suite with every prior suite still green at a recorded
-  commit. Without those recorded points, "newly exposed" is an assertion
-  instead of a bisect, and nothing after the first red baseline can be
-  attributed at all. A milestone that would start on a red baseline does not
-  start; escalate instead.
+- **Milestones carry entry and exit gates.** Start a milestone by running the
+  prior milestones' suites and recording the counts in STATUS.md. Close it by
+  passing its own suite with every prior suite still green at a recorded
+  commit. Never start a milestone on a red baseline; escalate instead.
 - **The fix site is not negotiable by convenience.** Do not accept a patch
   that compensates downstream for a lower layer's or another package's
   defect; route it per that reference, "When Another Component Owns It". An
@@ -156,39 +132,26 @@ Attribute every failure before routing it, per
 
 ## Long-Running Verification
 
-A sub-agent's processes — including anything it started with a
-background bash call — are killed the moment the agent returns its
-final message. Only background tasks started by the MAIN session
-survive turn boundaries and emit completion notifications. Two rules
-follow:
+A sub-agent's processes, background ones included, die when it returns; only
+main-session background tasks survive.
 
-1. **Workers must never "start and wait" on their own background.** An
-   implementation agent that needs a long verification (full
-   regression, whole-repo verification) runs it in the FOREGROUND and
-   stays alive until it completes. A worker that backgrounds the run
-   and returns "waiting for results" has orphaned a dead process and
-   made an invalid exit. Put this rule in the implementation brief for
-   any milestone whose proof includes a long-running command.
-2. **Premature exit during verification is recoverable without
-   re-briefing.** If a worker returns with only `[checkpoint]` entries
-   and its last checkpoint says verification was started or pending:
-   do NOT re-run the brief and do NOT spawn a continuation agent (a
-   new Agent call does not inherit the returned worker's context, and
-   the second worker will hit the same wall). Instead the orchestrator
-   (a) re-runs the verification command itself as a main-session
-   background task, (b) on success performs the commit exactly as the
-   brief specified — the diff is already in the working tree and the
-   worker's checkpoints record its verification claims — and (c)
-   records the outcome in STATUS.md on the worker's behalf, then
-   proceeds to audit. On verification failure, escalate per the
-   decision protocol with the failing output.
+1. **Workers never start a long verification and return.** A worker runs a
+   long verification (full regression, whole-repo verification) in the
+   foreground and stays alive until it finishes. Put this rule in the
+   implementation brief of any milestone whose proof includes a long command.
+2. **Recover a premature exit during verification without re-briefing.** If a
+   worker returns with only `[checkpoint]` entries and the last one says
+   verification was started or pending, do not re-run the brief and do not
+   spawn a continuation agent. Instead: (a) re-run the verification yourself
+   as a main-session background task; (b) on success, commit exactly as the
+   brief specified; (c) record the outcome in STATUS.md on the worker's
+   behalf and proceed to audit. On failure, escalate per the decision
+   protocol with the failing output.
 
-When sequencing allows it, prefer the split that avoids the problem:
-worker does implementation + fast targeted tests in foreground and
-records its claims; orchestrator owns the heavyweight verification gate
-before audit/commit.
-
-This is a validation-ownership split, not a new implementation phase.
+When sequencing allows, prefer the split that avoids the problem: the worker
+does implementation and fast targeted tests in the foreground and records its
+claims; the orchestrator owns the heavyweight gate before audit and commit.
+This is a split of validation ownership, not a new implementation phase.
 
 ## Artifacts
 
@@ -203,18 +166,9 @@ All in `project-notes/<slug>/`:
 | AUDIT.md | audit agent | append-only |
 | BRIEF.md | briefing agent | per-milestone |
 
-STATUS.md is state and LOG.md is history: keep them per
+Keep STATUS.md (state) and LOG.md (history) per
 `../project-creation/references/status-template.md`, "Keeping STATUS.md
-current". Treat a breach of its defect list as a defect to fix before
-continuing.
-
-**Authoritative state is in files, not agent return messages.** When a
-sub-agent completes, it returns a text message — but that message is a
-summary, not the source of truth. Always read the relevant artifact file
-(STATUS.md, AUDIT.md, BRIEF.md) to determine the actual outcome. Agent
-return messages may be truncated, ambiguous, or describe intermediate
-progress. The file markers (`[done]`, `[blocked]`, `[checkpoint]`) are
-the authoritative signal.
+current", and fix any breach of its defect list before continuing.
 
 ## Session Start
 1. List `project-notes/` to identify the active slug.
@@ -233,8 +187,9 @@ the authoritative signal.
 
 - `../references/project-profile.md` — where project commands, paths, and
   conventions live (cited as "profile §Section")
-- `../references/package-onboarding.md` — mandatory delegated onboarding for
-  package-repository work
-- `../references/failure-attribution.md` — which component owns a defect,
-  which milestone owns the work, and why the fix cannot move to a more
-  convenient layer
+- `../references/package-onboarding.md` — delegated onboarding for package work
+- `../references/failure-attribution.md` — which component owns a defect and
+  which milestone owns the work
+- `references/agent-briefs.md`, `references/brief-template.md`,
+  `references/decision-protocol.md` — prompts, brief format, routing
+- `references/rationale.md` — why the pipeline is shaped this way

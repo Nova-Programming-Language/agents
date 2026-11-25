@@ -148,6 +148,21 @@ classification relative to the comparison target, canonical case identity,
 status, message, likely owning subsystem, failing phase, per-case artifact
 paths, and an exact rerun command for that single failure.
 
+## Reading Failure Records
+
+Keep the project's test-system model in mind (profile §Regression): what
+identifies a test case canonically, which statuses count as failing, and
+whether one test file may legitimately produce several cases (for example
+across engines or forms).
+
+- Each failure record carries the fields profile §Regression lists, typically
+  a classification, case identity, status, message, likely owner, failing
+  phase, per-case artifacts, and a rerun hint.
+- Classifications are relative to the chosen comparison target, typically the
+  baseline.
+- The run log is archival; per-case artifacts are the place to drill into one
+  failing case.
+
 ## Pinned Container Path
 
 Container build, start, prepare, and regression commands are in profile
