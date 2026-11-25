@@ -163,8 +163,8 @@ When failures are found:
   diagnosis, audit, commit per fix
 - To track them externally: use `issues` — file one issue per distinct
   root cause with the structured failure data
-- To investigate non-obvious failures: use `bug-report` for local
-  investigation notes before filing
+- To investigate non-obvious failures: write a local bug report per
+  `issues`, "Local Bug Report", before filing
 
 Do not leave failures untracked. Every unexpected failure should either
 be fixed in this session or filed as an issue for a future session.

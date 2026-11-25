@@ -1,4 +1,0 @@
-interface:
-  display_name: "Bug Report"
-  short_description: "Write verified bug reports and repro notes"
-  default_prompt: "Use $bug-report to write a verified bug report from this issue."

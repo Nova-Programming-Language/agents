@@ -1,6 +1,6 @@
 ---
 name: issues
-description: Report and fix bugs via the project's issue tracker (e.g. GitHub issues); use when filing new issues from findings, picking up existing issues to fix, or triaging issue backlogs. Covers the full lifecycle from discovery through verified close.
+description: Report and fix bugs via the project's issue tracker (e.g. GitHub issues) or as verified repo-local bug reports; use when filing issues from findings, writing a bug report with exact reproduction and ownership clues, picking up issues to fix, or triaging backlogs. Covers discovery through verified close.
 ---
 
 # Issues
@@ -8,6 +8,7 @@ description: Report and fix bugs via the project's issue tracker (e.g. GitHub is
 ## When to Use
 
 - Filing a bug or defect as an issue in the project's tracker
+- Writing a verified, repo-local bug report (see Local Bug Report)
 - Picking up an existing issue to fix
 - Triaging a set of issues
 - Closing issues with verified evidence
@@ -24,8 +25,8 @@ When you discover a bug, audit finding, or regression failure that
 should be tracked:
 
 1. **Verify first.** Reproduce the issue with an exact command. Do not
-   file from memory or assumption. Use `bug-report` investigation
-   discipline if the reproduction is non-trivial.
+   file from memory or assumption. If the reproduction is non-trivial,
+   investigate it per Local Bug Report first.
 
 2. **Create the issue** using `references/issue-template.md` for
    structure. File with the tracker's create command (`gh issue create` on
@@ -54,6 +55,33 @@ should be tracked:
 
 4. **Link context.** If the issue came from an audit, regression run,
    or project milestone, reference it in the issue body.
+
+### Local Bug Report
+
+Write a durable report in the reports directory (profile §Paths) when the
+reproduction is non-trivial and needs structured investigation before filing,
+or when a repo-local record of a defect or blocker is wanted. It is not for
+transient debug notes.
+
+1. Reproduce with the narrowest command. Rerun after a clean rebuild when
+   relevant, and capture the exact failing output or behavior.
+2. Record the exact command or input file, and the branch or commit under
+   test: the current default branch (profile §Repository), a feature branch,
+   or a dirty worktree.
+3. Record whether a clean rebuild was performed, and state explicitly if it
+   changes the outcome. Record whether the bug still reproduces on the current
+   default branch.
+4. Distinguish "originally observed" from "currently reproducible". If it no
+   longer reproduces, say so plainly and record what changed during
+   verification.
+5. Name the most likely subsystem (the architecture map, profile §Paths), not
+   a person, and say why.
+6. If it blocks another task, say which commands or workflows are blocked.
+7. Write it per `references/bug-report-template.md`, named by the reports
+   directory's pattern (typically a date plus a short slug), using the current
+   local date, not a guessed one.
+8. Keep it factual: exact commands, file paths, and observed errors; no
+   speculation that is not tied to evidence.
 
 ### From audit results
 
@@ -279,5 +307,6 @@ resolved. Close them with evidence if so.
 ## References
 
 - `references/issue-template.md` — issue body structure
+- `references/bug-report-template.md` — repo-local bug report structure
 - `../references/project-profile.md` — profile §Repository holds the tracker
   and labels

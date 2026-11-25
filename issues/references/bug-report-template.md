@@ -1,5 +1,8 @@
 # Bug Report Template
 
+Structure for a repo-local bug report (`../SKILL.md`, "Local Bug Report").
+Every section is required.
+
 ## Summary
 
 One short paragraph describing the defect and the affected workflow.
