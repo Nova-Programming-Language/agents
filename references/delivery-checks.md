@@ -59,13 +59,7 @@ Validation should identify:
 
 “Tests under this directory should pass” is not enough by itself.
 
-When reporting a result, say what actually happened rather than what the tool
-concluded:
-
-- how many tests ran (a run that selected nothing may exit zero; profile
-  §Tests says how the runner reports the executed count)
-- how many failed in total, not only how many are new
-- for a comparison-based suite, both numbers: "no new regressions" describes a
-  delta against a baseline and is compatible with a non-zero failure count
-
-A suite that reports no new regressions has not reported a passing suite.
+When reporting a result, say how many tests ran and how many failed in total
+as well as how many are new, per `../regressions/SKILL.md`, "Non-Negotiable
+Rules". A suite that reports no new regressions has not reported a passing
+suite.

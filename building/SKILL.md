@@ -25,24 +25,11 @@ the profile lacks the section a step needs, ask the user.
 ## Non-Negotiable Rules
 
 - Decide which command you are about to run before deciding what to rebuild.
-- Invoke the project CLI the way profile §Build says (its default build
-  profile, and how to select a debug build only when you deliberately want
-  one). Prefer an invocation that resolves the build output location itself
-  over a hardcoded artifact path, which breaks when build output is redirected.
-- Know what that invocation refreshes and what it does not: an invocation
-  that builds the CLI cannot leave the CLI stale, but runtime libraries it
-  links may still be stale (profile §Build lists them).
-- If you do invoke a built binary by path, resolve its location the way
-  profile §Build describes rather than assuming a default directory.
-- Never trust compiled/runtime-linked validation after source edits unless the
-  runtime artifacts were refreshed or a canonical script did it.
-- Run the container prepare step (profile §Environments) before trusting stale
-  container artifacts.
-- Builds after code or test changes must be warning-free on the affected
-  surface. Treat new compiler or runtime build warnings as failures unless an
-  explicit blocker is recorded.
-- In validation summaries, state what was rebuilt or why the command itself
-  guaranteed freshness.
+- Invoke the CLI, resolve binaries, refresh runtime and container artifacts,
+  and report what was rebuilt per `../references/artifact-freshness.md`
+  (its Core Rule, Artifact Matrix, and Practical Rules).
+- Treat new build warnings as failures, per `../coding/SKILL.md`,
+  "Implementation Rules".
 
 ## Workflow
 

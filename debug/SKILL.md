@@ -42,12 +42,10 @@ usage and the `MALLOC_STRICT_SIZE`/CoreFoundation ARM64 pitfall.
 
 ## Source-of-Truth Triage
 
-Before changing code, answer these in the debug session:
-
-1. What exact answer is the code trying to compute?
-2. What source should authoritatively provide that answer?
-3. Is that data present and correct at the point of use?
-4. If it is absent, is the bug in the producer, installer, or consumer?
+Before changing code, answer the Required Questions in
+`../references/source-of-truth.md` in the debug session. Also check whether
+the data is present and correct at the point of use, and if absent, whether
+the bug is in the producer, installer, or consumer.
 
 Do not conclude a debug session with “use a heuristic” when the real finding is
 that required source-of-truth data was missing.
@@ -68,8 +66,7 @@ Before editing, answer:
 3. If the owning component is out of scope for this session or milestone, what
    is the blocker, and what is the issue to file?
 
-The rules that follow — including the milestone-versus-component split and the
-forbidden compensating fixes — are in `../references/failure-attribution.md`.
+The rest of the procedure is in `../references/failure-attribution.md`.
 
 Two failure modes are specific to debugging:
 
@@ -79,9 +76,6 @@ Two failure modes are specific to debugging:
 - **Fixing at the wrong repository.** A defect in the toolchain repaired by
   shaping package code around it, or the reverse. Fix it at the source; if the
   source is not in scope, report the blocker.
-
-A defect that a new caller exposes belongs to the component whose contract it
-violates, not to the caller that reached it first. Exposure is not authorship.
 
 ## Workflow
 
@@ -116,11 +110,11 @@ violates, not to the caller that reached it first. Exposure is not authorship.
   before inspecting derived names or side tables.
 - Treat missing required data as a producer/install bug first, not as a signal
   to patch in fallback inference.
-- Fix at the owning component, not at the frame where the value was observed.
-  When the two differ, say so explicitly in the report — the distinction is
-  what tells the next reader whether the defect is closed or merely masked.
-- Land the regression test in the owning component. A test that only pins the
-  symptom at the surfacing site leaves the contract unproven.
+- When the owning component differs from the frame where the value was
+  observed, say so explicitly in the report — it tells the next reader whether
+  the defect is closed or merely masked.
+- Land the regression test per `../references/failure-attribution.md`,
+  "Validation Expectations".
 
 ## Open These References As Needed
 

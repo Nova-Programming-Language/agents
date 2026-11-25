@@ -109,8 +109,9 @@ Exit criteria:
 
 - the next coding step is unambiguous
 - milestone boundaries are explicit
-- no milestone is a thin slice justified only by time, file count, context
-  size, or a failing test
+- no milestone is split except per
+  `../../orchestrate/references/brief-template.md`, "Scope validation" and
+  "Size by risk and reward"
 - required validation is defined in command-level terms, not just directories
 - affected command surfaces and proof commands are explicit
 - the plan has an explicit critique verdict before human feedback
@@ -137,10 +138,8 @@ Agent actions:
 - follow source-of-truth, runtime-evidence, and semantic-family rules
 - update status as reality changes
 - keep test failures inside the current milestone unless evidence proves an
-  external independent defect
-- do not create `a`/`b`, pilot, cleanup, or follow-up phases without plan
-  approval and a measured independent root cause or independently releasable
-  outcome
+  external independent defect; split only per the brief template's "Scope
+  validation" (above) and with plan approval
 
 Required artifact updates:
 

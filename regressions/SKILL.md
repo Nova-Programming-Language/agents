@@ -29,16 +29,29 @@ needs, ask the user.
 7. `../references/semantic-family.md` when the bug involves related constructs
 8. `references/full-regression.md`
 
-## Non-Negotiable Rules
+## When to Run What
+
+This section is the one home for which tests to run when; other skills point
+here.
 
 - Prefer the smallest validation that proves the change.
+- Use targeted tests repeatedly while implementing.
+- Run exhaustive tests (full regression and the other whole-component tiers in
+  profile §Regression) only at the end of a milestone; between commits and
+  checkpoints, run only the build and the tests that own the changed code.
+- Run the owning component's suite once at the milestone gate.
+- Run canonical/full regression only at the production-changing milestone
+  gates PLAN.md defines and at final release, not after every file,
+  checkpoint, or documentation-only milestone.
+
+## Non-Negotiable Rules
+
 - For package work, complete `../references/package-onboarding.md` before
   choosing or running the test command.
 - If the chosen command consumes release or runtime artifacts, refresh them
   first or use the canonical script that does it for you.
-- Code and test changes must not leave warnings on the affected validation
-  surface. Treat new compiler, build, and test-compilation warnings as failures
-  unless there is a documented blocker.
+- Treat new warnings on the validation surface as failures, per
+  `../coding/SKILL.md`, "Implementation Rules".
 - For targeted or directory test runs, rely on the test runner's default
   result recording unless you need an explicit export or override (profile
   §Tests).
@@ -51,7 +64,13 @@ needs, ask the user.
   never treat a retry-pass as satisfying a "proceed only if no failures"
   gate. If the cause cannot be found this session, file an issue with the
   reproduction evidence (frequency, seeds, thread counts) — an unfixed flake
-  is an open bug, not noise.
+  is an open bug, not noise. Reproduce it with a stress loop (vary test
+  parallelism, iterate the single test directly; how is in profile §Tests),
+  then diagnose.
+- A scope that selects nothing can exit zero and report zero tests run.
+  Before treating a scoped run as a pass, or a failure as not reproducing,
+  confirm the executed count is non-zero and roughly what you expected
+  (profile §Tests says how the runner reports it).
 - Start a full run (or any multi-hour command) detached so background-task
   kills cannot take it down, and watch it with the Monitor tool — see
   "Starting a Long Run Detached" in `references/full-regression.md` for the
@@ -71,10 +90,8 @@ needs, ask the user.
 - To ask whether anything got worse rather than whether anything failed, read
   the new-failure count from the comparison artifact (profile §Regression).
   Never infer it from the exit status.
-- When fixing a heuristic or fallback bug, add a regression that proves the
-  authoritative path is used.
-- When required data should exist, add a missing-data regression that fails
-  loudly instead of passing through fallback behavior.
+- When fixing a heuristic, fallback, or missing-data bug, add the regressions
+  `../references/source-of-truth.md`, "Validation Expectations", requires.
 - After reproducing a runtime failure, pivot to the debugger (profile
   §Debugging) or narrow tracing instead of broad code reading unless the issue
   is clearly architectural.
@@ -134,8 +151,7 @@ Use the structured records for all downstream work:
 
 For scoped test runs, use what the test runner prints (profile §Tests) to
 confirm the exact scope, where results were stored, and that the run was not
-empty: a scope that selects nothing can exit zero and report zero tests run,
-which reads as success at a glance. Replaying the last failures re-reads a
+empty (see Non-Negotiable Rules). Replaying the last failures re-reads a
 snapshot of that scope only, and a scoped run over the whole test tree is
 still not canonical full regression.
 

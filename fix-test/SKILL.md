@@ -49,11 +49,10 @@ If not reproducible in isolation, note it — may be an ordering or
 environment dependency.
 
 Run the reproduction with the project's single-test command (profile §Tests)
-and keep the same exact scope. A reproduction that selects nothing looks
-identical to one that passes, so confirm the run count is non-zero before
-concluding a failure does not reproduce. Profile §Tests says how the runner
-reports scope, run count, and stored artifacts, and which replay options
-reproduce an exact earlier scope.
+and keep the same exact scope; profile §Tests says which replay options
+reproduce an exact earlier scope. Confirm the executed count per
+`../regressions/SKILL.md`, "Non-Negotiable Rules", before concluding a failure
+does not reproduce.
 
 ### 3. Diagnose root cause
 
@@ -70,14 +69,9 @@ Trace from symptom to root cause. This step must not be skipped.
 - Identify WHERE behavior diverges from the expectation
 - Identify WHY — logic error, missing case, wrong data, stale
   contract, upstream bug?
-- If root cause is in another component, record as blocker with
-  evidence — do not work around it. The fix site is decided by which
-  contract was violated, never by which file is convenient to change; see
-  `../references/failure-attribution.md` for the four buckets and the
-  forbidden compensating fixes.
-- A defect that this test newly exposed — because it reached a path nothing
-  reached before — belongs to the component whose contract it violates, not
-  to the test or the caller that found it. Exposure is not authorship.
+- Attribute the failure per `../references/failure-attribution.md`. If the
+  root cause is in another component, record it as a blocker with evidence;
+  do not work around it.
 - If the architecture document has a "Common Change Patterns" section,
   check whether the original change that introduced the bug followed
   the pattern. Often a test failure means one component was updated
@@ -153,12 +147,10 @@ component elsewhere is not a fix.
   that shared code.
 - If a regression suite command exists (profile §Regression), run it and
   compare.
-- The regression test lands in the component that owns the defect. A test
-  that only pins the symptom where it surfaced leaves the violated contract
-  unproven and lets the same defect reappear through a different caller.
-- Re-run the exposing path too. It confirms the symptom is gone and that the
-  attribution was right; if the symptom survives a fix at the owning
-  component, the attribution was wrong and step 3 is not finished.
+- Land the regression test and re-run the exposing path per
+  `../references/failure-attribution.md`, "Validation Expectations". If the
+  symptom survives a fix at the owning component, the attribution was wrong
+  and step 3 is not finished.
 
 If the fix introduced new failures, diagnose and fix those before
 proceeding — they are part of THIS fix.
@@ -221,16 +213,11 @@ can be batched."
 - **Audit before commit.** Every fix is audited. No exceptions.
 - **Commit before moving on.** A fix is not done until it is committed.
 - **Root cause required.** "Made the test pass" is not a diagnosis.
-- **A flaky test is a bug.** A nondeterministic failure has a
-  deterministic cause; passing on retry hides it, never disproves it.
-  Reproduce with a stress loop (vary test parallelism, iterate the single
-  test directly; how is in profile §Tests), then diagnose. If the cause is out of scope for the
-  current fix, file an issue with frequency and repro conditions — never
-  rerun-until-green and move on.
-- **Fix at the owning component.** Not at the frame where the value was
-  observed, not in the consumer that received it, and not in the package
-  that happens to be in scope. Compensating downstream for an upstream
-  defect trades one defect for two and hides the first.
+- **A flaky test is a bug.** Handle it per `../regressions/SKILL.md`,
+  "Non-Negotiable Rules"; never rerun-until-green and move on.
+- **Fix at the owning component**, per `../references/failure-attribution.md`:
+  not at the frame where the value was observed, not in the consumer that
+  received it, and not in the package that happens to be in scope.
 - **No symptom fixes.** Nil checks, clamps, defaults, try/catch that
   hide the problem are not fixes.
 - **No test modification.** The test is usually right and the code
@@ -256,4 +243,4 @@ When used standalone, this skill manages its own sequencing.
   which milestone owns the work, and why the fix cannot move to a more
   convenient layer
 - `references/failure-log-template.md` — format for tracking fixes
-- `audit/SKILL.md` — audit skill used at step 6
+- `../audit/SKILL.md` — audit skill used at step 6

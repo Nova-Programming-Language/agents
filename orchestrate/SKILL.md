@@ -16,11 +16,9 @@ Requires artifacts from `project-creation` under `project-notes/<slug>/`.
 
 For each incomplete milestone in PLAN.md:
 
-Preserve the approved milestone as the unit of delivery. Do not progressively
-thin-slice it into `a`/`b`, pilot, cleanup, or follow-up phases. A split
-requires measured independent root causes or independently auditable and
-releasable outcomes; elapsed time, file count, context size, and a failing
-test are insufficient.
+Preserve the approved milestone as the unit of delivery. Split one only per
+`references/brief-template.md`, "Scope validation" and "Size by risk and
+reward".
 
 ### 0. Scout (agent, optional — measure before ratifying)
 Spawn a measurement-only agent (`references/agent-briefs.md`) BEFORE
@@ -97,11 +95,8 @@ for the next milestone's audit diff.
 
 ### 6. Between milestones (orchestrator)
 After commit: run the validation gate assigned by PLAN.md, check plan
-coherence, and check cumulative progress. Run exhaustive tests (full
-regression and the other whole-component tiers in profile §Regression) only at
-the end of a milestone; between commits and checkpoints, run only the build and the tests
-that own the changed code.
-See `references/decision-protocol.md`.
+coherence, and check cumulative progress, per `references/decision-protocol.md`.
+Choose which tests to run per `../regressions/SKILL.md`, "When to Run What".
 
 ## Orchestrator Discipline
 
@@ -139,22 +134,13 @@ underperforms, change the mix and record it in LOG.md.
 
 ### Delegated Package Onboarding
 
-For any worker touching or validating a package repository, read
-`../references/package-onboarding.md` and include its exact applicable files
-in the worker brief. A generic instruction to "follow repository rules" is not
-enough. Require the worker to report which READMEs it read and whether the
-commands matched package-specific prerequisites. Audit already-started work
-against those READMEs before accepting it.
+For any worker touching or validating a package repository, brief it and
+accept its result per `../references/package-onboarding.md`, "Delegated work".
 
 ## Attributing Failures
 
-A failure reaching the orchestrator gets attributed before it gets routed, and
-the attribution is read off which suite or fixture failed — not off which file
-a worker found it convenient to change. The full procedure, its four buckets,
-and the fixture requirement that makes them decidable are in
-`../references/failure-attribution.md`.
-
-Two orchestrator-level obligations follow from it:
+Attribute every failure before routing it, per
+`../references/failure-attribution.md`. Two obligations are the orchestrator's:
 
 - **Milestones carry entry and exit gates.** A milestone starts by running the
   prior milestones' suites and recording the counts in STATUS.md, and closes
@@ -163,15 +149,10 @@ Two orchestrator-level obligations follow from it:
   instead of a bisect, and nothing after the first red baseline can be
   attributed at all. A milestone that would start on a red baseline does not
   start; escalate instead.
-- **The fix site is not negotiable by convenience.** When a worker reports a
-  failure owned by a lower layer or another package, do not accept a patch
-  that compensates for it downstream. That trades one defect for two and
-  hides the first. Route it: the owning component is repaired, or the work is
-  filed and the milestone reports blocked.
-
-An audit that passes because a defect was worked around at the wrong layer has
-not passed. Treat a downstream compensation for an upstream defect as a
-failing structural dimension.
+- **The fix site is not negotiable by convenience.** Do not accept a patch
+  that compensates downstream for a lower layer's or another package's
+  defect; route it per that reference, "When Another Component Owns It". An
+  audit that passed such a patch has not passed (`../audit/SKILL.md`).
 
 ## Long-Running Verification
 
@@ -222,37 +203,10 @@ All in `project-notes/<slug>/`:
 | AUDIT.md | audit agent | append-only |
 | BRIEF.md | briefing agent | per-milestone |
 
-### STATUS.md is state, LOG.md is history — this is not optional
-
-STATUS.md answers "where is this project right now" for someone who has read
-nothing else. It follows `project-creation`'s status template and stays roughly
-one screen. **Never append to it.** Rewrite the sections that changed and delete
-what is no longer true.
-
-LOG.md answers "how did it get here". It is append-only and it is the ONLY place
-history accumulates.
-
-`[checkpoint]` markers are transient. A milestone's checkpoints are working state
-while that milestone is open; when it closes, move them to LOG.md and delete them
-from STATUS.md. A checkpoint that has been superseded is noise in a state
-document, and the next session reads STATUS first.
-
-The failure mode is silent and compounding. Each session appends "just one
-dated section", STATUS grows into a second undated log, and the current state
-becomes something a reader has to reconstruct by diffing checkpoints. Once that
-has happened, stale claims survive at the top of the file because nobody
-rewrites a 1,000-line status. Treat any of these as a defect to fix before
-continuing:
-
-- STATUS.md carries more than one dated section, or any superseded checkpoint
-- STATUS.md exceeds roughly 150 lines
-- a claim near the top is contradicted by a section further down
-- history appears in STATUS.md that is not also in LOG.md
-
-Migrating is mechanical: cut every superseded section, append it verbatim under
-a dated LOG.md entry saying what moved and why, then rewrite STATUS.md from the
-template against the actual current state. Never drop the text; only change its
-home.
+STATUS.md is state and LOG.md is history: keep them per
+`../project-creation/references/status-template.md`, "Keeping STATUS.md
+current". Treat a breach of its defect list as a defect to fix before
+continuing.
 
 **Authoritative state is in files, not agent return messages.** When a
 sub-agent completes, it returns a text message — but that message is a
@@ -269,11 +223,10 @@ the authoritative signal.
 4. Enter the pipeline at the next incomplete milestone.
 
 ## Session End
-1. **Rewrite** STATUS.md to the current state. Delete superseded checkpoints and
-   any claim that is no longer true. Do not append a dated section to it.
-2. Append to LOG.md — software work only, not agent workflow. Everything cut
-   from STATUS.md in step 1 lands here first; nothing is discarded.
-3. Verify: STATUS.md has one state, LOG.md has the history, and no superseded
+1. Rewrite STATUS.md and append to LOG.md per
+   `../project-creation/references/status-template.md`, "Keeping STATUS.md
+   current".
+2. Verify: STATUS.md has one state, LOG.md has the history, and no superseded
    text exists only in STATUS.md.
 
 ## References

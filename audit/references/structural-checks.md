@@ -3,10 +3,8 @@
 Evaluate the diff and surrounding code across these categories. Which checks
 run depends on the depth chosen per `scope-and-depth.md`.
 
-**What to demand**: targeted tests during implementation; the owning
-component's suite at the milestone gate; canonical/full regression only at
-defined production-changing gates and final release. Do not demand repeated
-full runs after files or checkpoints.
+**What to demand**: the test tiers in `../../regressions/SKILL.md`, "When to
+Run What". Do not demand exhaustive runs between commits or checkpoints.
 
 ## Architecture
 
@@ -125,7 +123,7 @@ fine. The concern is mixed responsibilities, not line count alone.
   "Done" claims against the diff.
 - **Completion matrix**: for broad public contracts, check every applicable
   cell of the plan's completion matrix (see
-  `project-creation/references/plan-template.md`), or build an equivalent
+  `../../project-creation/references/plan-template.md`), or build an equivalent
   inventory: success/failure behavior, engines/surfaces, lifecycle,
   packaging. A subset cannot pass the original criteria. Classify the result
   using the truthful states in `../SKILL.md`.
@@ -179,6 +177,5 @@ it removes, flag it — the refactor is adding complexity, not reducing it.
 
 - Files outside BRIEF.md scope: flag drive-by refactors and unrelated fixes.
 - Formatting churn: flag formatting-only changes to lines not otherwise
-  modified, and any formatter run beyond the files the task touched (e.g.
-  package- or repo-wide; formatter scope is in profile §Formatting) unless
-  explicitly required. Churn obscures real changes and pollutes git blame.
+  modified, and any formatter run beyond the files the task touched, against
+  the formatting rules in `../../coding/SKILL.md`, "Implementation Rules".

@@ -2,13 +2,8 @@
 
 Read the latest AUDIT.md section and route.
 
-Attribute before routing. For any failure, establish which component's
-contract was violated and which milestone owns the work — they are separate
-questions, and the first one decides where a fix may land. The procedure is
-`../../references/failure-attribution.md`. Routing a failure without
-attributing it produces the two most expensive outcomes available here: a fix
-applied at the layer that surfaced the defect rather than the one that owns
-it, and a milestone credited with work it did not do.
+Attribute every failure before routing it, per
+`../../references/failure-attribution.md`.
 
 ## Pass
 
@@ -52,24 +47,18 @@ to user — they decide whether to fix now or accept.
 The worker returned findings or diagnosis instead of a patch + verification
 or a concrete blocker. This is not a valid exit.
 
-**Special case — returned mid-verification.** If the patch is complete
-in the working tree and the last `[checkpoint]` says a long
-verification was started or pending, this is a premature exit, not a
-scope problem. Do not re-brief and do not spawn a continuation agent
-(it cannot inherit the worker's context and will hit the same wall;
-any background run the worker started died with it). The orchestrator
-re-runs the verification as a main-session background task, commits per
-the brief on success, records the outcome in STATUS.md, and proceeds to
-audit. See SKILL.md §Long-Running Verification.
+**Special case — returned mid-verification.** If the patch is complete in the
+working tree and the last `[checkpoint]` says a long verification was started
+or pending, this is a premature exit, not a scope problem: recover it per
+`../SKILL.md`, "Long-Running Verification", rule 2.
 
 Otherwise, do NOT re-run the same brief. Instead:
 
 1. Read STATUS.md for what was accomplished vs remaining.
 2. Keep the remaining work in the current milestone. Sequential failures are
    not new phases.
-3. Propose a plan split only if evidence establishes independent root causes
-   or independently auditable/releasable outcomes; obtain approval before
-   creating `a`/`b`, pilot, cleanup, or follow-up milestones.
+3. Propose a plan split only per `brief-template.md`, "Scope validation" and
+   "Size by risk and reward", and obtain approval before creating it.
 4. Never audit a verified subset as satisfying the original criteria.
 5. Update PLAN.md only after an approved split or a real scope change.
 
@@ -80,16 +69,14 @@ After commit, before next milestone:
 ### 1. Assigned validation gate
 
 Run the owning suite or broader gate assigned to this milestone in PLAN.md and
-compare against the baseline in STATUS.md. Run canonical/full regression only
-at defined production-changing milestone gates and final release, not after
-every file, checkpoint, or documentation-only milestone.
-Classify every change:
+compare against the baseline in STATUS.md. Choose tiers per
+`../../regressions/SKILL.md`, "When to Run What". Classify every change:
 
 - **Unexpected regression** — passing at baseline, now failing, not
   declared in PLAN.md. Escalate. Attribute it before proposing any fix: the
-  current milestone may have broken it, or may merely have exposed a latent
-  defect in a lower layer by reaching it with an input nothing sent before.
-  Both escalate; they do not share a fix site. Exposure is not authorship.
+  current milestone may have broken it or only exposed a lower layer's
+  defect. Both escalate; they do not share a fix site (failure-attribution,
+  "When Another Component Owns It").
 - **Declared regression** — all four conditions: named in PLAN.md before
   implementation, named a resolving milestone, milestone still exists,
   recorded in STATUS.md. If any condition fails → unexpected.

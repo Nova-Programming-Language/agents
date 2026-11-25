@@ -90,8 +90,10 @@ doc in the same change (same reference, "When a change must update the doc").
   required (profile §Formatting). Review the resulting diff and revert
   formatting changes outside the intended edits.
 - Code and test changes must not introduce warnings on the affected build or
-  component-test surfaces. Treat new warnings as failures and either fix them or
-  report an explicit blocker.
+  component-test surfaces, including compiler, runtime-build, test-compilation,
+  and test-runner warnings. Treat new warnings as failures and either fix them
+  (unused helpers, unreachable branches, stale imports, annotation warnings) or
+  report an explicit blocker. This is the one home for the warnings rule.
 
 ## Naming
 
@@ -120,19 +122,13 @@ Comments explain *why*, not *what*.
 
 ## Source-of-Truth Contract
 
-Before implementing a lookup or decision path, state the answer being
-computed, its authoritative source, whether missing data is valid or a bug,
-and which component owns producing it.
-
-Forbidden: string/pattern heuristics when structured data exists, fallback
-from contract data to AST/registries, defaulting required data to None/empty,
-"temporary" compatibility logic.
+Before implementing a lookup or decision path, answer the Required Questions
+and avoid the Forbidden Patterns in `../references/source-of-truth.md`.
 
 ## Semantic-Family Check
 
-Before adding a construct-specific path, state the semantic family, the
-closest existing construct, whether new is identical/specialization/sibling,
-and the first layer where semantics diverge. Prefer shared core with thin
+Before adding a construct-specific path, answer the Required Questions in
+`../references/semantic-family.md`. Prefer a shared core with thin
 specialization over separate paths.
 
 ## Component Workflow
@@ -159,10 +155,7 @@ path listed in profile §Command surfaces, not one happy path.
 Before validation: name the command, identify which artifacts it executes,
 rebuild if needed, state what was rebuilt.
 
-- Use targeted tests repeatedly while implementing.
-- Run the owning component's suite once at the milestone gate.
-- Run broader/canonical regression only at approved production-changing
-  milestone gates and final release, not after each file or checkpoint.
+- Choose which tests to run per `../regressions/SKILL.md`, "When to Run What".
 - Use the full-suite regression command from profile §Regression.
 - Use the component-local check and test commands from profile §Build and
   §Tests.
@@ -178,9 +171,9 @@ do not reintroduce deprecated fallbacks, record blockers explicitly.
 ## Depth-First Work
 
 Complete each fix fully (diagnose, fix, verify) before starting the next.
-Keep sequential failures within the current milestone unless evidence proves
-independent root causes. Do not invent subphases because of time, file count,
-context size, or a failing test.
+Keep sequential failures within the current milestone; split only per
+`../orchestrate/references/brief-template.md`, "Scope validation" and "Size by
+risk and reward".
 
 ## When Invoked by Orchestrate
 

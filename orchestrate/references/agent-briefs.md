@@ -1,13 +1,15 @@
 # Agent Prompt Templates
 
 All paths use `project-notes/<slug>/`. All agents are general-purpose.
+Prompts are given to agents that run from the project repo, so paths to skill
+files inside them are absolute.
 
 ---
 
 ## Scout Agent (optional, before briefing)
 
 Use when the milestone's premises rest on implicit complex assumptions
-(see SKILL.md §0). Measurement only — the scout's findings become the
+(`../SKILL.md`, step 0). Measurement only — the scout's findings become the
 brief's facts.
 
 ### Prompt
@@ -69,12 +71,13 @@ Read in order:
 2. project-notes/[slug]/PLAN.md — milestone [name]: scope, proof commands
 3. project-notes/[slug]/STATUS.md — current state, baseline
 4. Governing architecture doc(s) (location: profile §Paths), found per
-   references/architecture-docs.md — component ownership, invariants, change
-   patterns. Use for Abstraction Context and co-required updates. Name any
-   doc gap and any required doc update in the brief.
+   /home/tp/agents/references/architecture-docs.md — component ownership,
+   invariants, change patterns. Use for Abstraction Context and co-required
+   updates. Name any doc gap and any required doc update in the brief.
 5. Source files from PLAN.md
 
-Write project-notes/[slug]/BRIEF.md per orchestrate/references/brief-template.md.
+Write project-notes/[slug]/BRIEF.md per
+/home/tp/agents/orchestrate/references/brief-template.md.
 
 Rules:
 - Only information relevant to this milestone
@@ -84,8 +87,8 @@ Rules:
 - Populate Attribution Context: name the component below this milestone and
   the command that proves it green at a named commit, the consumers above it,
   the boundary fixtures this milestone owns on both sides of its seams, and
-  the components that are out of scope. Read references/failure-attribution.md
-  first. A worker given this can localize its own failures; a worker without
+  the components that are out of scope. Read
+  /home/tp/agents/references/failure-attribution.md first. A worker given this can localize its own failures; a worker without
   it attributes by guess and fixes at whatever layer is convenient.
 - If architecture doc has Common Change Patterns, identify the matching
   pattern and list co-required updates in Implementation Approach
@@ -98,10 +101,8 @@ Rules:
 
 Verify BRIEF.md: criteria match milestone, file list complete, no
 blocking open questions. **Scope check**: preserve the approved cohesive
-outcome. Propose a split only when measurements establish independent root
-causes or independently auditable/releasable results. Time, file count,
-context size, component count, and an individual failing test do not justify a
-split. Do not invent `a`/`b`, pilot, cleanup, or follow-up phases.
+outcome; propose a split only per `brief-template.md`, "Scope validation" and
+"Size by risk and reward".
 
 ---
 
@@ -119,45 +120,36 @@ Read in order:
 2. project-notes/[slug]/PLAN.md — milestone [name] scope and proof
 3. The governing architecture doc(s) named in BRIEF.md — component
    ownership, invariants, not-responsible-for boundaries, change patterns;
-   doc gaps and required doc updates per references/architecture-docs.md
+   doc gaps and required doc updates per
+   /home/tp/agents/references/architecture-docs.md
 4. Source files listed in BRIEF.md
 
 [If domain coding rules exist:]
-Read coding/SKILL.md for source-of-truth and semantic-family rules.
+Read /home/tp/agents/coding/SKILL.md for source-of-truth and semantic-family rules.
 Follow the brief's architectural approach over independent decisions.
 
 Implement the milestone:
 - Follow the brief. Write minimal code satisfying acceptance criteria.
 - Complete the cohesive outcome fully, including promised branches, engines,
   lifecycle, and packaging.
-- Use targeted tests during implementation. Run the owning suite once at the
-  milestone gate. Run canonical/full regression only when PLAN.md assigns it
-  to this production-changing gate or final release.
+- Choose which tests to run per /home/tp/agents/regressions/SKILL.md,
+  "When to Run What"; run exhaustive tests only where PLAN.md assigns them.
 - For test failures, use fix-test discipline: reproduce, diagnose root
   cause, fix, verify, check collateral. Keep sequential failures in this
   milestone unless evidence proves an external independent defect.
 - Attribute every failure before fixing it, per
-  references/failure-attribution.md: which component's contract was
-  violated decides WHERE the fix goes; which milestone owns the work decides
-  who does it now. The fix goes in the owning component. If that component
-  is outside this brief's scope, do not compensate for it here — file the
-  defect and write [blocked] naming it. A patch that works around an
-  upstream defect downstream will be rejected at audit even if every test
-  passes.
-- If a failure crosses a component boundary that has no fixture on both
-  sides, adding that fixture is part of this milestone's work, not
-  follow-up. Attribution by opinion is not an acceptable substitute.
+  /home/tp/agents/references/failure-attribution.md. Fix only in the owning
+  component. If it is outside this brief's scope, file the defect and write
+  [blocked] naming it; a downstream workaround is rejected at audit. A
+  missing two-sided boundary fixture is this milestone's work to add.
 - As you work, write progress to STATUS.md prefixed with `[checkpoint]`
   (e.g., "[checkpoint] diagnosed root cause: [summary]").
 - Run long verification commands (full regression, whole-repo
-  verification) in the FOREGROUND and wait for them to finish. Never
-  start one in your background and return "waiting for results": every
-  process you started — background included — is killed the moment you
-  return, so that exit orphans a dead run and is invalid. If you
-  cannot wait for a long verification, stop before starting it and
-  write a final `[checkpoint]` stating exactly which command remains
-  and that the implementation is otherwise complete — the orchestrator
-  will run it and commit on your behalf.
+  verification) in the FOREGROUND and wait for them. Never start one in
+  your background and return: every process you started is killed when you
+  return. If you cannot wait, stop before starting it and write a final
+  `[checkpoint]` naming the remaining command and saying the implementation
+  is otherwise complete; the orchestrator will run it and commit for you.
 
 When you are finished, you must do one of these two things:
 
@@ -179,9 +171,8 @@ Report the truthful state: `scaffolded`, `implemented-but-not-exposed`,
 Rules:
 - Stay within BRIEF.md scope
 - Do not refactor surrounding code
-- Format only files intentionally written or modified for this milestone; do
-  not run repo-wide or package-wide formatting unless explicitly required
-  (formatter scope: profile §Formatting)
+- Format only files you intentionally changed, per
+  /home/tp/agents/coding/SKILL.md, "Implementation Rules"
 - Do not batch independent problems
 - Do not create new phases or silently defer criteria
 ```
@@ -190,9 +181,9 @@ Rules:
 
 ## Audit Agent
 
-See `audit/SKILL.md`. Construct the prompt from
-`audit/references/audit-prompt.md` with project slug, acceptance criteria,
-base commit, and upcoming milestones.
+See `../../audit/SKILL.md`. Construct the prompt from
+`../../audit/references/audit-prompt.md` with project slug, acceptance
+criteria, base commit, and upcoming milestones.
 
 The agent appends to `project-notes/<slug>/AUDIT.md`.
 Route per `decision-protocol.md`.

@@ -87,16 +87,12 @@ name a concrete software task.
 - PLAN.md is the source of truth for milestone sequencing.
 - STATUS.md is tactical and short.
 - LOG.md is append-only. It is the ONLY place history accumulates.
-- STATUS.md is point-in-time state, not a log. Rewrite it; never append a dated
-  section to it. When a milestone closes, move its checkpoints to LOG.md and
-  delete them from STATUS.md. If STATUS.md has grown past roughly 150 lines or
-  carries superseded checkpoints, migrate before doing anything else — a status
-  file nobody rewrites is where stale claims survive.
-- Default to cohesive, independently auditable milestones. Do not split work
-  because of elapsed time, file count, context size, or one newly failing test.
-  A split requires independently releasable value or measured independent root
-  causes. Do not invent `a`/`b`, pilot, cleanup, or follow-up phases without
-  explicit plan approval.
+- STATUS.md is point-in-time state, not a log: rewrite it, never append, and
+  migrate it before anything else when it breaks the defect list in
+  `references/status-template.md`, "Keeping STATUS.md current".
+- Default to cohesive, independently auditable milestones; split one only per
+  `../orchestrate/references/brief-template.md`, "Scope validation" and "Size
+  by risk and reward".
 - Broad public contracts require a completion matrix covering success and
   failure behavior, engines/surfaces, lifecycle, and packaging.
 - Architecture drafts and plans must pass AI critique before human review.

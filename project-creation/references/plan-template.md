@@ -32,10 +32,6 @@
 - expected proof:
 - expected commit shape:
 
-Splits require an independently releasable/auditable outcome or measured
-independent root cause. Time, file count, context size, and a failing test are
-not split criteria.
-
 ## Completion Matrix
 
 Required for broad public contracts. Each applicable cell must name automated
@@ -59,9 +55,7 @@ Mark only the paths that actually apply.
 - negative validation:
 - build or environment prerequisites:
 - manual checks:
-- milestone gates: targeted tests during implementation; owning suite once at
-  milestone completion; canonical/full regression only at defined
-  production-changing gates and final release
+- milestone gates (tiers per the regressions skill, "When to Run What"):
 
 ## AI Critique
 
@@ -80,3 +74,7 @@ Mark only the paths that actually apply.
 - related constructs that should stay unified:
 - true divergence points:
 ```
+
+Size and split milestones only per
+`../../orchestrate/references/brief-template.md`, "Scope validation" and "Size
+by risk and reward".

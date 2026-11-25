@@ -60,18 +60,16 @@ Common authoring mistakes:
 4. Keep skipped tests parseable and type-checkable; skip is not a syntax
    escape hatch.
 5. Know how the runner records cases for the file's form (profile §Tests).
-6. Test changes must not introduce compiler or test-runner warnings on the
-   affected component/test surface. Fix unused helpers, unreachable branches,
-   stale imports, and annotation warnings instead of leaving them for later.
+6. Fix new warnings instead of leaving them for later, per
+   `../coding/SKILL.md`, "Implementation Rules".
 
 ## Validation Workflow
 
 Run the narrowest command that proves the new test (profile §Tests: how to
 run one test or one file).
 
-A passing run is not proof that anything ran. Check the runner's executed-test
-count in the summary and confirm it is non-zero and roughly the count you
-expected; a target that selects nothing may still exit zero (profile §Tests).
+A passing run is not proof that anything ran: check the executed count per
+`../regressions/SKILL.md`, "Non-Negotiable Rules".
 
 Use differential validation across execution engines or backends when the
 change can diverge between them, using the run modes profile §Tests

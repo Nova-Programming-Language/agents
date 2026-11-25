@@ -24,7 +24,10 @@ If an expected README is absent, state that explicitly and continue with the
 remaining sources. Do not claim README compliance unless the applicable files
 were actually read.
 
-For delegated work, put the exact onboarding files in the worker brief. Before
-accepting a worker result, require it to report which README files it read and
-whether its commands matched their instructions. If work began without this
+## Delegated work
+
+Put the exact onboarding files in the worker brief; a generic instruction to
+"follow repository rules" is not enough. Before accepting a worker result,
+require it to report which README files it read and whether its commands
+matched their instructions. If work began without this
 onboarding, audit the completed commands against the READMEs before proceeding.

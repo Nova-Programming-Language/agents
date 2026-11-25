@@ -21,6 +21,9 @@ Read first — these hold the audit's rules and criteria:
   a failure
 - /home/tp/agents/references/architecture-docs.md — finding the governing
   architecture doc, doc gaps, required doc updates
+- /home/tp/agents/regressions/SKILL.md "When to Run What" and
+  /home/tp/agents/coding/SKILL.md "Implementation Rules" — the test tiers and
+  formatting rules the structural checks cite
 
 Read (when they exist):
 - project-notes/[slug]/BRIEF.md — acceptance criteria, constraints,

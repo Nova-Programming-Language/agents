@@ -96,7 +96,8 @@ is wrong" without reasoning.
 ## Validation Expectations
 
 - The fix lands with a test **in the owning component** that fails before and
-  passes after.
+  passes after. A test that only pins the symptom where it surfaced leaves the
+  contract unproven and lets the defect return through another caller.
 - When the failure crossed a boundary, both sides' fixtures exist afterwards.
 - A newly exposed prior defect gets its regression test at the layer that owns
   it, not only at the layer that surfaced it.
