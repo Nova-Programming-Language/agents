@@ -1,6 +1,6 @@
 ---
 name: orchestrate
-description: Drive a multi-milestone project through scout, brief, implement, audit and commit agents, keeping the main context a thin orchestrator; use when project-creation artifacts exist and work should be delegated. Not for a single fix done directly (use coding or fix-test) or creating the artifacts (use project-creation).
+description: Drive a multi-milestone project by delegating brief, implement and audit work to agents; use when project-creation artifacts exist. Not for setting up a project (use project-creation).
 ---
 
 # Orchestrate
@@ -52,7 +52,8 @@ progress while it works.
 
 ### 2a. Check for completion (orchestrator)
 After the agent returns, read STATUS.md for the final marker:
-- `[done]` — patch committed and verified. Proceed to audit.
+- `[done]` — implemented and verified, not yet committed (the commit is
+  step 5). Proceed to audit.
 - `[blocked]` — one specific blocker. Route per the decision protocol.
 - Only `[checkpoint]` entries — the agent exited without completing. Route
   per **Incomplete** in `references/decision-protocol.md`.
@@ -143,9 +144,9 @@ main-session background tasks survive.
    worker returns with only `[checkpoint]` entries and the last one says
    verification was started or pending, do not re-run the brief and do not
    spawn a continuation agent. Instead: (a) re-run the verification yourself
-   as a main-session background task; (b) on success, commit exactly as the
-   brief specified; (c) record the outcome in STATUS.md on the worker's
-   behalf and proceed to audit. On failure, escalate per the decision
+   as a main-session background task; (b) on success, record the outcome in
+   STATUS.md on the worker's behalf; (c) proceed to audit, then commit at
+   step 5. On failure, escalate per the decision
    protocol with the failing output.
 
 When sequencing allows, prefer the split that avoids the problem: the worker

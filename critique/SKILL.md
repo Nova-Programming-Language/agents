@@ -1,6 +1,6 @@
 ---
 name: critique
-description: Critique architecture drafts, implementation plans, and other major project artifacts before human review; use after drafting and before requesting or acting on human feedback. Not for auditing finished code (use audit) or reviewing a diff for bugs (use code-review).
+description: Critique architecture drafts, plans, and other major project artifacts; use after drafting, before human review. Not for finished code (use audit).
 ---
 
 # Critique

@@ -1,6 +1,6 @@
 ---
 name: fix-test
-description: Fix failing tests one at a time, depth-first, each with root-cause diagnosis, audit, and its own commit; use for test failures, regression results to work through, or a list of bugs to resolve one by one. Not for new features (use coding) or only filing failures (use issues).
+description: Fix failing tests one at a time, each with root-cause diagnosis, audit, and commit; use for test failures or regression results to work through. Not for new features (use coding).
 ---
 
 # Fix Test
@@ -117,7 +117,7 @@ Commit with `checkin`. The message names:
 - the test that was failing
 - the root cause (one sentence)
 - the fix (one sentence)
-- the verification command
+- the key verification command, in one line (`checkin`, Commit Policy)
 - the issue reference, in the closing or progress form `checkin` describes
 
 ### 8. Move on

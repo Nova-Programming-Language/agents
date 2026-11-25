@@ -1,6 +1,6 @@
 ---
 name: project-creation
-description: Create the persistent project-notes artifacts (PROJECT, PLAN, STATUS, LOG) and stage gates for multi-session work; use when starting a project that spans several commits or sessions. Not for one-session fixes, or for driving an existing project's milestones (use orchestrate).
+description: Create the project-notes artifacts (PROJECT, PLAN, STATUS, LOG) for multi-session work; use when starting a project that spans sessions. Not for running its milestones (use orchestrate).
 ---
 
 # Project Creation

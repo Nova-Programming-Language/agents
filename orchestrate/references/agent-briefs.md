@@ -2,7 +2,9 @@
 
 All paths use `project-notes/<slug>/`. All agents are general-purpose.
 Prompts are given to agents that run from the project repo, so paths to skill
-files inside them are absolute.
+files inside them start with `<skills>`: the skills root, the directory that
+holds the skill folders. Replace `<skills>` with that directory's absolute path
+when you fill in a prompt.
 
 ---
 
@@ -71,13 +73,13 @@ Read in order:
 2. project-notes/[slug]/PLAN.md — milestone [name]: scope, proof commands
 3. project-notes/[slug]/STATUS.md — current state, baseline
 4. Governing architecture doc(s) (location: profile §Paths), found per
-   /home/tp/agents/references/architecture-docs.md — component ownership,
+   <skills>/references/architecture-docs.md — component ownership,
    invariants, change patterns. Use for Abstraction Context and co-required
    updates. Name any doc gap and any required doc update in the brief.
 5. Source files from PLAN.md
 
 Write project-notes/[slug]/BRIEF.md per
-/home/tp/agents/orchestrate/references/brief-template.md.
+<skills>/orchestrate/references/brief-template.md.
 
 Rules:
 - Only information relevant to this milestone
@@ -88,7 +90,7 @@ Rules:
   the command that proves it green at a named commit, the consumers above it,
   the boundary fixtures this milestone owns on both sides of its seams, and
   the components that are out of scope. Read
-  /home/tp/agents/references/failure-attribution.md first. A worker given this can localize its own failures; a worker without
+  <skills>/references/failure-attribution.md first. A worker given this can localize its own failures; a worker without
   it attributes by guess and fixes at whatever layer is convenient.
 - If architecture doc has Common Change Patterns, identify the matching
   pattern and list co-required updates in Implementation Approach
@@ -121,24 +123,24 @@ Read in order:
 3. The governing architecture doc(s) named in BRIEF.md — component
    ownership, invariants, not-responsible-for boundaries, change patterns;
    doc gaps and required doc updates per
-   /home/tp/agents/references/architecture-docs.md
+   <skills>/references/architecture-docs.md
 4. Source files listed in BRIEF.md
 
 [If domain coding rules exist:]
-Read /home/tp/agents/coding/SKILL.md for source-of-truth and semantic-family rules.
+Read <skills>/coding/SKILL.md for source-of-truth and semantic-family rules.
 Follow the brief's architectural approach over independent decisions.
 
 Implement the milestone:
 - Follow the brief. Write minimal code satisfying acceptance criteria.
 - Complete the cohesive outcome fully, including promised branches, engines,
   lifecycle, and packaging.
-- Choose which tests to run per /home/tp/agents/regressions/SKILL.md,
+- Choose which tests to run per <skills>/regressions/SKILL.md,
   "When to Run What"; run exhaustive tests only where PLAN.md assigns them.
 - For test failures, use fix-test discipline: reproduce, diagnose root
   cause, fix, verify, check collateral. Keep sequential failures in this
   milestone unless evidence proves an external independent defect.
 - Attribute every failure before fixing it, per
-  /home/tp/agents/references/failure-attribution.md. Fix only in the owning
+  <skills>/references/failure-attribution.md. Fix only in the owning
   component. If it is outside this brief's scope, file the defect and write
   [blocked] naming it; a downstream workaround is rejected at audit. A
   missing two-sided boundary fixture is this milestone's work to add.
@@ -149,12 +151,13 @@ Implement the milestone:
   your background and return: every process you started is killed when you
   return. If you cannot wait, stop before starting it and write a final
   `[checkpoint]` naming the remaining command and saying the implementation
-  is otherwise complete; the orchestrator will run it and commit for you.
+  is otherwise complete; the orchestrator will run it for you.
 
 When you are finished, you must do one of these two things:
 
-1. Write `[done]` to STATUS.md with the commit hash and verification
-   commands. Start your return message with `[done]`.
+1. Write `[done]` to STATUS.md with the verification commands and their
+   results. Do not commit: the orchestrator commits after the audit. Start
+   your return message with `[done]`.
 2. Write `[blocked]` to STATUS.md with the specific blocker and
    evidence (file:line, command output). Start your return message
    with `[blocked]`.
@@ -172,7 +175,7 @@ Rules:
 - Stay within BRIEF.md scope
 - Do not refactor surrounding code
 - Format only files you intentionally changed, per
-  /home/tp/agents/coding/SKILL.md, "Implementation Rules"
+  <skills>/coding/SKILL.md, "Implementation Rules"
 - Do not batch independent problems
 - Do not create new phases or silently defer criteria
 ```

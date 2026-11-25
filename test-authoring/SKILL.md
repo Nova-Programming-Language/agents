@@ -1,6 +1,6 @@
 ---
 name: test-authoring
-description: Write or update project tests with the correct form, annotations, and validation flow; use when adding unit, program, or diagnostic coverage. Not for running regression suites (use regressions) or fixing failing tests (use fix-test).
+description: Write or update project tests with the right form and annotations; use when adding unit, program, or diagnostic coverage. Not for running suites (use regressions).
 ---
 
 # Test Authoring

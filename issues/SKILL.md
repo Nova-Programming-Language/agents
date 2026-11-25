@@ -1,6 +1,6 @@
 ---
 name: issues
-description: File, claim, triage, fix and close tracker issues, and write verified repo-local bug reports with exact reproduction and ownership clues; use for findings to file, a reproducible defect or blocker to document, issues to pick up, or backlog triage. Not for transient debug notes (use debug) or fixing failing tests one at a time (use fix-test).
+description: File, triage, fix and close tracker issues, and write verified local bug reports; use for findings to file, defects to document, or issues to pick up. Not for a list of failing tests (use fix-test).
 ---
 
 # Issues

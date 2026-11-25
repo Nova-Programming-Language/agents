@@ -1,6 +1,6 @@
 ---
 name: metadata-contract
-description: Inspect or debug Nova lowered metadata contracts; use for LoweredModule, TypeCatalog, NodeTypeTable, CallSiteTable, symbol-map, and contract-validation issues. Not for general language-semantics bugs or other projects (use debug or coding).
+description: Inspect or debug Nova lowered metadata contracts (LoweredModule, TypeCatalog, NodeTypeTable, CallSiteTable); use for contract production or consumption bugs. Not for general bugs (use debug).
 ---
 
 # Metadata Contract

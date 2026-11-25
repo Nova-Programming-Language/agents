@@ -1,6 +1,6 @@
 ---
 name: create-pr
-description: Create or verify a GitHub pull request with gh — reuse an existing PR for the branch, push it, and confirm the real PR number, URL and state; use when asked to create, open, submit or check a PR. Not for commits or pushes alone (use checkin) or merging (use merge-pr).
+description: Create or verify a GitHub pull request with gh, reusing any existing PR; use when asked to open or check a PR. Not for merging (use merge-pr).
 ---
 
 # Create PR

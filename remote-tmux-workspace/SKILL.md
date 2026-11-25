@@ -1,6 +1,6 @@
 ---
 name: remote-tmux-workspace
-description: Work in a remote repository over SSH using durable tmux sessions and clean output capture; use when asked to SSH into another machine, inspect or change a remote repo, keep a persistent remote shell, run long remote builds and tests, or compare tmux with screen. Not for local work.
+description: Work in a remote repository over SSH with durable tmux sessions; use when asked to SSH into a machine, change a remote repo, or run long remote jobs. Not for local work.
 ---
 
 # Remote Tmux Workspace

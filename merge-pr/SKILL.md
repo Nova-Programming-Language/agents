@@ -1,6 +1,6 @@
 ---
 name: merge-pr
-description: Merge a GitHub pull request with gh and verify it — confirm the PR and its mergeability, merge with the intended strategy, then check it is MERGED and the remote default branch moved; use when asked to merge, land, close out, or verify a merge. Not for creating PRs (use create-pr).
+description: Merge a GitHub pull request with gh and verify the merge; use when asked to merge, land, or close out a PR. Not for creating PRs (use create-pr).
 ---
 
 # Merge PR

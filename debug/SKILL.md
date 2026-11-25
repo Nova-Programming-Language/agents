@@ -1,6 +1,6 @@
 ---
 name: debug
-description: Debug reproducible toolchain, runtime, REPL, native-binary, or test failures with the project's debugger entrypoints and breakpoint maps; use for deterministic crashes, wrong values, source-line stepping, or control-flow bugs. Not for non-reproducible or architectural problems, or writing up a bug (use issues).
+description: Debug reproducible failures with the project's debugger and breakpoint maps; use for crashes, wrong values, or control-flow bugs. Not for writing up a bug (use issues).
 ---
 
 # Debug

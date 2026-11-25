@@ -1,6 +1,6 @@
 ---
 name: coding
-description: Implement or modify the project's code within its specs and architecture docs; use when changing interpreter, frontend, codegen, CLI, tests, or architecture-driven behavior. Not for architecture docs (use design), one-at-a-time test fixing (use fix-test), or test-only work (use test-authoring).
+description: Implement or change the project's code within its specs and architecture docs; use for any code or test change. Not for working through failing tests (use fix-test).
 ---
 
 # Coding

@@ -1,6 +1,6 @@
 ---
 name: building
-description: Build or rebuild the project's CLI, runtimes, or pinned container environment; use when compiling local changes, refreshing stale artifacts, or preparing test runs. Not for choosing or running tests (use regressions).
+description: Build or rebuild the project's CLI, runtimes, or pinned container; use when compiling changes or refreshing stale artifacts. Not for running tests (use regressions).
 ---
 
 # Building

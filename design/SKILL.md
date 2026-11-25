@@ -1,6 +1,6 @@
 ---
 name: design
-description: Write or update the project's architecture documents (ownership, invariants, change patterns, missing-data behavior); use when planning or refactoring a component before implementation. Not for implementing code (use coding), PRDs (use prd), or critiquing a finished draft (use critique).
+description: Write or update the project's architecture documents; use when planning or refactoring a component before implementation. Not for implementing it (use coding).
 ---
 
 # Design

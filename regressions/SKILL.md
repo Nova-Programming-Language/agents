@@ -1,6 +1,6 @@
 ---
 name: regressions
-description: Choose and run targeted or full regression validation, read its results, and track full-suite state across sessions, including in the pinned container; use when verifying behavior or deciding which tests to run. Not for writing tests (use test-authoring) or fixing failures (use fix-test).
+description: Choose and run targeted or full regression validation and read its results; use when verifying behavior or deciding which tests to run. Not for fixing failures (use fix-test).
 ---
 
 # Regression Test

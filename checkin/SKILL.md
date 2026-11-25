@@ -1,6 +1,6 @@
 ---
 name: checkin
-description: Commit, rebase onto upstream, and push project repo changes; use when the user asks to commit, sync, or publish work, or a skill says to commit with checkin. Not for opening or merging pull requests (use create-pr or merge-pr).
+description: Commit, rebase, and push project repo changes; use when asked to commit, sync, or publish work, or when another skill commits. Not for pull requests (use create-pr).
 ---
 
 # Checkin
@@ -15,7 +15,7 @@ or publish work to the remote repository.
 1. Fetch the remote before proposing a commit or push.
 2. Inspect divergence from upstream.
 3. Inspect dirty files and draft a commit message from the actual worktree.
-4. Wait for the human to confirm the commit message before committing.
+4. Confirm the commit message per Commit Policy, "Confirmation".
 5. Stage all dirty files by default.
 6. Only split or exclude files when the human explicitly asks for a narrower commit.
 7. Commit with a non-interactive git command.
@@ -58,14 +58,16 @@ git pull --rebase origin <default>
   working tree and fold them into the next product commit.
 - Draft the message from the actual dirty worktree, not from the ticket title.
 - Commit messages describe **what changed in the software and why** — not
-  the agent process that produced the change. Do not include: validation
-  commands run, STATUS.md updates, artifact refreshes, audit results,
-  skill invocations, or session workflow steps. Those belong in LOG.md
-  or STATUS.md, not in permanent git history.
+  the agent process that produced the change. Do not include: a list of the
+  commands run, STATUS.md updates, artifact refreshes, audit results, skill
+  invocations, or session workflow steps. Those belong in LOG.md or
+  STATUS.md, not in permanent git history.
+- Name the key verification command in one line. This is the one home for
+  what a commit message says about verification.
 - Write commit messages as durable context for both humans and future AI coding
   agents. Prefer messages that capture the concrete behavior change, important
-  semantic or ownership clues, key validation commands, and any still-relevant
-  blockers when that context will help a later coding session.
+  semantic or ownership clues, and any still-relevant blockers when that
+  context will help a later coding session.
 - Reference tracker issues in the commit message, using the tracker's
   linking syntax from profile §Repository:
   - If the commit fully fixes an issue: the closing form (the tracker
@@ -76,7 +78,10 @@ git pull --rebase origin <default>
   - Check the issue tracker before committing — if the work was driven by
     an issue, the commit must reference it. Do not leave the connection
     implicit.
-- Wait for explicit human confirmation before running `git commit`.
+- **Confirmation**: when a user invokes checkin directly, wait for their
+  explicit confirmation of the message before running `git commit`.
+  Orchestrated work (orchestrate, fix-test) commits through checkin without
+  asking. This is the one home for the confirmation rule.
 - By default, treat the full dirty worktree as the intended commit scope.
 - Do not silently narrow the commit to only the files touched most recently.
 - Only create a partial commit when the human explicitly asks to split the work
