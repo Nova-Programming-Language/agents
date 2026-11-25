@@ -130,7 +130,6 @@ Conditional skills:
 
 - `fix-test` when working through test failures
 - `building`
-- `docs`
 
 Agent actions:
 

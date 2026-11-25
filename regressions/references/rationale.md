@@ -3,8 +3,8 @@
 Reasons behind rules in `../SKILL.md`. The rules themselves live there.
 
 - **Exhaustive tests only at the end of a milestone.** Corpus walks and
-  whole-crate or whole-CLI suites run after every commit made milestones take
-  hours per small change. The build plus the tests that own the changed code
+  whole-component suites run after every commit made milestones take hours
+  per small change. The build plus the tests that own the changed code
   catch what a commit can break; the milestone gate catches the rest.
 - **There is no transient flake.** A nondeterministic failure has a
   deterministic cause, and passing on retry hides it, never disproves it. An

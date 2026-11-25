@@ -45,9 +45,10 @@ Rules:
 - Distinguish clearly: measured facts vs named residual unknowns.
 
 Finish with a final `[checkpoint] <milestone>-scout: COMPLETE` (or
-[blocked]) in STATUS.md, commit the record, and start your return
-message with the marker. Report: each question's answer, the residual
-unknowns, and anything measured that contradicts the plan.
+[blocked]) in STATUS.md, leave the record in the working tree (do not
+commit it), and start your return message with the marker. Report: each
+question's answer, the residual unknowns, and anything measured that
+contradicts the plan.
 ```
 
 ### After
@@ -168,8 +169,7 @@ blocks the remaining acceptance criteria, file the new defect in
 the project's issue tracker (profile §Repository) and write `[blocked]` with that issue as the blocker.
 If all acceptance criteria pass, write `[done]`.
 
-Report the truthful state: `scaffolded`, `implemented-but-not-exposed`,
-`exposed`, or `release-verified`. Never call the first three fully complete.
+Report one truthful state, per <skills>/audit/SKILL.md, "Dimensions".
 
 Rules:
 - Stay within BRIEF.md scope

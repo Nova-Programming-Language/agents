@@ -6,19 +6,25 @@ One brief = one cohesive milestone outcome. Keep co-required branches,
 engines, and lifecycle work together when they form one public contract.
 Do not reduce the approved outcome merely to make a smaller brief.
 
-**Scope validation** — split only when measurements establish independent root
-causes or each result is independently auditable and releasable. Time, file
-count, context size, component count, or one failing test is insufficient.
-Never invent `a`/`b`, pilot, cleanup, or follow-up phases; propose a split to
-the orchestrator and preserve the original acceptance criteria until approved.
+## Scope validation
 
-**Size by risk and reward.** Milestones that are too small slow progress:
-each one costs another brief, audit and gate. Milestones that are too large
-make a failure hard to trace to its cause. Split one only where the split
-makes failures traceable in a way the single milestone could not. Within a
-milestone, keep failures traceable with one commit per concern, each
-followed by its owning tests, so a later failure bisects to a commit. Hold
-a commit back only on a measured dependency, never on an unmeasured premise.
+Split only when measurements establish independent root causes or each result
+is independently auditable and releasable. Time, file count, context size,
+component count, or one failing test is insufficient. Never invent `a`/`b`,
+pilot, cleanup, or follow-up phases; propose a split to the orchestrator and
+preserve the original acceptance criteria until approved.
+
+## Size by risk and reward
+
+Milestones that are too small slow progress: each one costs another brief,
+audit and gate. Milestones that are too large make a failure hard to trace to
+its cause. Split one only where the split makes failures traceable in a way
+the single milestone could not. Within a milestone, the worker keeps each
+concern a separable change and runs its owning tests after each, so a later
+failure traces to one concern. The worker does not commit; the orchestrator
+commits after the audit.
+
+## Template
 
 ```md
 # Task Brief: [milestone name]

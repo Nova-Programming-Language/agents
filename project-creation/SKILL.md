@@ -76,17 +76,15 @@ Append a dated entry at session end:
 - next: the next coding or design step
 ```
 
-LOG.md records **software engineering work only** — code changes, design
-decisions, milestones, technical blockers. Not agent workflow (spawning
-agents, confirming commits, updating artifacts). The "next" field must
-name a concrete software task.
+What LOG.md records: `references/status-template.md`, "Keeping STATUS.md
+current". The "next" field must name a concrete software task.
 
 ## Rules
 
 - PROJECT.md is the durable source of project truth.
 - PLAN.md is the source of truth for milestone sequencing.
 - STATUS.md is tactical and short.
-- LOG.md is append-only. It is the ONLY place history accumulates.
+- LOG.md rules: `references/status-template.md`, "Keeping STATUS.md current".
 - STATUS.md is point-in-time state, not a log: rewrite it, never append, and
   migrate it before anything else when it breaks the defect list in
   `references/status-template.md`, "Keeping STATUS.md current".

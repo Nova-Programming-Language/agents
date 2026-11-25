@@ -1,6 +1,6 @@
 ---
 name: coding
-description: Implement or change the project's code within its specs and architecture docs; use for any code or test change. Not for working through failing tests (use fix-test).
+description: Implement or change the project's code within its specs and architecture docs; use for any code or test change. Not for working through failing tests (use fix-test) or writing tests (use test-authoring).
 ---
 
 # Coding
@@ -53,8 +53,7 @@ doc in the same change (same reference, "When a change must update the docs").
 ## Implementation Rules
 
 - Implement the spec and architecture, not just the test expectation.
-- Report state truthfully: `scaffolded`, `implemented-but-not-exposed`,
-  `exposed`, or `release-verified`. Never call a partial state complete.
+- Report one truthful state, per `../audit/SKILL.md`, "Dimensions".
 - Do not expose a public API or configuration variant until all behavior
   promised at that release boundary is implemented and tested across required
   engines/surfaces, unless the approved plan defines a real independently
@@ -68,6 +67,7 @@ doc in the same change (same reference, "When a change must update the docs").
 - No fallbacks, heuristics, or silent degradation to hide missing data.
 - Do not work around bugs in another component — fix the producer.
 - Stay within the component boundaries from the architecture document.
+- Rebuild artifacts before validation (`../references/artifact-freshness.md`).
 - Gather runtime evidence before changing code for reproducible bugs.
 - If the project's semantic-families doc names the affected family, update
   the whole family up to the first explicit divergence point; do not
@@ -132,7 +132,8 @@ specialization over separate paths.
    class. If it has several
    implementations, the duplication is the root cause: consolidate them into
    one shared check before changing it. If consolidation is out of scope, the
-   commit says "partial fix", lists the uncovered sites, and does not use the
+   commit uses the progress form (`../checkin/SKILL.md`, "Commit Policy"),
+   lists the uncovered sites, and does not use the
    closing form (`../issues/SKILL.md`, "Closing an issue"). If there is no
    single place to consolidate into (the fact lives in side tables or is
    rebuilt per site), stop and report a design gap; do not add another site.
@@ -161,6 +162,8 @@ rebuild if needed, state what was rebuilt.
 - Prefer the warning-deny check from profile §Build when the change touches
   code or tests that emit warnings only under test compilation.
 - Use `../references/artifact-freshness.md` when consuming release artifacts.
+- Follow the doc-comment rules and run the doc validation commands in profile
+  §Docs when the change touches documented items or generated docs.
 
 ## Architecture-Driven Work
 
@@ -176,9 +179,11 @@ risk and reward".
 
 ## When Invoked by Orchestrate
 
-Brief and plan take precedence. Read BRIEF.md, follow its approach, update
-STATUS.md when done or blocked. If the brief conflicts with source-of-truth
-rules, record the conflict and follow the brief — the audit catches problems.
+Read BRIEF.md, follow its approach, and update STATUS.md when done or
+blocked. The brief and plan take precedence over this skill's defaults, but
+not over the project's rules file or source-of-truth rules
+(`../references/project-profile.md`, "Authority"). If the brief conflicts with
+them, write `[blocked]` naming the conflict; do not implement it.
 
 ## References
 

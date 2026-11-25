@@ -66,7 +66,9 @@ nothing else. It follows the template above and stays roughly one screen.
 - **Never append to STATUS.md.** Rewrite the sections that changed and delete
   what is no longer true.
 - LOG.md is append-only, and it is the only place history accumulates. It
-  records software engineering work only, not agent workflow.
+  records software engineering work only (code changes, design decisions,
+  milestones, technical blockers), not agent workflow (spawning agents,
+  confirming commits, updating artifacts).
 - `[checkpoint]` markers are working state while their milestone is open.
   When the milestone closes, move them to LOG.md and delete them from
   STATUS.md.

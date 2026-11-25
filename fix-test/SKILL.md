@@ -88,12 +88,12 @@ The diagnosis must name:
 
 - Run the target test; it must pass.
 - Add tests across the class's sites, not only the original reproduction.
-- Verify the component broadly: run the tests that own the changed code — the
-  owning component's suite or a representative subset that exercises its
-  major code paths — and, when the fix touched shared code, the tests of the
+- After each fix, run only the owning tests: the build and the tests that own
+  the changed code. Run the owning component's suite once, at the milestone
+  gate. When the fix touched shared code, also run the tests of the
   components that consume it (`../regressions/SKILL.md`, "When to Run What").
-  Exhaustive tests wait for the end of the milestone; used standalone, run
-  them once after the last fix.
+  Exhaustive tests also wait for the milestone gate; used standalone, the gate
+  is after the last fix.
 - Land the regression test and re-run the exposing path per
   `../references/failure-attribution.md`, "Validation Expectations". If the
   symptom survives a fix at the owning component, the attribution was wrong

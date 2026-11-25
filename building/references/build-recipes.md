@@ -7,7 +7,7 @@ and what each one does and does not refresh.
 
 ## Fast Validation
 
-A compile-only check of the affected crates or modules (profile §Build). It
+A compile-only check of the affected components or modules (profile §Build). It
 proves the code compiles; it executes nothing, so artifact freshness is not a
 concern.
 
@@ -49,8 +49,8 @@ artifacts.
 
 ## Quick Heuristics
 
-- Change that touches no runtime or compiled-backend code (for example CLI- or
-  interpreter-only): start with the compile-only check.
+- Change that touches no runtime or compiled-backend code (for example a
+  frontend-only change): start with the compile-only check.
 - Routine package or repo validation: prefer the release CLI invocation that
   builds the CLI as part of the command (profile §Build).
 - Runtime or compiled-backend change: rebuild release CLI plus runtime

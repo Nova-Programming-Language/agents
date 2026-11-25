@@ -35,8 +35,9 @@ translate them for another tracker. Reasons behind the rules are in
    - if uncertain, your best hypothesis, noted in the body; triage corrects it
      if wrong.
 
-   Also apply a severity label (bug, enhancement, blocker) and a source
-   label (audit, regression, manual), using the project's names:
+   Also apply a severity label and a source label, using the project's names
+   (profile §Repository; for example bug or enhancement, and regression or
+   manual), when the project defines them:
    ```
    gh issue create --label "<subsystem>" --label "<severity>" --label "<source>" ...
    ```
@@ -119,8 +120,9 @@ Verified: <exact command and result>"
 - Every close comment includes the commit hash, the root cause (one
   sentence), the fix (one sentence) and which sites of the violated rule it
   covers, and the verification command with its output.
-- Use "Fixes #N" only when every site of the class is covered; otherwise use
-  "refs #N" and leave the issue open listing the uncovered sites.
+- Use the closing form only when every site of the class is covered;
+  otherwise use the progress form (`../checkin/SKILL.md`, "Commit Policy") and
+  leave the issue open listing the uncovered sites.
 - Do not close without verification. If the fix is committed but a broader
   regression is still pending, say so in a comment and leave the issue open.
 

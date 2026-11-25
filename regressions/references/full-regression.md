@@ -18,8 +18,8 @@ options only for exports or overrides.
 
 Kinds of targeted validation, each with commands in profile §Tests:
 
-- **Crate/unit validation**: compile check plus filtered unit tests for the
-  changed crate or module.
+- **Component/unit validation**: compile check plus filtered unit tests for
+  the changed component or module.
 - **Targeted test-runner validation**: one directory, one file, or one
   name filter, optionally pinned to a single engine or backend.
 - **Directory/subtree validation**: a subtree of the test tree.
@@ -140,13 +140,14 @@ comparison artifact rather than the exit status.
 Profile §Regression lists the stable artifact locations (reference-run map,
 last-run manifest, last-run failures, comparisons against baseline, previous,
 and best-recorded runs, and per-run directories), the structured failure
-record format with an example, and the meaning of each field.
+record format, the meaning of each field, and how to rerun one record.
 
 Structured failure entries carry enough context to classify, triage, and fix
 failures without parsing raw compiler output. Expect fields covering
 classification relative to the comparison target, canonical case identity,
 status, message, likely owning subsystem, failing phase, per-case artifact
-paths, and an exact rerun command for that single failure.
+paths. How to rerun a single failure from its record is in profile
+§Regression.
 
 ## Reading Failure Records
 
@@ -157,7 +158,7 @@ across engines or forms).
 
 - Each failure record carries the fields profile §Regression lists, typically
   a classification, case identity, status, message, likely owner, failing
-  phase, per-case artifacts, and a rerun hint.
+  phase, and per-case artifacts.
 - Classifications are relative to the chosen comparison target, typically the
   baseline.
 - The run log is archival; per-case artifacts are the place to drill into one

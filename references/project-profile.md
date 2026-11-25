@@ -15,6 +15,11 @@ Use the first that exists, from the repo root:
 If there is none, ask the user for the commands a step needs. Never guess a
 build, test, or regression command.
 
+## Authority
+
+The project's rules file and authority order (profile §Rules) win over skill
+text. A brief or plan that conflicts with them is a blocker, not an override.
+
 ## Sections
 
 A skill that needs a project fact names the profile section that holds it, as

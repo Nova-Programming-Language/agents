@@ -77,7 +77,3 @@ Mark only the paths that actually apply.
 - related constructs that should stay unified:
 - true divergence points:
 ```
-
-Size and split milestones only per
-`../../orchestrate/references/brief-template.md`, "Scope validation" and "Size
-by risk and reward".

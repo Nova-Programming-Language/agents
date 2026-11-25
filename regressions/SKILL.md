@@ -3,12 +3,12 @@ name: regressions
 description: Choose and run targeted or full regression validation and read its results; use when verifying behavior or deciding which tests to run. Not for fixing failures (use fix-test).
 ---
 
-# Regression Test
+# Regressions
 
 ## When to Use
 
 Use this skill when validating behavior after code changes, whether through
-targeted tests, crate-local tests, or the canonical full regression workflow.
+targeted tests, component-local tests, or the canonical full regression workflow.
 Commands, result locations, and failure-record formats come from the project
 profile (`../references/project-profile.md`). Never guess a test or regression
 command; if the profile lacks the section a step needs, ask the user. Reasons
@@ -36,9 +36,10 @@ here.
 - Prefer the smallest validation that proves the change.
 - Use targeted tests repeatedly while implementing.
 - Run exhaustive tests (full regression and the other whole-component tiers in
-  profile §Regression) only at the end of a milestone; between commits and
-  checkpoints, run only the build and the tests that own the changed code.
-- Run the owning component's suite once at the milestone gate.
+  profile §Regression) only at the end of a milestone.
+- After each fix, run only the owning tests: the build and the tests that own
+  the changed code. Run the owning component's suite once, at the milestone
+  gate.
 - When a change touches shared code (utilities, data structures, common
   paths), also run the tests of the components that consume it.
 - Run canonical/full regression only at the production-changing milestone
@@ -69,9 +70,10 @@ here.
   Before treating a scoped run as a pass, or a failure as not reproducing,
   confirm the executed count is non-zero and roughly what you expected
   (profile §Tests says how the runner reports it).
-- Start a full run, or any multi-hour command, detached and watch it with the
-  Monitor tool, per `references/full-regression.md`, "Starting a Long Run
-  Detached".
+- In the main session, start a full run, or any multi-hour command, detached
+  and watch it with the Monitor tool, per `references/full-regression.md`,
+  "Starting a Long Run Detached". A sub-agent runs it in the foreground and
+  stays alive (`../orchestrate/SKILL.md`, "Long-Running Verification").
 - Know what the full-regression exit status means: profile §Regression says
   whether it is absolute or a comparison against the baseline, and how a
   missing baseline is treated.

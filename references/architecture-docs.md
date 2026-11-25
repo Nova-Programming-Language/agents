@@ -6,10 +6,11 @@ when none does, and when a change must update the docs.
 
 ## The architecture map
 
-Each project keeps one standalone file that maps source paths to the
-architecture docs that govern them. Default location:
-`docs/architecture/file-map.md`. A project may name a different location in
-its PROJECT.md, AGENTS.md, or CLAUDE.md; use that if present.
+Each project keeps one map from source paths to the architecture docs that
+govern them. Default location: `docs/architecture/file-map.md`. A project may
+name a different file, or give the map itself as a path → doc list, in profile
+§Paths (`project-profile.md`), PROJECT.md, AGENTS.md, or CLAUDE.md; use that if
+present.
 
 Format and starting point: `architecture-map-template.md` (next to this file).
 

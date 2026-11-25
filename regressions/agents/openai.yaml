@@ -1,4 +1,4 @@
 interface:
-  display_name: "Regression Test"
+  display_name: "Regressions"
   short_description: "Run targeted and full regression workflows"
-  default_prompt: "Use $regression-test to choose and run the right regression workflow."
+  default_prompt: "Use $regressions to choose and run the right regression workflow."

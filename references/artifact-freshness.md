@@ -32,7 +32,7 @@ with an example command per row.
 | --- | --- | --- | --- |
 | Compile-only check | handled by the build tool | not relevant | none beyond the command itself |
 | Debug CLI execution | handled by the build tool for the debug CLI | not guaranteed | debug-only; prefer the release CLI unless you are intentionally validating the debug binary |
-| Crate/unit tests | handled by the build tool for debug test binaries | not guaranteed | no manual CLI rebuild; rebuild runtimes only if the test depends on them |
+| Component/unit tests | handled by the build tool for debug test binaries | not guaranteed | no manual CLI rebuild; rebuild runtimes only if the test depends on them |
 | Release CLI execution | handled by the build tool for the release CLI | not guaranteed | the CLI is built as part of the command; runtime surfaces are not |
 | Compiled/runtime-linked validation, debug CLI | handled by the build tool for the debug CLI | not handled automatically | debug-only; prefer the release CLI; rebuild the runtime libraries before trusting the result |
 | Compiled/runtime-linked validation, release CLI | handled by the build tool for the release CLI | not handled automatically | rebuild the runtime libraries first |

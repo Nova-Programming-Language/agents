@@ -19,7 +19,8 @@ or publish work to the remote repository.
 5. Stage all dirty files by default.
 6. Only split or exclude files when the human explicitly asks for a narrower commit.
 7. Commit with a non-interactive git command.
-8. Push. If push is rejected because upstream moved, fetch/rebase/push again.
+8. Push only if Push Policy, "When to push", allows it. If push is rejected
+   because upstream moved, fetch/rebase/push again.
 
 ## Required Inspection Commands
 
@@ -80,8 +81,8 @@ git pull --rebase origin <default>
     implicit.
 - **Confirmation**: when a user invokes checkin directly, wait for their
   explicit confirmation of the message before running `git commit`.
-  Orchestrated work (orchestrate, fix-test) commits through checkin without
-  asking. This is the one home for the confirmation rule.
+  When another skill commits through checkin (orchestrate, fix-test), it
+  commits without asking. This is the one home for the confirmation rule.
 - By default, treat the full dirty worktree as the intended commit scope.
 - Do not silently narrow the commit to only the files touched most recently.
 - Only create a partial commit when the human explicitly asks to split the work
@@ -92,6 +93,9 @@ git pull --rebase origin <default>
 
 ## Push Policy
 
+- **When to push**: push only when the user asks. Orchestrated commits
+  (orchestrate, fix-test) commit without asking and do not push. This is the
+  one home for the push rule.
 - Preferred push path:
 
 ```bash
