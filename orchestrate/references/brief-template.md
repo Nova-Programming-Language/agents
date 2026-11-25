@@ -12,13 +12,13 @@ count, context size, component count, or one failing test is insufficient.
 Never invent `a`/`b`, pilot, cleanup, or follow-up phases; propose a split to
 the orchestrator and preserve the original acceptance criteria until approved.
 
-**Size by risk and reward.** Cutting work too thin slows progress: every
-extra milestone costs another brief, audit and gate. Cutting it too coarse
-makes a failure impossible to trace to its cause. Split, hold or add a stop
-only where it buys attribution that the batch could not give otherwise.
-Inside a batch, keep attribution cheap: one commit per concern, with the
-owning check after each, so a later failure bisects to a commit. A commit is
-held only on a measured dependency, never on an unmeasured premise.
+**Size by risk and reward.** Milestones that are too small slow progress:
+each one costs another brief, audit and gate. Milestones that are too large
+make a failure hard to trace to its cause. Split one only where the split
+makes failures traceable in a way the single milestone could not. Within a
+milestone, keep failures traceable with one commit per concern, each
+followed by its owning tests, so a later failure bisects to a commit. Hold
+a commit back only on a measured dependency, never on an unmeasured premise.
 
 ```md
 # Task Brief: [milestone name]
