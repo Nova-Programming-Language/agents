@@ -16,200 +16,124 @@ committed.
 
 ## The Loop
 
-Repeat for each failure:
+Repeat for each failure. Keep each one's entry in STATUS.md per
+`references/failure-log-template.md`.
 
 ### 1. Select one failure
 
-Pick the next failure. If working through regression results, get the
-structured failure records from the regression tooling (profile §Regression)
-and use their classification, owner, and phase fields to
-choose the most informative failure first — one whose fix is likely
-to resolve or explain others.
-
-The record's owner is a starting hypothesis, not a verdict. It says where
-the failure surfaced; step 3 establishes which component's contract it
-violates, and those differ often enough that accepting the owner field as the answer
-is how fixes land in the wrong layer.
-
-Record in STATUS.md: which failure you are working on and why.
+- Pick the next failure. From regression results, use the structured failure
+  records (profile §Regression): their classification, owner, and phase pick
+  the most informative failure first, one whose fix is likely to resolve or
+  explain others.
+- Treat the record's owner as a starting hypothesis, not a verdict; step 3
+  decides the owning component.
+- Record in STATUS.md which failure you are working on and why.
 
 ### 2. Reproduce
 
-For a package-repository failure, first complete
-`../references/package-onboarding.md`. Read the root and target package
-READMEs before choosing the reproduction command; they may define required
-services, native libraries, environment variables, or test modes.
-
-Run the failing test in isolation. Record:
-- The exact command
-- The actual output (error message, wrong value, crash)
-- The expected output
-
-If not reproducible in isolation, note it — may be an ordering or
-environment dependency.
-
-Run the reproduction with the project's single-test command (profile §Tests)
-and keep the same exact scope; profile §Tests says which replay options
-reproduce an exact earlier scope. Confirm the executed count per
-`../regressions/SKILL.md`, "Non-Negotiable Rules", before concluding a failure
-does not reproduce.
+- For a package-repository failure, first complete
+  `../references/package-onboarding.md`, reading the root and target package
+  READMEs before choosing the reproduction command.
+- Run the failing test in isolation with the single-test command (profile
+  §Tests), keeping the exact scope; profile §Tests says which replay options
+  reproduce an earlier scope. Record the exact command, the actual output, and
+  the expected output.
+- Confirm the executed count per `../regressions/SKILL.md`, "Non-Negotiable
+  Rules", before concluding a failure does not reproduce.
+- If it does not reproduce in isolation, note it: it may be an ordering or
+  environment dependency.
 
 ### 3. Diagnose root cause
 
-Trace from symptom to root cause. This step must not be skipped.
+Never skip this step. Trace from symptom to root cause:
 
-- Find the governing architecture doc per
-  `../references/architecture-docs.md` (record a doc gap if none) to
-  identify which component owns the behavior being tested. Use the
-  component's **Invariant** and **Not responsible for** sections to
-  determine whether the defect is in the component itself or in an
-  upstream producer.
-- Read the test to understand what it asserts
-- Read the code path the test exercises
-- Identify WHERE behavior diverges from the expectation
-- Identify WHY — logic error, missing case, wrong data, stale
-  contract, upstream bug?
+- Find the owning component and its co-required changes per
+  `../coding/SKILL.md`, "Using Architecture Documents". Check whether the
+  change that introduced the bug followed the matching Common Change Pattern.
+- Read the test and the code path it exercises; find where behavior diverges
+  from the expectation, and why.
 - Attribute the failure per `../references/failure-attribution.md`. If the
   root cause is in another component, record it as a blocker with evidence;
   do not work around it.
-- If the architecture document has a "Common Change Patterns" section,
-  check whether the original change that introduced the bug followed
-  the pattern. Often a test failure means one component was updated
-  but a co-required component was not.
 
 The diagnosis must name:
-- The root cause (one sentence)
-- The rule it violates, and every site that enforces or depends on that
-  rule (file:line), including other implementations of the same check
-- The file and line where the defect lives
-- Which component owns the violated contract, and where that contract is
-  written — this is the fix site
-- Whether this is a local fix or requires upstream changes
-- Which suite or fixture decided the attribution. If the failure crossed a
-  component boundary that has no test on both sides, say so: the missing
-  fixture is why the next failure on that seam will be argued rather than
-  located.
+
+- the root cause (one sentence)
+- the rule it violates, and every site that enforces or depends on that rule
+  (file:line), including other implementations of the same check
+- the file and line where the defect lives
+- the component that owns the violated contract, and where that contract is
+  written (the fix site)
+- whether the fix is local or needs upstream changes
+- which suite or fixture decided the attribution, and whether a boundary the
+  failure crossed lacks a test on either side
 
 ### 3a. File discovered bugs
 
-During diagnosis you will often find bugs that are unrelated to the
-current failure — upstream contract violations, adjacent defects,
-stale assumptions in other components. Do not ignore them and do not
-fix them inline (that is scope creep).
-
-Sites in the same class as the current defect are not discovered bugs;
-they are part of this fix.
-
-For each discovered bug:
-- File an issue in the project's tracker (profile §Repository) using the
-  `issues` skill
-- Include the evidence you already have (file:line, what's wrong)
-- Label it with the correct subsystem
-- Reference the current issue if related
-
-Then continue with the current fix. The discovered bugs are now
-tracked and will get their own fix cycle.
-
-This is not optional. Unfiled bugs are lost bugs.
+- File every unrelated bug found during diagnosis with the `issues` skill:
+  evidence (file:line, what is wrong), the subsystem label, and a reference to
+  the current issue if related, then continue with the current fix. This is
+  not optional: unfiled bugs are lost bugs.
+- Do not fix them inline, and do not ignore them.
+- Sites in the same class as the current defect are not discovered bugs; they
+  are part of this fix.
 
 ### 4. Fix the root cause
 
-Implement the fix:
-
-- Fix the root cause, not the symptom
-- Do not modify test expectations to match wrong behavior
-- Do not add workarounds or defensive checks that hide the problem
-- Keep the fix minimal over the class, not the instance — do not fix
-  unrelated discovered bugs inline, they have their own issues now
-- If the rule is implemented in several places, the duplication is the
-  root cause: route every site through one shared check. If that is out
-  of scope, the commit says "partial fix", lists the uncovered sites, and
-  does not say "Fixes"
+- Fix the whole class per `../coding/SKILL.md`, "Component Workflow", step 1.
+- Do not modify test expectations to match wrong behavior, and do not add
+  workarounds or defensive checks that hide the problem.
 
 ### 5. Verify
 
-Run the target test. It must pass. Add tests across the class's sites,
-not only the original repro.
-
-Then verify the component broadly. The goal is not just proving the
-target test passes — it is proving the component still works across
-its major code paths. A fix that passes one test but breaks the
-component elsewhere is not a fix.
-
-- Identify which component owns the code you changed, using the
-  governing architecture doc (or the doc gap recorded at step 3).
-- Run the component's test suite (profile §Tests) or a representative subset that
-  exercises its major code paths. For example, if you fixed a bug
-  in the type checker, run the type checking tests broadly, not
-  just the one test that was failing.
-- If the fix touched shared code (utilities, data structures, common
-  paths), widen further — run tests for the components that consume
-  that shared code.
-- If a regression suite command exists (profile §Regression), run it and
-  compare.
+- Run the target test; it must pass.
+- Run the tests across the class's sites and the tests that own the changed
+  code, per `../regressions/SKILL.md`, "When to Run What". Exhaustive tests
+  wait for the end of the milestone.
 - Land the regression test and re-run the exposing path per
   `../references/failure-attribution.md`, "Validation Expectations". If the
   symptom survives a fix at the owning component, the attribution was wrong
   and step 3 is not finished.
-
-If the fix introduced new failures, diagnose and fix those before
-proceeding — they are part of THIS fix.
+- Any new failure the fix introduced is part of this fix: diagnose and fix it
+  before going on.
 
 ### 6. Audit
 
-Run the `audit` skill against this fix. The audit checks:
-
-- **Functional**: does the target test now pass?
-- **Structural**: is this a root-cause fix or a symptom fix? Is it at the
-  component that owns the violated contract, or at the one where the failure
-  happened to surface? Does it introduce shortcuts, silent failures, or
-  incomplete error handling?
-- **Completeness**: does the fix match the diagnosed root cause, or
-  did it drift into a different approach?
-- **Collateral**: any new failures or out-of-scope changes?
-
-If the audit fails, go back to step 4 with the audit findings. The
-fix must pass audit before it can be committed. Do not skip the audit
-because "it's a small change" — small changes are where shortcuts hide.
+- Run the `audit` skill on this fix (`../audit/SKILL.md`), even for a small
+  change.
+- If the audit fails, go back to step 4 with its findings. Do not commit until
+  it passes.
 
 ### 7. Commit
 
-After passing audit, commit using `checkin`. The commit message must
-include:
-- The test that was failing
-- The root cause (one sentence)
-- The fix (one sentence)
-- The verification command
-- Issue reference, in the tracker's syntax (profile §Repository): the
-  closing form if this fully resolves the issue, or the progress form if
-  the issue covers multiple failures and this commit addresses one of them
+Commit with `checkin`. The message names:
 
-This creates a clean, revertible checkpoint per fix. If a later fix
-goes wrong, earlier fixes are safely committed.
+- the test that was failing
+- the root cause (one sentence)
+- the fix (one sentence)
+- the verification command
+- the issue reference, in the closing or progress form `checkin` describes
 
 ### 8. Move on
 
-Update STATUS.md: move this failure to Done with the commit hash.
-
-Check if other failures in the list are now resolved by this fix —
-run them, and if they pass, mark them Done referencing this commit.
-Do not assume they're fixed without running them.
-
-Return to step 1 for the next failure.
+- Update STATUS.md: move this failure to Done with the commit hash.
+- Run the other failures in the list; mark any that now pass Done, referencing
+  this commit. Do not assume they are fixed without running them.
+- Return to step 1.
 
 ## When to Stop
 
-- All failures are fixed, audited, and committed
-- You hit a blocker (upstream bug, missing contract) — record with
-  evidence and stop. Do not work around it.
-- The user tells you to stop
+- All failures are fixed, audited, and committed.
+- You hit a blocker (upstream bug, missing contract): record it with evidence
+  and stop. Do not work around it.
+- The user tells you to stop.
 
-Do NOT stop because "the remaining failures are similar" or "these
-can be batched."
+Never stop because "the remaining failures are similar" or "these can be
+batched".
 
 ## Depth-First Rules
 
-- **One at a time.** Never have two failures in progress simultaneously.
+- **One at a time.** Never have two failures in progress at once.
 - **Audit before commit.** Every fix is audited. No exceptions.
 - **Commit before moving on.** A fix is not done until it is committed.
 - **Root cause required.** "Made the test pass" is not a diagnosis.
@@ -218,29 +142,24 @@ can be batched."
 - **Fix at the owning component**, per `../references/failure-attribution.md`:
   not at the frame where the value was observed, not in the consumer that
   received it, and not in the package that happens to be in scope.
-- **No symptom fixes.** Nil checks, clamps, defaults, try/catch that
-  hide the problem are not fixes.
-- **No test modification.** The test is usually right and the code
-  is wrong.
-- **No batching.** Fix one, verify, audit, commit. Then check if
-  others resolved.
+- **No symptom fixes.** Nil checks, clamps, defaults, and try/catch that hide
+  the problem are not fixes.
+- **No test modification.** The test is usually right and the code is wrong.
 
 ## Integration with Orchestrate
 
-When orchestrate encounters test failures:
-- Each failure is a separate cycle of this loop
-- The orchestrate pipeline should not batch failures into one agent run
-- Each cycle produces its own audit and commit
-
-When used standalone, this skill manages its own sequencing.
+Each failure is its own cycle of this loop, with its own audit and commit; the
+orchestrate pipeline does not combine failures into one agent run. Used
+standalone, this skill manages its own sequencing.
 
 ## References
 
 - `../references/project-profile.md` — where project commands live (cited as
   "profile §Section")
 - `../references/package-onboarding.md` — required before package failure work
-- `../references/failure-attribution.md` — which component owns the defect,
-  which milestone owns the work, and why the fix cannot move to a more
-  convenient layer
+- `../references/failure-attribution.md` — which component owns the defect
+- `../coding/SKILL.md` — fix the class; architecture docs
+- `../regressions/SKILL.md` — which tests to run; flaky tests; empty scopes
 - `references/failure-log-template.md` — format for tracking fixes
+- `references/rationale.md` — why the loop is shaped this way
 - `../audit/SKILL.md` — audit skill used at step 6

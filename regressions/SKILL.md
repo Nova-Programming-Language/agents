@@ -40,6 +40,8 @@ here.
   profile §Regression) only at the end of a milestone; between commits and
   checkpoints, run only the build and the tests that own the changed code.
 - Run the owning component's suite once at the milestone gate.
+- When a change touches shared code (utilities, data structures, common
+  paths), also run the tests of the components that consume it.
 - Run canonical/full regression only at the production-changing milestone
   gates PLAN.md defines and at final release, not after every file,
   checkpoint, or documentation-only milestone.

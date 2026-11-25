@@ -133,17 +133,22 @@ specialization over separate paths.
 
 ## Component Workflow
 
-1. State the semantic rule being changed, and list every site that
-   enforces it. If it has several implementations, consolidate them
-   before changing it. If there is no single place to consolidate into
-   (the fact lives in side tables or is rebuilt per site), stop and report
-   a design gap; do not add another site.
+1. State the semantic rule being changed (or, for a bug, the rule the defect
+   violates), and list every site in the codebase that enforces or depends
+   on it. Fix the class, not the instance. If it has several
+   implementations, the duplication is the root cause: consolidate them into
+   one shared check before changing it. If consolidation is out of scope, the
+   commit says "partial fix", lists the uncovered sites, and does not use the
+   closing form (`../issues/SKILL.md`, "Closing an issue"). If there is no
+   single place to consolidate into (the fact lives in side tables or is
+   rebuilt per site), stop and report a design gap; do not add another site.
 2. Identify the owning component.
 3. Identify every user-facing path affected.
 4. For runtime bugs, collect runtime evidence before broad code reading.
 5. For related constructs, find the highest shared semantic layer first.
 6. Implement the general fix.
-7. Validate all impacted paths, not just one.
+7. Validate all impacted paths, not just one, with tests across every site of
+   the class, not only the original reproduction.
 
 ## Cross-Command Audit
 
