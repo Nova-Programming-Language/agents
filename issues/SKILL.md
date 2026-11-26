@@ -27,8 +27,10 @@ translate them for another tracker. Reasons behind the rules are in
    Local Bug Report first.
 2. **Create the issue** with the body in `references/issue-template.md`, using
    the tracker's create command (`gh issue create`).
-3. **Label it.** Exactly one subsystem label, chosen by where the defect is,
-   not where the symptom appears:
+3. **Label it** with the profile's label set (profile §Repository). Where the
+   project has subsystem labels, apply exactly one, chosen by where the defect
+   is, not where the symptom appears; where it has none, put the component in
+   the title or body the way the profile says:
    - a stack trace or error in a specific module or package → the component
      that owns it (the architecture map, profile §Paths);
    - otherwise the profile's failure-kind → label rules (profile §Repository);
@@ -128,7 +130,9 @@ Verified: <exact command and result>"
 
 ### Issues that are blockers
 
-Label it `blocker`, reference what it blocks (milestone, issue, component),
+Mark it a blocker the way the profile says (a `blocker` label, or a
+statement in the body when the project has no such label), reference what it
+blocks (milestone, issue, component),
 and, in an orchestrate pipeline, record it in STATUS.md under Blocked with
 the issue URL.
 
@@ -175,7 +179,8 @@ share one tracker account.
 
 ### Component verification pass
 
-Before fixing anything, check every open issue's labels:
+Before fixing anything, check every open issue's labels (skip this pass
+when the project has no subsystem labels):
 
 ```
 gh issue list --state open --json number,title,labels

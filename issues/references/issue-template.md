@@ -32,7 +32,7 @@ Use this structure when creating issues in the project's tracker
 
 ## Ownership Hypothesis
 
-- Subsystem: [one subsystem label from profile §Repository]
+- Subsystem: [the component, as a label or as the profile names it (§Repository)]
 - Likely cause: [one sentence — what is probably wrong]
 
 ## Context
