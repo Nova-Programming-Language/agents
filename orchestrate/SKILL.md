@@ -151,7 +151,8 @@ main-session background tasks survive.
 
 When sequencing allows, prefer the split that avoids the problem: the worker
 does implementation and fast targeted tests in the foreground and records its
-claims; the orchestrator owns the heavyweight gate before audit and commit.
+claims; the orchestrator owns the heavyweight gate, after the audit passes and
+before the commit.
 This is a split of validation ownership, not a new implementation phase.
 
 ## Artifacts

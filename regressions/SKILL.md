@@ -36,10 +36,11 @@ here.
 - Prefer the smallest validation that proves the change.
 - Use targeted tests repeatedly while implementing.
 - Run exhaustive tests (full regression and the other whole-component tiers in
-  profile §Regression) only at the end of a milestone.
+  profile §Regression) once per milestone, after its audit passes; fix rounds
+  do not repeat them.
 - After each fix, run only the owning tests: the build and the tests that own
   the changed code. Run the owning component's suite once, at the milestone
-  gate.
+  gate. Rerun a test only if the change since it last passed can affect it.
 - When a change touches shared code (utilities, data structures, common
   paths), also run the tests of the components that consume it.
 - Run canonical/full regression only at the production-changing milestone
